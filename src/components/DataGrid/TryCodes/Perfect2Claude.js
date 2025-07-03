@@ -112,8 +112,12 @@ const AddBugModal = ({ isOpen, onClose, newBug, setNewBug, filterOptions, onSubm
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-[rgba(0,0,0,0.50)] flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between mb-4">
@@ -321,36 +325,6 @@ const BugManagementSystem = () => {
     },
     {
       id: 5,
-      slNo: 105,
-      issueEnv: ['demo', 'stg'],
-      title: 'UI elements overlapping on mobile',
-      description: 'On mobile devices, navigation menu overlaps with main content area.',
-      reportedOn: '2025-06-15',
-      reportedBy: 'Kavita Singh',
-      assignedTo: 'Rajesh Kumar',
-      status: 'open',
-      priority: 'P4',
-      comments: 'CSS responsive design needs adjustment.',
-      createdAt: '2025-06-15',
-      updatedAt: '2025-06-18',
-    },
-    {
-      id: 6,
-      slNo: 105,
-      issueEnv: ['demo', 'stg'],
-      title: 'UI elements overlapping on mobile',
-      description: 'On mobile devices, navigation menu overlaps with main content area.',
-      reportedOn: '2025-06-15',
-      reportedBy: 'Kavita Singh',
-      assignedTo: 'Rajesh Kumar',
-      status: 'open',
-      priority: 'P4',
-      comments: 'CSS responsive design needs adjustment.',
-      createdAt: '2025-06-15',
-      updatedAt: '2025-06-18',
-    },
-    {
-      id: 7,
       slNo: 105,
       issueEnv: ['demo', 'stg'],
       title: 'UI elements overlapping on mobile',
