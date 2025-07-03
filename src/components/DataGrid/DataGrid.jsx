@@ -3,6 +3,7 @@ import { Upload } from 'lucide-react';
 import { Search, Filter, Download, Eye, Edit, Trash2, Plus, ChevronLeft, ChevronRight, X, Calendar, User, AlertCircle, Clock, Flag } from 'lucide-react';
 import { validateCSVContent } from '../../utils/validateCsv';
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 
 const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
   const getPriorityColor = (priority) => {
@@ -283,26 +284,51 @@ const ImportBugModal = ({ isOpen, onClose, onSubmit }) => {
   
     setIsLoading(true);
     try {
-      const text = await selectedFile.text();
+      const fileName = selectedFile.name;
+      const isCSV = fileName.endsWith('.csv');
+      const isXLSX = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
   
-      // ✅ Use PapaParse to parse CSV
-      const { data, errors, meta } = Papa.parse(text, {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: header => header.trim(),
-        transform: value => value.trim()
-      });
+      let parsedData = [];
+      let headers = [];
   
-      if (errors.length > 0) {
-        setErrorMsg(`CSV parsing error: ${errors[0].message}`);
+      // ✅ Handle CSV files
+      if (isCSV) {
+        const text = await selectedFile.text();
+        const { data, errors, meta } = Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: header => header.trim(),
+          transform: value => value.trim()
+        });
+  
+        if (errors.length > 0) {
+          setErrorMsg(`CSV parsing error: ${errors[0].message}`);
+          setTimeout(() => setErrorMsg(''), 10000);
+          return;
+        }
+  
+        parsedData = data;
+        headers = meta.fields;
+      }
+  
+      // ✅ Handle XLSX files
+      else if (isXLSX) {
+        const buffer = await selectedFile.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        parsedData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+        headers = Object.keys(parsedData[0] || {});
+      }
+  
+      else {
+        setErrorMsg('Unsupported file type. Please upload .csv or .xlsx files only.');
         setTimeout(() => setErrorMsg(''), 10000);
         return;
       }
   
-      const headers = meta.fields;
-  
-      // ✅ Validate headers and values
-      const validationResult = validateCSVContent(headers, data);
+      // ✅ Validate data
+      const validationResult = validateCSVContent(headers, parsedData);
       if (!validationResult.isValid) {
         setErrorMsg(validationResult.message);
         setTimeout(() => setErrorMsg(''), 10000);
@@ -310,10 +336,10 @@ const ImportBugModal = ({ isOpen, onClose, onSubmit }) => {
       }
       setErrorMsg('');
   
-      // ✅ Process and enrich bug data
+      // ✅ Process and normalize data
       const today = new Date().toISOString().split('T')[0];
-      const processedData = data.map((bug, index) => {
-        const cleaned = {
+      const processedData = parsedData.map((bug, index) => {
+        return {
           ...bug,
           id: bug.id || Date.now() + index,
           slNo: bug.slNo || 1000 + index,
@@ -324,18 +350,17 @@ const ImportBugModal = ({ isOpen, onClose, onSubmit }) => {
           comments: bug.comments || '',
           issueEnv: Array.isArray(bug.issueEnv)
             ? bug.issueEnv
-            : (bug.issueEnv || '').split(',').map(env => env.trim()).filter(Boolean),
+            : (bug.issueEnv || '').split(',').map(e => e.trim()).filter(Boolean),
           reportedOn: bug.reportedOn || today,
           createdAt: bug.createdAt || today,
           updatedAt: bug.updatedAt || today
         };
-        return cleaned;
       });
   
       setPreviewData(processedData);
       setShowPreview(true);
     } catch (error) {
-      alert('Error reading file: ' + error.message);
+      alert('Error processing file: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -391,7 +416,7 @@ const ImportBugModal = ({ isOpen, onClose, onSubmit }) => {
                 <div className="flex items-center space-x-4">
                   <input
                     type="file"
-                    accept=".csv"
+                    accept=".csv, .xlsx, .xls"
                     onChange={handleFileSelect}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
