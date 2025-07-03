@@ -14,6 +14,7 @@ import {
 import AddEmployeeModal from './addEmployee/addEmployee';
 import EditEmployeeModal from './addEmployee/EditEmployeeModal';
 import ViewEmployeeModal from './addEmployee/ViewEmployeeModal';
+import Model from '../common/Model'
 
 const AdvancedDataTable = () => {
     // Sample data - in real app, this would come from API
@@ -704,7 +705,7 @@ const AdvancedDataTable = () => {
                 {/* Data Display */}
                 <div className="p-6">
                     {/* Bulk Actions Toolbar */}
-                    <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-1 gap-6">
                         {paginatedData.map((item) => (
                             <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                                 <div className="flex items-center space-x-4 mb-4">
@@ -808,6 +809,18 @@ const AdvancedDataTable = () => {
                 filterOptions={filterOptions}
                 onSubmit={handleAddEmployee}
             />}
+            {/* {isAddModalOpen &&
+                <Model
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    title="Add New Employee"
+                    onSubmit={handleAddEmployee}
+                    submitText="Add"
+                    cancelText="Close"
+                >
+                    <h3>Model Content</h3>
+                </Model>
+            } */}
             {viewModalOpen && selectedEmployee && (
                 <ViewEmployeeModal
                     employee={selectedEmployee}

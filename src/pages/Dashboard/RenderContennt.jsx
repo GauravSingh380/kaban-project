@@ -1,5 +1,6 @@
 import HomePageUser from "../../components/home/Home"
 import DataGrid from "../../components/DataGrid/DataGrid"
+import FormBuilder from "../../components/FormBuilder/FormBuilder"
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -25,7 +26,7 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       projects: (
         <div className="space-y-2">
-          <h1>tab 1</h1>
+          <FormBuilder />
         </div>
       ),
       issues: (
