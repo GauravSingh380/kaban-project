@@ -110,7 +110,7 @@ const RegisterPage = () => {
         {/* Back to Landing */}
         <Link
           to="/"
-          className="inline-flex items-center text-purple-200 hover:text-white mb-8 transition-colors"
+          className="inline-flex items-center text-purple-200 hover:text-purple-400 mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
@@ -119,14 +119,14 @@ const RegisterPage = () => {
         {/* Register Form */}
         <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-8 border border-purple-400 border-opacity-20">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
-            <p className="text-purple-200">Join our project management platform</p>
+            <h1 className="text-3xl font-bold text-purple-700 mb-2">Create Account</h1>
+            <p className="text-purple-700">Join our project management platform</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label className="block text-purple-200 text-sm font-medium mb-2">
+              <label className="block text-purple-700 text-sm font-medium mb-2">
                 Full Name
               </label>
               <div className="relative">
@@ -136,7 +136,7 @@ const RegisterPage = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-purple-300 ${
+                  className={`w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-400 ${
                     errors.name ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                   }`}
                   placeholder="Enter your full name"
@@ -149,7 +149,7 @@ const RegisterPage = () => {
 
             {/* Email Field */}
             <div>
-              <label className="block text-purple-200 text-sm font-medium mb-2">
+              <label className="block text-purple-700 text-sm font-medium mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -159,7 +159,7 @@ const RegisterPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-purple-300 ${
+                  className={`w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-400 ${
                     errors.email ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                   }`}
                   placeholder="Enter your email"
@@ -172,7 +172,7 @@ const RegisterPage = () => {
 
             {/* Role Selection */}
             <div>
-              <label className="block text-purple-200 text-sm font-medium mb-2">
+              <label className="block text-purple-700 text-sm font-medium mb-2">
                 Role
               </label>
               <div className="relative">
@@ -181,10 +181,10 @@ const RegisterPage = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border border-purple-400 border-opacity-30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
+                  className="w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border border-purple-400 border-opacity-30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
                 >
                   {roles.map(role => (
-                    <option key={role.value} value={role.value} className="bg-purple-800 text-white">
+                    <option key={role.value} value={role.value} className="bg-purple-800 text-gray-700">
                       {role.label}
                     </option>
                   ))}
@@ -194,7 +194,7 @@ const RegisterPage = () => {
 
             {/* Password Field */}
             <div>
-              <label className="block text-purple-200 text-sm font-medium mb-2">
+              <label className="block text-purple-700 text-sm font-medium mb-2">
                 Password
               </label>
               <div className="relative">
@@ -204,7 +204,7 @@ const RegisterPage = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-purple-300 ${
+                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-400 ${
                     errors.password ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                   }`}
                   placeholder="Create a password"
@@ -224,7 +224,7 @@ const RegisterPage = () => {
 
             {/* Confirm Password Field */}
             <div>
-              <label className="block text-purple-200 text-sm font-medium mb-2">
+              <label className="block text-purple-700 text-sm font-medium mb-2">
                 Confirm Password
               </label>
               <div className="relative">
@@ -234,7 +234,7 @@ const RegisterPage = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-purple-300 ${
+                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-400 ${
                     errors.confirmPassword ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                   }`}
                   placeholder="Confirm your password"
@@ -261,7 +261,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-purple-600 text-purple-200 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
@@ -269,11 +269,11 @@ const RegisterPage = () => {
 
           {/* Login Link */}
           <div className="mt-8 text-center">
-            <p className="text-purple-200">
-              Already have an account?{' '}
+            <p className="text-purple-700">
+              Already have an account?
               <Link
                 to="/login"
-                className="text-white font-semibold hover:text-purple-200 transition-colors"
+                className="text-purple-500 font-semibold underline hover:text-purple-800 transition-colors"
               >
                 Sign In
               </Link>

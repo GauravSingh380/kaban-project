@@ -174,7 +174,7 @@ const FormBuilder = () => {
     };
 
     // Render form field in preview
-    const renderPreviewField = (field) => {
+    const renderHtmlField = (field) => {
         if (!isFieldVisible(field)) return null;
 
         const commonProps = {
