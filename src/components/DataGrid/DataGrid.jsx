@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Upload } from 'lucide-react';
 import { Search, Filter, Download, Eye, Edit, Trash2, Plus, ChevronLeft, ChevronRight, X, Calendar, User, AlertCircle, Clock, Flag } from 'lucide-react';
 import { validateCSVContent } from '../../utils/validateCsv';
+import Papa from 'papaparse';
 
 const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
   const getPriorityColor = (priority) => {
@@ -279,62 +280,58 @@ const ImportBugModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleFilePreview = async () => {
     if (!selectedFile) return;
-
+  
     setIsLoading(true);
     try {
       const text = await selectedFile.text();
-      const lines = text.split('\n').filter(line => line.trim());
-
-      if (lines.length === 0) {
-        alert('File is empty');
+  
+      // ✅ Use PapaParse to parse CSV
+      const { data, errors, meta } = Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: header => header.trim(),
+        transform: value => value.trim()
+      });
+  
+      if (errors.length > 0) {
+        setErrorMsg(`CSV parsing error: ${errors[0].message}`);
+        setTimeout(() => setErrorMsg(''), 10000);
         return;
       }
-
-      // Step 1: Extract headers
-      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-
-      // Step 2: Create basic row objects
-      const rawData = lines.slice(1).map((line, index) => {
-        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
-        const bug = {};
-        headers.forEach((header, i) => {
-          bug[header] = values[i] || '';
-        });
-        return bug;
-      });
-      console.log("rawData-------", rawData);
-
-      // ✅ Step 3: Validate raw data BEFORE processing further
-      const validationResult = validateCSVContent(headers, rawData);
+  
+      const headers = meta.fields;
+  
+      // ✅ Validate headers and values
+      const validationResult = validateCSVContent(headers, data);
       if (!validationResult.isValid) {
         setErrorMsg(validationResult.message);
-        setTimeout(() => setErrorMsg(''), 10000); // Optional: auto-clear
+        setTimeout(() => setErrorMsg(''), 10000);
         return;
       }
       setErrorMsg('');
-
-      // Step 4: Clean/process validated bugs
+  
+      // ✅ Process and enrich bug data
       const today = new Date().toISOString().split('T')[0];
-      const processedData = rawData.map((bug, index) => {
-        // Generate IDs if not present
-        if (!bug.id) bug.id = Date.now() + index;
-        if (!bug.slNo) bug.slNo = 1000 + index;
-
-        // Parse environment array
-        if (bug.issueEnv && typeof bug.issueEnv === 'string') {
-          bug.issueEnv = bug.issueEnv.split(',').map(env => env.trim()).filter(env => env);
-        } else if (!bug.issueEnv) {
-          bug.issueEnv = [];
-        }
-
-        // Set default dates
-        if (!bug.reportedOn) bug.reportedOn = today;
-        if (!bug.createdAt) bug.createdAt = today;
-        if (!bug.updatedAt) bug.updatedAt = today;
-
-        return bug;
+      const processedData = data.map((bug, index) => {
+        const cleaned = {
+          ...bug,
+          id: bug.id || Date.now() + index,
+          slNo: bug.slNo || 1000 + index,
+          priority: bug.priority || 'P3',
+          status: bug.status || 'open',
+          reportedBy: bug.reportedBy || 'Unknown',
+          assignedTo: bug.assignedTo || 'Unassigned',
+          comments: bug.comments || '',
+          issueEnv: Array.isArray(bug.issueEnv)
+            ? bug.issueEnv
+            : (bug.issueEnv || '').split(',').map(env => env.trim()).filter(Boolean),
+          reportedOn: bug.reportedOn || today,
+          createdAt: bug.createdAt || today,
+          updatedAt: bug.updatedAt || today
+        };
+        return cleaned;
       });
-
+  
       setPreviewData(processedData);
       setShowPreview(true);
     } catch (error) {
