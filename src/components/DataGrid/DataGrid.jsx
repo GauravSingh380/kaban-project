@@ -4,6 +4,7 @@ import { Search, Filter, Download, Eye, Edit, Trash2, Plus, ChevronLeft, Chevron
 import { validateCSVContent } from '../../utils/validateCsv';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
+import { initialBugs } from '../../helper';
 
 const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
   const getPriorityColor = (priority) => {
@@ -37,21 +38,21 @@ const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedB
             className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <div>
-            <h3 className="font-medium text-gray-900 mb-1">{title}</h3>
-            <p className="text-sm text-gray-600">Bug #{slNo}</p>
+            <h3 className="text-xl font-medium text-gray-900 mb-1">{title}</h3>
+            <p className="text-sm font-bold text-gray-600">Bug #{slNo}</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
+          {(status !== "fixed" && status !== "closed") && <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
             {priority}
-          </span>
-          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(status)}`}>
+          </span>}
+          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(status)}`}>
             {status}
           </span>
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{description}</p>
+      <p className="text-md text-gray-600 mb-4 line-clamp-5">{description}</p>
 
       <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
         <div className="flex items-center space-x-2">
@@ -72,20 +73,27 @@ const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedB
         </div>
       </div>
 
-      <div className="mb-4">
-        <p className="text-sm font-medium text-gray-700 mb-2">Environment:</p>
+      <div className="mb-4 flex">
+        <p className="text-sm font-medium text-gray-700 pt-0.5 mr-2">Environment:</p>
         <div className="flex flex-wrap gap-2">
           {issueEnv.map((env, index) => (
-            <span key={index} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-              {env}
-            </span>
+            <span
+            key={index}
+            className={`inline-flex px-2 py-1 text-xs rounded-sm
+              ${env === 'demo'
+                ? 'bg-red-100 text-red-400'
+                : 'bg-blue-100 text-blue-800'}
+            `}
+          >
+            {env.toUpperCase()}
+          </span>
           ))}
         </div>
       </div>
 
       <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          {comments && comments.length > 50 ? `${comments.substring(0, 50)}...` : comments}
+          {comments && comments.length > 50 ? `${comments.substring(0, 400)}...` : comments}
         </div>
         <div className="flex items-center space-x-2">
           <button
@@ -490,116 +498,6 @@ const ImportBugModal = ({ isOpen, onClose, onSubmit }) => {
 };
 
 const BugManagementSystem = () => {
-  // Initial bug data
-  const initialBugs = [
-    {
-      id: 1,
-      slNo: 101,
-      issueEnv: ['dev', 'stg'],
-      title: 'Login page crashes on invalid email',
-      description: 'When entering an invalid email format, the page crashes instead of showing an error message.',
-      reportedOn: '2025-07-01',
-      reportedBy: 'Gaurav Singh',
-      assignedTo: 'Ajeet Gupta',
-      status: 'open',
-      priority: 'P1',
-      comments: 'Needs immediate attention, reported by QA during regression testing.',
-      createdAt: '2025-07-01',
-      updatedAt: '2025-07-03',
-    },
-    {
-      id: 2,
-      slNo: 102,
-      issueEnv: ['demo'],
-      title: 'Dashboard chart not loading',
-      description: 'Chart fails to load when there are no active users in the system.',
-      reportedOn: '2025-06-28',
-      reportedBy: 'Priya Sharma',
-      assignedTo: 'Rohit Mehta',
-      status: 'fixed',
-      priority: 'P2',
-      comments: 'Handled edge case for empty dataset.',
-      createdAt: '2025-06-28',
-      updatedAt: '2025-07-02',
-    },
-    {
-      id: 3,
-      slNo: 103,
-      issueEnv: ['prod'],
-      title: 'Payment gateway timeout',
-      description: 'Payment processing times out after 30 seconds, causing transaction failures.',
-      reportedOn: '2025-06-25',
-      reportedBy: 'Amit Kumar',
-      assignedTo: 'Neha Patel',
-      status: 'in-progress',
-      priority: 'P1',
-      comments: 'Critical issue affecting revenue. Working on increasing timeout limit.',
-      createdAt: '2025-06-25',
-      updatedAt: '2025-07-01',
-    },
-    {
-      id: 4,
-      slNo: 104,
-      issueEnv: ['dev', 'stg'],
-      title: 'Email notifications not sent',
-      description: 'Users are not receiving email notifications for password reset requests.',
-      reportedOn: '2025-06-20',
-      reportedBy: 'Ravi Gupta',
-      assignedTo: 'Sunita Sharma',
-      status: 'closed',
-      priority: 'P3',
-      comments: 'SMTP configuration issue resolved.',
-      createdAt: '2025-06-20',
-      updatedAt: '2025-06-22',
-    },
-    {
-      id: 5,
-      slNo: 105,
-      issueEnv: ['demo', 'stg'],
-      title: 'UI elements overlapping on mobile',
-      description: 'On mobile devices, navigation menu overlaps with main content area.',
-      reportedOn: '2025-06-15',
-      reportedBy: 'Kavita Singh',
-      assignedTo: 'Rajesh Kumar',
-      status: 'open',
-      priority: 'P4',
-      comments: 'CSS responsive design needs adjustment.',
-      createdAt: '2025-06-15',
-      updatedAt: '2025-06-18',
-    },
-    {
-      id: 6,
-      slNo: 105,
-      issueEnv: ['demo', 'stg'],
-      title: 'UI elements overlapping on mobile',
-      description: 'On mobile devices, navigation menu overlaps with main content area.',
-      reportedOn: '2025-06-15',
-      reportedBy: 'Kavita Singh',
-      assignedTo: 'Rajesh Kumar',
-      status: 'open',
-      priority: 'P4',
-      comments: 'CSS responsive design needs adjustment.',
-      createdAt: '2025-06-15',
-      updatedAt: '2025-06-18',
-    },
-    {
-      id: 7,
-      slNo: 105,
-      issueEnv: ['demo', 'stg'],
-      title: 'UI elements overlapping on mobile',
-      description: 'On mobile devices, navigation menu overlaps with main content area.',
-      reportedOn: '2025-06-15',
-      reportedBy: 'Kavita Singh',
-      assignedTo: 'Rajesh Kumar',
-      status: 'open',
-      priority: 'P4',
-      comments: 'CSS responsive design needs adjustment.',
-      createdAt: '2025-06-15',
-      updatedAt: '2025-06-18',
-    }
-  ];
-
-  // State management
   const [originalData, setOriginalData] = useState(initialBugs);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });

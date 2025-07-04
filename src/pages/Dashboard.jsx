@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronLeft, ChevronRight, LogOut, } from 'lucide-react';
 import HomePageUser from "../components/home/Home"
-import allMenuItems from '../helper';
+import {allMenuItems} from '../helper';
 import SidebarTabs from '../components/common/SidebarTabs';
 import RenderContent from './Dashboard/RenderContennt';
 
