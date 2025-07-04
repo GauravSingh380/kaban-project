@@ -132,3 +132,23 @@ export const initialBugs = [
     updatedAt: '2025-06-18',
   }
 ];
+
+export const getPriorityColor = (priority) => {
+  switch (priority) {
+    case 'P1': return 'bg-red-100 text-red-800';
+    case 'P2': return 'bg-orange-100 text-orange-800';
+    case 'P3': return 'bg-yellow-100 text-yellow-800';
+    case 'P4': return 'bg-green-100 text-green-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
+
+export const getStatusColor = (status) => {
+  switch (status) {
+    case 'open': return 'bg-red-100 text-red-800';
+    case 'in-progress': return 'bg-yellow-100 text-yellow-800';
+    case 'fixed': return 'bg-green-100 text-green-800';
+    case 'closed': return 'bg-gray-100 text-gray-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
