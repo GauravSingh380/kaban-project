@@ -89,7 +89,7 @@ const LandingPage = () => {
                 <h3 className="text-xl font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-purple-200">
+                <p className="text-purple-700">
                   {feature.description}
                 </p>
               </div>
