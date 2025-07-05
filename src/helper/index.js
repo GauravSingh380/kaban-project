@@ -152,3 +152,174 @@ export const getStatusColor = (status) => {
     default: return 'bg-gray-100 text-gray-800';
   }
 };
+
+
+
+const sampleFormConfigJson= {
+  "title": "Dynamic Form",
+  "description": "Form with conditional logic",
+  "fields": [
+    {
+      "id": "field_1751738422051",
+      "type": "text",
+      "label": "New Text Input",
+      "name": "field_1",
+      "required": false,
+      "placeholder": "",
+      "options": [],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738423434",
+      "type": "email",
+      "label": "New Email",
+      "name": "field_2",
+      "required": false,
+      "placeholder": "",
+      "options": [],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738424970",
+      "type": "number",
+      "label": "New Number",
+      "name": "field_3",
+      "required": false,
+      "placeholder": "",
+      "options": [],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738426559",
+      "type": "select",
+      "label": "New Dropdown",
+      "name": "field_4",
+      "required": false,
+      "placeholder": "",
+      "options": [
+        "Option 1",
+        "Option 2"
+      ],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738428175",
+      "type": "radio",
+      "label": "New Radio Button",
+      "name": "field_5",
+      "required": false,
+      "placeholder": "",
+      "options": [
+        "Option 1",
+        "Option 2"
+      ],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738429153",
+      "type": "checkbox",
+      "label": "New Checkbox",
+      "name": "field_6",
+      "required": false,
+      "placeholder": "",
+      "options": [
+        "Option 1",
+        "Option 2"
+      ],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738430083",
+      "type": "textarea",
+      "label": "New Text Area",
+      "name": "field_7",
+      "required": false,
+      "placeholder": "",
+      "options": [],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738430982",
+      "type": "date",
+      "label": "New Date",
+      "name": "field_8",
+      "required": false,
+      "placeholder": "",
+      "options": [],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    },
+    {
+      "id": "field_1751738433339",
+      "type": "file",
+      "label": "New File Upload",
+      "name": "field_9",
+      "required": false,
+      "placeholder": "",
+      "options": [],
+      "conditions": [],
+      "validations": {
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "min": "",
+        "max": ""
+      }
+    }
+  ]
+}

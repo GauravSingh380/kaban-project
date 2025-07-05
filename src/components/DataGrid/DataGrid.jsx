@@ -6,6 +6,7 @@ import BugCard from './BugCard/BugCard';
 import AddBugModal from './BugModel/AddBugModal';
 import ImportBugModal from './ImportBugModel/ImportBugModal';
 import GlobalModel from '../common/GlobalModel';
+import RenderHtmlFields from '../common/RenderHtmlFields';
 
 const BugManagementSystem = () => {
   const [originalData, setOriginalData] = useState(initialBugs);
@@ -27,6 +28,7 @@ const BugManagementSystem = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
+  const [previewData, setPreviewData] = useState({});
 
   const [newBug, setNewBug] = useState({
     title: '',
@@ -301,6 +303,30 @@ const BugManagementSystem = () => {
     setOriginalData(prev => [...prev, ...processedBugs]);
     alert(`Successfully imported ${processedBugs.length} bugs!`);
   };
+  const handleInputChange = (fieldName, value) => {
+    setPreviewData(prev => ({
+        ...prev,
+        [fieldName]: value
+    }));
+};
+const handleEditBug = (e) => {
+  e.preventDefault();
+  console.log("Prev------data---", previewData)
+    // Find the bug to edit
+    // const bugToEdit = originalData.find(bug => bug.id === previewData.id);
+
+    // if (bugToEdit) {
+    //     // Update the bug
+    //     const updatedBug = { ...bugToEdit, ...previewData };
+    //     const updatedData = originalData.map(bug => bug.id === updatedBug.id ? updatedBug : bug);
+    //     setOriginalData(updatedData);
+    //     setEditModelOpen(false);
+    //     setPreviewData({});
+    // } else {
+    //     alert('Bug not found!');
+    // }
+
+}
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -679,7 +705,13 @@ const BugManagementSystem = () => {
         isOpen={isEditModelOpen}
         onClose={() => setEditModelOpen(false)}
         header="Edit bug"
-        onSubmit={handleAddBug}
+        onSubmit={(e) => handleEditBug(e)}
+        children={
+        <RenderHtmlFields
+        fieldItems={formConfig}
+        previewData={previewData}
+        handleInputChange={handleInputChange}
+        />}
       />
       <ImportBugModal
         isOpen={isImportModalOpen}
@@ -689,5 +721,181 @@ const BugManagementSystem = () => {
     </div>
   );
 };
+
+const innitBugg =  {
+  id: 1,
+  slNo: 101,
+  issueEnv: ['dev', 'prod'],
+  title: 'Login page crashes on invalid email',
+  description: "As a school admin, Purchased The Hochman Method: 3–12 (Live Virtual) membership with 5 educators , but on admin dahboard same membership displaying twice",
+  reportedOn: '2025-07-01',
+  reportedBy: 'Gaurav Singh',
+  assignedTo: 'Ajeet Gupta',
+  status: 'open',
+  priority: 'P1',
+  comments: 'Needs immediate attention, reported by QA during regression testing.',
+  createdAt: '2025-07-01',
+  updatedAt: '2025-07-03',
+}
+const formConfig = [
+  {
+    "id": "1",
+    "type": "text",
+    "label": "Bug Title",
+    "name": "title",
+    "required": true,
+    "placeholder": "Enter bug title",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "2",
+    "type": "textarea",
+    "label": "Description",
+    "name": "description",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "3",
+    "type": "select",
+    "label": "Priority",
+    "name": "priority",
+    "required": false,
+    "placeholder": "",
+    "options": ['P1', 'P2', 'P3', 'P4'],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "4",
+    "type": "select",
+    "label": "Status",
+    "name": "status",
+    "required": false,
+    "placeholder": "",
+    "options": ['open', 'in-progress','closed', 'fixed'],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "5",
+    "type": "text",
+    "label": "Reported By",
+    "name": "reportedBy",
+    "required": true,
+    "placeholder": "Enter bug title",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "6",
+    "type": "text",
+    "label": "Reported By",
+    "name": "reportedBy",
+    "required": true,
+    "placeholder": "Enter bug title",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "7",
+    "type": "select",
+    "label": "Assigned To",
+    "name": "assignedTo",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "8",
+    "type": "checkbox",
+    "label": "Environment",
+    "name": "issueEnv",
+    "required": false,
+    "placeholder": "",
+    "options": [
+      "dev",
+      "prod",
+      "stg",
+      "demo",
+    ],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "9",
+    "type": "textarea",
+    "label": "Comments",
+    "name": "comments",
+    "required": false,
+    "placeholder": "Enter you comments...",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+]
 
 export default BugManagementSystem;

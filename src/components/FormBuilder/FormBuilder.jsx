@@ -606,7 +606,7 @@ const FormBuilder = () => {
                                                 {field.label}
                                                 {field.required && <span className="text-red-500 ml-1">*</span>}
                                             </label>
-                                            {renderPreviewField(field)}
+                                            {renderHtmlField(field)}
                                         </div>
                                     ))}
 
