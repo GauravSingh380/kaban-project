@@ -733,11 +733,14 @@ const handleEditBug = (e) => {
         header="Edit bug details"
         onSubmit={(e) => handleEditBug(e)}
         children={
-        <RenderHtmlFields
-        fieldItems={formConfig}
-        previewData={previewData}
-        handleInputChange={handleInputChange}
-        />}
+          <div>
+            <RenderHtmlFields
+              fieldItems={formConfig}
+              previewData={previewData}
+              handleInputChange={handleInputChange}
+            />
+          </div>
+        }
       />
       <ImportBugModal
         isOpen={isImportModalOpen}
@@ -792,6 +795,7 @@ const formConfig = [
     "placeholder": "",
     "options": ['P1', 'P2', 'P3', 'P4'],
     "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
     "validations": {
       "minLength": "",
       "maxLength": "",
@@ -809,6 +813,7 @@ const formConfig = [
     "placeholder": "",
     "options": ['open', 'in-progress','closed', 'fixed'],
     "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
     "validations": {
       "minLength": "",
       "maxLength": "",
@@ -826,6 +831,7 @@ const formConfig = [
     "placeholder": "Enter bug title",
     "options": [],
     "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
     "validations": {
       "minLength": "",
       "maxLength": "",
@@ -843,6 +849,7 @@ const formConfig = [
     "placeholder": "",
     "options": [],
     "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
     "validations": {
       "minLength": "",
       "maxLength": "",
