@@ -312,6 +312,32 @@ const BugManagementSystem = () => {
 const handleEditBug = (e) => {
   e.preventDefault();
   console.log("Prev------data---", previewData)
+      // Create new bug object
+      const bug = {
+        id: Math.max(...originalData.map(b => b.id)) + 1,
+        slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
+        ...previewData,
+        reportedOn: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0]
+      };
+  
+      // Add to data
+      const newData = [...originalData, bug];
+      setOriginalData(newData);
+  
+      // Reset form and close modal
+      setNewBug({
+        title: '',
+        description: '',
+        priority: '',
+        status: 'open',
+        reportedBy: '',
+        assignedTo: '',
+        issueEnv: [],
+        comments: ''
+      });
+
     // Find the bug to edit
     // const bugToEdit = originalData.find(bug => bug.id === previewData.id);
 
@@ -704,7 +730,7 @@ const handleEditBug = (e) => {
       <GlobalModel
         isOpen={isEditModelOpen}
         onClose={() => setEditModelOpen(false)}
-        header="Edit bug"
+        header="Edit bug details"
         onSubmit={(e) => handleEditBug(e)}
         children={
         <RenderHtmlFields
@@ -722,21 +748,6 @@ const handleEditBug = (e) => {
   );
 };
 
-const innitBugg =  {
-  id: 1,
-  slNo: 101,
-  issueEnv: ['dev', 'prod'],
-  title: 'Login page crashes on invalid email',
-  description: "As a school admin, Purchased The Hochman Method: 3–12 (Live Virtual) membership with 5 educators , but on admin dahboard same membership displaying twice",
-  reportedOn: '2025-07-01',
-  reportedBy: 'Gaurav Singh',
-  assignedTo: 'Ajeet Gupta',
-  status: 'open',
-  priority: 'P1',
-  comments: 'Needs immediate attention, reported by QA during regression testing.',
-  createdAt: '2025-07-01',
-  updatedAt: '2025-07-03',
-}
 const formConfig = [
   {
     "id": "1",
@@ -826,23 +837,6 @@ const formConfig = [
   {
     "id": "6",
     "type": "text",
-    "label": "Reported By",
-    "name": "reportedBy",
-    "required": true,
-    "placeholder": "Enter bug title",
-    "options": [],
-    "conditions": [],
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "7",
-    "type": "select",
     "label": "Assigned To",
     "name": "assignedTo",
     "required": false,
@@ -858,7 +852,7 @@ const formConfig = [
     }
   },
   {
-    "id": "8",
+    "id": "7",
     "type": "checkbox",
     "label": "Environment",
     "name": "issueEnv",
@@ -880,7 +874,7 @@ const formConfig = [
     }
   },
   {
-    "id": "9",
+    "id": "8",
     "type": "textarea",
     "label": "Comments",
     "name": "comments",
