@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Upload } from 'lucide-react';
 import { Search, Filter, Download, Plus, ChevronLeft, ChevronRight, X, AlertCircle } from 'lucide-react';
-import { initialBugs } from '../../helper';
+import { formConfig, initialBugs } from '../../helper';
 import BugCard from './BugCard/BugCard';
 import AddBugModal from './BugModel/AddBugModal';
 import ImportBugModal from './ImportBugModel/ImportBugModal';
@@ -28,7 +28,16 @@ const BugManagementSystem = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
-  const [previewData, setPreviewData] = useState({});
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    priority: '',
+    status: '',
+    reportedBy: '',
+    assignedTo: '',
+    issueEnv: [],
+    comments: ''
+  })
 
   const [newBug, setNewBug] = useState({
     title: '',
@@ -189,42 +198,6 @@ const BugManagementSystem = () => {
     setCurrentPage(1);
   };
 
-  const handleAddBug = () => {
-    // Basic validation
-    if (!newBug.title || !newBug.description || !newBug.priority || !newBug.status || !newBug.reportedBy || !newBug.assignedTo) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    // Create new bug object
-    const bug = {
-      id: Math.max(...originalData.map(b => b.id)) + 1,
-      slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
-      ...newBug,
-      reportedOn: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0]
-    };
-
-    // Add to data
-    const newData = [...originalData, bug];
-    setOriginalData(newData);
-
-    // Reset form and close modal
-    setNewBug({
-      title: '',
-      description: '',
-      priority: '',
-      status: 'open',
-      reportedBy: '',
-      assignedTo: '',
-      issueEnv: [],
-      comments: ''
-    });
-
-    setIsAddModalOpen(false);
-  };
-
   const exportData = () => {
     // Get the data to export (selected bugs or all filtered/sorted bugs)
     const dataToExport = selectedRows.length > 0
@@ -304,53 +277,48 @@ const BugManagementSystem = () => {
     alert(`Successfully imported ${processedBugs.length} bugs!`);
   };
   const handleInputChange = (fieldName, value) => {
-    setPreviewData(prev => ({
+    setFormData(prev => ({
         ...prev,
         [fieldName]: value
     }));
 };
-const handleEditBug = (e) => {
-  e.preventDefault();
-  console.log("Prev------data---", previewData)
-      // Create new bug object
-      const bug = {
-        id: Math.max(...originalData.map(b => b.id)) + 1,
-        slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
-        ...previewData,
+const handleAddNewBug = (e) => {
+  const requiredFields = formConfig.filter(field => field.required);
+    const missingFields = requiredFields.filter(field => !formData[field.name]);
+    
+    if (missingFields.length > 0) {
+      alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+      return;
+    }
+    setOriginalData((prevData) => {
+      // const bug = {
+      //   id: Math.max(...originalData.map(b => b.id)) + 1,
+      //   slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
+      //   ...newBug,
+      //   reportedOn: new Date().toISOString().split('T')[0],
+      //   createdAt: new Date().toISOString().split('T')[0],
+      //   updatedAt: new Date().toISOString().split('T')[0]
+      // };
+      return [...prevData, { 
+        ...formData, 
+        id: prevData.length + 1, 
+        slNo: prevData.length + 1 , 
         reportedOn: new Date().toISOString().split('T')[0],
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: new Date().toISOString().split('T')[0]
-      };
-  
-      // Add to data
-      const newData = [...originalData, bug];
-      setOriginalData(newData);
-  
-      // Reset form and close modal
-      setNewBug({
-        title: '',
-        description: '',
-        priority: '',
-        status: 'open',
-        reportedBy: '',
-        assignedTo: '',
-        issueEnv: [],
-        comments: ''
-      });
-
-    // Find the bug to edit
-    // const bugToEdit = originalData.find(bug => bug.id === previewData.id);
-
-    // if (bugToEdit) {
-    //     // Update the bug
-    //     const updatedBug = { ...bugToEdit, ...previewData };
-    //     const updatedData = originalData.map(bug => bug.id === updatedBug.id ? updatedBug : bug);
-    //     setOriginalData(updatedData);
-    //     setEditModelOpen(false);
-    //     setPreviewData({});
-    // } else {
-    //     alert('Bug not found!');
-    // }
+      }]
+    })
+    setIsAddModalOpen(false);
+    setFormData({
+      title: '',
+      description: '',
+      priority: '',
+      status: '',
+      reportedBy: '',
+      assignedTo: '',
+      issueEnv: [],
+      comments: ''
+    });
 
 }
 
@@ -717,26 +685,16 @@ const handleEditBug = (e) => {
           </div>
         )}
       </div>
-
-      {/* Add Bug Modal */}
-      <AddBugModal
+      <GlobalModel
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        newBug={newBug}
-        setNewBug={setNewBug}
-        filterOptions={filterOptions}
-        onSubmit={handleAddBug}
-      />
-      <GlobalModel
-        isOpen={isEditModelOpen}
-        onClose={() => setEditModelOpen(false)}
-        header="Edit bug details"
-        onSubmit={(e) => handleEditBug(e)}
+        header="Add new bug details"
+        onSubmit={(e) => handleAddNewBug(e)}
         children={
           <div>
             <RenderHtmlFields
               fieldItems={formConfig}
-              previewData={previewData}
+              formData={formData}
               handleInputChange={handleInputChange}
             />
           </div>
@@ -750,153 +708,5 @@ const handleEditBug = (e) => {
     </div>
   );
 };
-
-const formConfig = [
-  {
-    "id": "1",
-    "type": "text",
-    "label": "Bug Title",
-    "name": "title",
-    "required": true,
-    "placeholder": "Enter bug title",
-    "options": [],
-    "conditions": [],
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "2",
-    "type": "textarea",
-    "label": "Description",
-    "name": "description",
-    "required": false,
-    "placeholder": "",
-    "options": [],
-    "conditions": [],
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "3",
-    "type": "select",
-    "label": "Priority",
-    "name": "priority",
-    "required": false,
-    "placeholder": "",
-    "options": ['P1', 'P2', 'P3', 'P4'],
-    "conditions": [],
-    "alignment": 'grid grid-cols-2 gap-4',
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "4",
-    "type": "select",
-    "label": "Status",
-    "name": "status",
-    "required": false,
-    "placeholder": "",
-    "options": ['open', 'in-progress','closed', 'fixed'],
-    "conditions": [],
-    "alignment": 'grid grid-cols-2 gap-4',
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "5",
-    "type": "text",
-    "label": "Reported By",
-    "name": "reportedBy",
-    "required": true,
-    "placeholder": "Enter bug title",
-    "options": [],
-    "conditions": [],
-    "alignment": 'grid grid-cols-2 gap-4',
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "6",
-    "type": "text",
-    "label": "Assigned To",
-    "name": "assignedTo",
-    "required": false,
-    "placeholder": "",
-    "options": [],
-    "conditions": [],
-    "alignment": 'grid grid-cols-2 gap-4',
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "7",
-    "type": "checkbox",
-    "label": "Environment",
-    "name": "issueEnv",
-    "required": false,
-    "placeholder": "",
-    "options": [
-      "dev",
-      "prod",
-      "stg",
-      "demo",
-    ],
-    "conditions": [],
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-  {
-    "id": "8",
-    "type": "textarea",
-    "label": "Comments",
-    "name": "comments",
-    "required": false,
-    "placeholder": "Enter you comments...",
-    "options": [],
-    "conditions": [],
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
-  },
-]
 
 export default BugManagementSystem;

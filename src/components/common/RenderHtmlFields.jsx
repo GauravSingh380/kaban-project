@@ -1,6 +1,6 @@
 import React from 'react';
 
-const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
+const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
   // Group fields by their alignment/grid configuration
   const groupFields = () => {
     const groups = [];
@@ -9,7 +9,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
 
     fieldItems.forEach((field, index) => {
       const fieldGridClass = field.alignment || 'w-full';
-      
+
       // If this field has a different grid class or we're starting fresh
       if (currentGridClass !== fieldGridClass || currentGroup.length === 0) {
         // Save previous group if it exists
@@ -19,7 +19,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
             fields: currentGroup
           });
         }
-        
+
         // Start new group
         currentGroup = [field];
         currentGridClass = fieldGridClass;
@@ -27,7 +27,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
         // Add to current group
         currentGroup.push(field);
       }
-      
+
       // If this is the last field, save the group
       if (index === fieldItems.length - 1) {
         groups.push({
@@ -61,7 +61,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
             <input
               {...commonProps}
               type={field.type}
-              value={previewData[field.name] || ''}
+              value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
           </div>
@@ -78,7 +78,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
               type="number"
               min={field.validations?.min || undefined}
               max={field.validations?.max || undefined}
-              value={previewData[field.name] || ''}
+              value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
           </div>
@@ -93,7 +93,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
             <textarea
               {...commonProps}
               rows={4}
-              value={previewData[field.name] || ''}
+              value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
           </div>
@@ -107,7 +107,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
             </label>
             <select
               {...commonProps}
-              value={previewData[field.name] || ''}
+              value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             >
               <option value="">Select an option</option>
@@ -133,7 +133,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
                     type="radio"
                     name={field.name}
                     value={option}
-                    checked={previewData[field.name] === option}
+                    checked={formData[field.name] === option}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
                     className="text-blue-600"
                   />
@@ -156,9 +156,9 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
                   <input
                     type="checkbox"
                     value={option}
-                    checked={(previewData[field.name] || []).includes(option)}
+                    checked={(formData[field.name] || []).includes(option)}
                     onChange={(e) => {
-                      const currentValues = previewData[field.name] || [];
+                      const currentValues = formData[field.name] || [];
                       const newValues = e.target.checked
                         ? [...currentValues, option]
                         : currentValues.filter((v) => v !== option);
@@ -182,7 +182,7 @@ const RenderHtmlFields = ({ fieldItems, previewData, handleInputChange }) => {
             <input
               {...commonProps}
               type="date"
-              value={previewData[field.name] || ''}
+              value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
           </div>

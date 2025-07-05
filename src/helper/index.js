@@ -153,7 +153,153 @@ export const getStatusColor = (status) => {
   }
 };
 
-
+export const formConfig = [
+  {
+    "id": "1",
+    "type": "text",
+    "label": "Bug Title",
+    "name": "title",
+    "required": true,
+    "placeholder": "Enter bug title",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "2",
+    "type": "textarea",
+    "label": "Description",
+    "name": "description",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "3",
+    "type": "select",
+    "label": "Priority",
+    "name": "priority",
+    "required": false,
+    "placeholder": "",
+    "options": ['P1', 'P2', 'P3', 'P4'],
+    "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "4",
+    "type": "select",
+    "label": "Status",
+    "name": "status",
+    "required": false,
+    "placeholder": "",
+    "options": ['open', 'in-progress','closed', 'fixed'],
+    "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "5",
+    "type": "text",
+    "label": "Reported By",
+    "name": "reportedBy",
+    "required": true,
+    "placeholder": "Enter bug title",
+    "options": [],
+    "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "6",
+    "type": "text",
+    "label": "Assigned To",
+    "name": "assignedTo",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "7",
+    "type": "checkbox",
+    "label": "Environment",
+    "name": "issueEnv",
+    "required": false,
+    "placeholder": "",
+    "options": [
+      "dev",
+      "prod",
+      "stg",
+      "demo",
+    ],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "8",
+    "type": "textarea",
+    "label": "Comments",
+    "name": "comments",
+    "required": false,
+    "placeholder": "Enter you comments...",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+]
 
 const sampleFormConfigJson= {
   "title": "Dynamic Form",
