@@ -5,6 +5,7 @@ import { initialBugs } from '../../helper';
 import BugCard from './BugCard/BugCard';
 import AddBugModal from './BugModel/AddBugModal';
 import ImportBugModal from './ImportBugModel/ImportBugModal';
+import GlobalModel from '../common/GlobalModel';
 
 const BugManagementSystem = () => {
   const [originalData, setOriginalData] = useState(initialBugs);
@@ -25,6 +26,8 @@ const BugManagementSystem = () => {
   // Add this state variable with other useState declarations in BugManagementSystem component
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModelOpen, setEditModelOpen] = useState(false);
+
   const [newBug, setNewBug] = useState({
     title: '',
     description: '',
@@ -58,7 +61,9 @@ const BugManagementSystem = () => {
         item.reportedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.assignedTo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.slNo.toString().includes(searchTerm) ||
-        item.comments.toLowerCase().includes(searchTerm.toLowerCase())
+        item.comments.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.priority.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -310,21 +315,21 @@ const BugManagementSystem = () => {
             <div className="mt-4 sm:mt-0 flex items-center space-x-3">
               <button
                 onClick={() => setIsImportModalOpen(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+                className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-orange-600 text-white rounded-md hover:bg-orange-700"
               >
                 <Upload className="w-4 h-4" />
                 <span>Import</span>
               </button>
               <button
                 onClick={exportData}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 text-white rounded-md hover:bg-green-700"
               >
                 <Download className="w-4 h-4" />
                 <span>Export ({selectedRows.length > 0 ? selectedRows.length : sortedData.length})</span>
               </button>
               <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Bug</span>
@@ -587,7 +592,7 @@ const BugManagementSystem = () => {
                   key={bug.id}
                   {...bug}
                   onView={(id) => alert(`View bug ${id}`)}
-                  onEdit={(id) => alert(`Edit bug ${id}`)}
+                  onEdit={(id) => setEditModelOpen(true)}
                   onDelete={(id) => {
                     if (window.confirm('Are you sure you want to delete this bug?')) {
                       const updatedData = originalData.filter(b => b.id !== id);
@@ -668,6 +673,12 @@ const BugManagementSystem = () => {
         newBug={newBug}
         setNewBug={setNewBug}
         filterOptions={filterOptions}
+        onSubmit={handleAddBug}
+      />
+      <GlobalModel
+        isOpen={isEditModelOpen}
+        onClose={() => setEditModelOpen(false)}
+        header="Edit bug"
         onSubmit={handleAddBug}
       />
       <ImportBugModal

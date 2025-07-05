@@ -73,19 +73,19 @@ const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedB
         <div className="flex items-center space-x-2">
           <button
             onClick={() => onView(id)}
-            className="text-blue-600 hover:text-blue-800 p-1"
+            className="text-blue-600 hover:text-blue-800 p-1 cursor-pointer"
           >
             <Eye className="w-4 h-4" />
           </button>
           <button
             onClick={() => onEdit(id)}
-            className="text-green-600 hover:text-green-800 p-1"
+            className="text-green-600 hover:text-green-800 p-1 cursor-pointer"
           >
             <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(id)}
-            className="text-red-600 hover:text-red-800 p-1"
+            className="text-red-600 hover:text-red-800 p-1 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
           </button>
