@@ -6,6 +6,8 @@ import DashboardContent1 from "../../components/MainDashboard/DashboardContent1"
 import DashboardContent2 from "../../components/MainDashboard/DashboardContent2";
 import ProjectsContent1 from "../../components/Projects/ProjectContent1";
 import ProjectsContent2 from "../../components/Projects/ProjectContent2";
+import BugReportsDashboard1 from "../../components/BugReport/BugReportsDashboard1";
+import BugReportsDashboard2 from "../../components/BugReport/BugReportsDashboard2";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -44,7 +46,12 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       reports: (
         <div className="space-y-6">
-          <h1>Report content</h1>
+          <BugReportsDashboard1 />
+          <br />
+          <br />
+          <br />
+          <br />
+          <BugReportsDashboard2 />
         </div>
       ),
       sprints: (
