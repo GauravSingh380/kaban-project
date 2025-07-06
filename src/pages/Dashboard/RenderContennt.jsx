@@ -2,6 +2,10 @@ import HomePageUser from "../../components/home/Home"
 import DataGrid from "../../components/DataGrid/DataGrid"
 import FormBuilder from "../../components/FormBuilder/FormBuilder"
 import KanbanCalender from "../../components/Calender/KanbanCalender";
+import DashboardContent1 from "../../components/MainDashboard/DashboardContent1";
+import DashboardContent2 from "../../components/MainDashboard/DashboardContent2";
+import ProjectsContent1 from "../../components/Projects/ProjectContent1";
+import ProjectsContent2 from "../../components/Projects/ProjectContent2";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -23,11 +27,14 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       dashboard: (
         <div className="space-y-6">
           <HomePageUser  user={user}/>
+          <DashboardContent1 />
+          {/* <DashboardContent2 /> */}
         </div>
       ),
       projects: (
         <div className="space-y-2">
-          <FormBuilder />
+          <ProjectsContent1 />
+          {/* <ProjectsContent2 /> */}
         </div>
       ),
       issues: (
@@ -35,9 +42,9 @@ const RenderContent = ({menuItems, activeTab, user}) => {
           <DataGrid />
         </div>
       ),
-      backlog: (
+      reports: (
         <div className="space-y-6">
-          <h1>tab 1</h1>
+          <h1>Report content</h1>
         </div>
       ),
       sprints: (
