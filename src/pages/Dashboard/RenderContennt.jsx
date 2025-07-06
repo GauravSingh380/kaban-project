@@ -1,6 +1,7 @@
 import HomePageUser from "../../components/home/Home"
 import DataGrid from "../../components/DataGrid/DataGrid"
 import FormBuilder from "../../components/FormBuilder/FormBuilder"
+import KanbanCalender from "../../components/Calender/KanbanCalender";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -46,7 +47,7 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       calendar: (
         <div className="space-y-6">
-         <h1>tab 1</h1>
+         <KanbanCalender />
         </div>
       ),
     };

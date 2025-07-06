@@ -11,9 +11,9 @@ export const validateCSVContent = (headers, rows) => {
         'comments',
     ];
 
-    const priorityValues = ['P1', 'P2', 'P3', 'P4'];
-    const statusValues = ['open', 'fixed', 'closed', 'blocked'];
-    const envValues = ['dev', 'stg', 'demo', 'prod'];
+    const priorityValues = ['P1', 'P2', 'P3', 'P4', ''];
+    const statusValues = ['open', 'fixed', 'closed', 'blocked', ''];
+    const envValues = ['dev', 'stg', 'demo', 'prod', ''];
 
     // Check for missing headers
     const missingHeaders = requiredHeaders.filter((h) => !headers.includes(h));
