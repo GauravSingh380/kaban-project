@@ -65,7 +65,8 @@ const BugManagementSystem = () => {
         item.slNo.toString().includes(searchTerm) ||
         item.comments.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.priority.toLowerCase().includes(searchTerm.toLowerCase())
+        item.priority.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.issueEnv.map((item) => item.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())).some((lowerCase) => Boolean(lowerCase))
       );
     }
 

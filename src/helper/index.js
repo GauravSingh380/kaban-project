@@ -16,7 +16,7 @@ export const allMenuItems = [
   { id: 'projects', label: 'Projects', icon: FolderIcon, roles: ['Super Admin', 'Admin', 'QA', 'User'] },
   { id: 'issues', label: 'Issues', icon: BugIcon, roles: ['Super Admin', 'Admin', 'QA', 'User'] },
   { id: 'reports', label: 'Reports', icon: BarChartIcon, roles: ['Super Admin', 'Admin', 'QA'] },
-  { id: 'backlog', label: 'Backlog', icon: ListIcon, roles: ['Super Admin', 'Admin', 'QA'] },
+  // { id: 'backlog', label: 'Backlog', icon: ListIcon, roles: ['Super Admin', 'Admin', 'QA'] },
   { id: 'sprints', label: 'Sprints', icon: KanbanIcon, roles: ['Super Admin', 'Admin', 'QA'] },
   { id: 'calendar', label: 'Calendar', icon: CalendarIcon, roles: ['Super Admin', 'Admin', 'QA', 'User'] },
   { id: 'team', label: 'Team', icon: Users, roles: ['Super Admin', 'Admin'] },
