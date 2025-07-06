@@ -28,6 +28,7 @@ const BugManagementSystem = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
+  const [currentEditBugId, setCurrentEditBugId] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -39,16 +40,6 @@ const BugManagementSystem = () => {
     comments: ''
   })
 
-  const [newBug, setNewBug] = useState({
-    title: '',
-    description: '',
-    priority: '',
-    status: 'open',
-    reportedBy: '',
-    assignedTo: '',
-    issueEnv: [],
-    comments: ''
-  });
   const [showFilters, setShowFilters] = useState(false);
 
   // Get unique values for filter dropdowns
@@ -290,7 +281,6 @@ const handleAddNewBug = (e) => {
       alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
       return;
     }
-    setOriginalData((prevData) => {
       // const bug = {
       //   id: Math.max(...originalData.map(b => b.id)) + 1,
       //   slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
@@ -299,10 +289,13 @@ const handleAddNewBug = (e) => {
       //   createdAt: new Date().toISOString().split('T')[0],
       //   updatedAt: new Date().toISOString().split('T')[0]
       // };
+      const maxId = originalData.length > 0 ? Math.max(...originalData.map(b => b.id)) : 0;
+      const maxSlNo = originalData.length > 0 ? Math.max(...originalData.map(b => b.slNo)) : 0;
+    setOriginalData((prevData) => {
       return [...prevData, { 
         ...formData, 
-        id: prevData.length + 1, 
-        slNo: prevData.length + 1 , 
+        id: maxId + 1,
+        slNo: maxSlNo + 1,
         reportedOn: new Date().toISOString().split('T')[0],
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: new Date().toISOString().split('T')[0]
@@ -321,6 +314,69 @@ const handleAddNewBug = (e) => {
     });
 
 }
+
+const handleEditBug = (id) => {
+  setCurrentEditBugId(id);
+  const bugToEdit = originalData.find(b => b.id === id);
+  
+  if (bugToEdit) {
+    setFormData({
+      title: bugToEdit.title || '',
+      description: bugToEdit.description || '',
+      priority: bugToEdit.priority || '',
+      status: bugToEdit.status || '',
+      reportedBy: bugToEdit.reportedBy || '',
+      assignedTo: bugToEdit.assignedTo || '',
+      issueEnv: bugToEdit.issueEnv || [],
+      comments: bugToEdit.comments || ''
+    });
+    setEditModelOpen(true);
+  }
+};
+const handleUpdateBug = (e) => {
+  e.preventDefault();
+  
+  // Validate required fields
+  const requiredFields = formConfig.filter(field => field.required);
+  const missingFields = requiredFields.filter(field => {
+    const value = formData[field.name];
+    return !value || (Array.isArray(value) && value.length === 0);
+  });
+  
+  if (missingFields.length > 0) {
+    alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+    return;
+  }
+
+  // Update the bug in originalData
+  setOriginalData(prevData => 
+    prevData.map(bug => 
+      bug.id === currentEditBugId 
+        ? {
+            ...bug,
+            ...formData,
+            updatedAt: new Date().toISOString().split('T')[0]
+          }
+        : bug
+    )
+  );
+
+  // Close modal and reset form
+  setEditModelOpen(false);
+  setCurrentEditBugId(null);
+  setFormData({
+    title: '',
+    description: '',
+    priority: '',
+    status: '',
+    reportedBy: '',
+    assignedTo: '',
+    issueEnv: [],
+    comments: ''
+  });
+
+  alert('Bug updated successfully!');
+};
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -612,7 +668,10 @@ const handleAddNewBug = (e) => {
                   key={bug.id}
                   {...bug}
                   onView={(id) => alert(`View bug ${id}`)}
-                  onEdit={(id) => setEditModelOpen(true)}
+                  onEdit={(id) => {
+                    handleEditBug(id);
+                    setEditModelOpen(true);
+                  }}
                   onDelete={(id) => {
                     if (window.confirm('Are you sure you want to delete this bug?')) {
                       const updatedData = originalData.filter(b => b.id !== id);
@@ -690,6 +749,7 @@ const handleAddNewBug = (e) => {
         onClose={() => setIsAddModalOpen(false)}
         header="Add new bug details"
         onSubmit={(e) => handleAddNewBug(e)}
+        submitText="Add new bug"
         children={
           <div>
             <RenderHtmlFields
@@ -698,6 +758,20 @@ const handleAddNewBug = (e) => {
               handleInputChange={handleInputChange}
             />
           </div>
+        }
+      />
+      <GlobalModel
+        isOpen={isEditModelOpen}
+        onClose={() => setEditModelOpen(false)}
+        header="Edit bug details"
+        onSubmit={handleUpdateBug}
+        submitText="Update Details"
+        children={
+            <RenderHtmlFields
+              fieldItems={formConfig}
+              formData={formData}
+              handleInputChange={handleInputChange}
+            />
         }
       />
       <ImportBugModal
