@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from 'lucide-react';
+// import { useAuth } from '../api/hooks/useAuth';
+// import { useApi } from '../api/hooks/useApi';
+import { useApi, useAuth } from '../api';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,9 +11,22 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const { login, isAuthenticated } = useAuth();
+  const { loading, error, execute } = useApi(login);
+
+  // Get the page user was trying to access before login
+  const from = location.state?.from?.pathname || '/dashboard';
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,6 +34,7 @@ const LoginPage = () => {
       ...prev,
       [name]: value
     }));
+    
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -50,34 +67,23 @@ const LoginPage = () => {
     e.preventDefault();
     
     if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const apiResp = await execute(formData);
+      console.log("API Response:", apiResp);
       
-      // Mock authentication - in real app, this would be an API call
-      const userData = {
-        id: 1,
-        email: formData.email,
-        name: 'John Doe',
-        role: 'Super Admin', // Can be: Super Admin, Admin, QA, User
-        token: 'mock-jwt-token-' + Date.now(),
-        loginTime: Date.now()
-      };
+      // Clear any previous errors on successful login
+      setErrors({});
       
-      // Store in localStorage with expiration (1 hour)
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('loginTime', userData.loginTime.toString());
-      
-      // Navigate to dashboard
-      navigate('/dashboard');
-      
+      // Navigation will happen automatically due to useEffect above
     } catch (error) {
-      setErrors({ submit: 'Login failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
+      // Handle different types of errors
+      if (error.message) {
+        setErrors({ submit: error.message });
+      } else {
+        setErrors({ submit: 'Login failed. Please try again.' });
+      }
+      console.error('Login failed:', error);
     }
   };
 
@@ -113,10 +119,11 @@ const LoginPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 text-gray-700 bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-purple-500 ${
+                  className={`w-full pl-10 pr-4 py-3 text-gray-700 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-purple-500 ${
                     errors.email ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                   }`}
                   placeholder="Enter your email"
+                  disabled={loading}
                 />
               </div>
               {errors.email && (
@@ -136,15 +143,17 @@ const LoginPage = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 bg-opacity-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-500 ${
+                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-500 ${
                     errors.password ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                   }`}
                   placeholder="Enter your password"
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-300 transition-colors"
+                  disabled={loading}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -154,18 +163,20 @@ const LoginPage = () => {
               )}
             </div>
 
-            {/* Submit Error */}
-            {errors.submit && (
-              <p className="text-sm text-red-400 text-center">{errors.submit}</p>
+            {/* API Error Display */}
+            {(error || errors.submit) && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error ? error.message : errors.submit}
+              </div>
             )}
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 

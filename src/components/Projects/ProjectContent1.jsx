@@ -1,30 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Plus,
-    Search,
-    Filter,
-    MoreHorizontal,
-    Calendar,
-    Users,
-    Bug,
-    AlertCircle,
-    CheckCircle2,
-    Clock,
-    TrendingUp,
-    TrendingDown,
-    FolderOpen,
-    Settings,
-    Eye,
-    Edit,
-    Trash2,
-    Archive,
-    Star,
-    GitBranch,
-    Activity,
-    Target,
-    Download,
-    Upload,
-    X
+import {Plus,Search,Filter,MoreHorizontal,Calendar,Users,Bug,AlertCircle,CheckCircle2,Clock,
+    TrendingUp,TrendingDown,FolderOpen,Settings,Eye,Edit,Trash2,Archive,Star,
+    GitBranch,Activity,Target,Download,Upload,X
 } from 'lucide-react';
 
 const ProjectsContent1 = ({ user }) => {
@@ -468,7 +445,7 @@ const ProjectsContent1 = ({ user }) => {
     const ProjectListItem = ({ project }) => (
         <div className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
             <div className="px-6 py-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-evenly">
                     <div className="flex items-center gap-4 flex-1">
                         <input
                             type="checkbox"

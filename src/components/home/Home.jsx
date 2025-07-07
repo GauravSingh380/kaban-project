@@ -13,16 +13,16 @@ const Home = ({ user }) => {
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">Your Dashboard Access</h3>
                 <div className="space-y-2">
-                    {user?.role === 'Super Admin' && (
+                    {user?.role === 'super-admin' && (
                         <p className="text-gray-600">You have full access to all features and can manage all users and settings.</p>
                     )}
-                    {user?.role === 'Admin' && (
+                    {user?.role === 'admin' && (
                         <p className="text-gray-600">You can access most features including form builder and dashboard management.</p>
                     )}
-                    {user?.role === 'QA' && (
+                    {user?.role === 'qa' && (
                         <p className="text-gray-600">You have access to data grid and task management for quality assurance.</p>
                     )}
-                    {user?.role === 'User' && (
+                    {user?.role === 'user' && (
                         <p className="text-gray-600">You can view the dashboard and manage your tasks.</p>
                     )}
                 </div>

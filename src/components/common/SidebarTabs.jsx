@@ -15,6 +15,7 @@ const SidebarTabs = ({
 //   const [activeTab, setActiveTab] = useState(defaultTab || menuItems[0]?.id);
   const isMobile = window.innerWidth < 768;
   const isVertical = orientation === "vertical";
+  console.log("useruseruser---", user);
 
   return (
     <div className={`flex ${isVertical ? "h-screen" : "flex-col"} bg-gray-100`}>
@@ -57,7 +58,7 @@ const SidebarTabs = ({
           <div className="p-4 border-b border-purple-700">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {user.name.charAt(0).toUpperCase()}
+                {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div>
                 <p className="text-sm font-medium truncate">{user.name}</p>
@@ -139,7 +140,7 @@ const SidebarTabs = ({
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-500">{user.role}</div>
             <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              {user.name.charAt(0).toUpperCase()}
+              {user?.name?.charAt(0).toUpperCase()}
             </div>
           </div>
         </header>

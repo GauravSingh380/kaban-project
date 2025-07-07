@@ -1,52 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronLeft, ChevronRight, LogOut, } from 'lucide-react';
-import HomePageUser from "../components/home/Home"
-import {allMenuItems} from '../helper';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../api'; // Update path as needed
+import { allMenuItems } from '../helper';
 import SidebarTabs from '../components/common/SidebarTabs';
 import RenderContent from './Dashboard/RenderContennt';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const { user, isAuthenticated, logout, loading } = useAuth();
+  let defaultTab; 
+  if(user){
+    defaultTab = user.role === 'admin' ? 'dashboard' : 'issues';
+  }
+
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Check authentication and token expiration
+  // Handle authentication state
   useEffect(() => {
-    const checkAuth = () => {
-      const userData = localStorage.getItem('user');
-      const loginTime = localStorage.getItem('loginTime');
+    if (isAuthenticated === false) {
+      setError('Session expired. Please login again.');
+      const timer = setTimeout(() => {
+        navigate('/login', { state: { from: location } });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, navigate, location]);
 
-      if (!userData || !loginTime) {
-        navigate('/login');
-        return;
-      }
-
-      const currentTime = Date.now();
-      const sessionDuration = currentTime - parseInt(loginTime);
-      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
-
-      if (sessionDuration > oneHour) {
-        // Token expired
-        localStorage.removeItem('user');
-        localStorage.removeItem('loginTime');
-        navigate('/login');
-        return;
-      }
-
-      setUser(JSON.parse(userData));
-    };
-
-    checkAuth();
-
-    // Check every minute for token expiration
-    const interval = setInterval(checkAuth, 60000);
-
-    return () => clearInterval(interval);
-  }, [navigate]);
-
+  // Handle responsive layout
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
@@ -63,8 +49,7 @@ const Dashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('loginTime');
+    logout();
     navigate('/login');
   };
 
@@ -78,10 +63,10 @@ const Dashboard = () => {
   const renderContent = () => {
     return (
       <RenderContent menuItems={menuItems} activeTab={activeTab} user={user} />
-    )
+    );
   };
 
-  if (!user) {
+  if (loading || !user) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="text-center">
@@ -92,12 +77,23 @@ const Dashboard = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="text-center p-4 bg-red-100 rounded-lg">
+          <p className="text-red-600">{error}</p>
+          <p className="text-gray-600 mt-2">Redirecting to login page...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <SidebarTabs
       user={user}
       menuItems={menuItems}
       renderContent={renderContent}
-      orientation="vertical" // or "horizontal"
+      orientation="vertical"
       defaultTab="dashboard"
       setActiveTab={setActiveTab}
       activeTab={activeTab}
