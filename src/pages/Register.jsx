@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, User, ArrowLeft, UserCheck } from 'lucide-react';
 import { useApi, useAuth } from '../api';
+import { useToast } from '../components/StyledAlert/ToastContext';
+import StyledSpinner from '../components/StyledSpinner/StyledSpinner';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,20 +13,12 @@ const RegisterPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'User'
   });
+  const alert = useToast();
   // const [loading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const roles = [
-    { value: 'User', label: 'User' },
-    { value: 'QA', label: 'QA' },
-    { value: 'Admin', label: 'Admin' },
-    { value: 'Super Admin', label: 'Super Admin' }
-  ];
-  
+  const location = useLocation();  
   
   const { register, isAuthenticated } = useAuth();
   const { loading, error, execute } = useApi(register);
@@ -94,6 +88,7 @@ const RegisterPage = () => {
     try {
       const apiResp = await execute(formData);
       console.log("API Response:", apiResp);
+      alert.success('Registration completed successfully!');
       // Clear any previous errors on successful login
       setErrors({});
       // Navigation will happen automatically due to useEffect above
@@ -101,8 +96,10 @@ const RegisterPage = () => {
     } catch (error) {
       if (error.message) {
         setErrors({ submit: error.message });
+        alert.error(error.message || 'An error occurred. Please try again.');
       } else {
         setErrors({ submit: 'Login failed. Please try again.' });
+        alert.error("Login failed. Please try again.");
       }
       console.error('Register failed:', error);
     }
@@ -129,6 +126,11 @@ const RegisterPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
+            {/* {(error || errors.submit) && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error ? error.message : errors.submit}
+              </div>
+            )} */}
             <div>
               <label className="block text-purple-700 text-sm font-medium mb-2">
                 Full Name
@@ -173,30 +175,6 @@ const RegisterPage = () => {
                 <p className="mt-1 text-sm text-red-400">{errors.email}</p>
               )}
             </div>
-
-            {/* Role Selection */}
-            {/* <div>
-              <label className="block text-purple-700 text-sm font-medium mb-2">
-                Role
-              </label>
-              <div className="relative">
-                <UserCheck className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 bg-white bg-opacity-10 border border-purple-400 border-opacity-30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
-                >
-                  {roles.map(role => (
-                    <option key={role.value} value={role.value} className="bg-purple-800 text-gray-700">
-                      {role.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div> */}
-
-            {/* Password Field */}
             <div>
               <label className="block text-purple-700 text-sm font-medium mb-2">
                 Password
@@ -261,19 +239,25 @@ const RegisterPage = () => {
               <p className="text-sm text-red-400 text-center">{errors.submit}</p>
             )} */}
             {/* API Error Display */}
-            {(error || errors.submit) && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {error ? error.message : errors.submit}
-              </div>
-            )}
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 text-purple-200 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-purple-600 text-purple-100 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-90 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {/* {loading && <StyledSpinner 
+              borderWidth = '3px'
+               size = '1rem'/> } */}
+              {/* {loading ? 'Creating Account...' : 'Create Account'} */}
+              {loading ?
+                <StyledSpinner
+                  borderWidth='3px'
+                  size='1.5rem'
+                  text='Creating Account...'
+                  fontSize = 'semi bold'
+                />
+                : 'Create Account'}
             </button>
           </form>
 
