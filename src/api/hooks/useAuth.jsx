@@ -19,39 +19,36 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is logged in on app start
   useEffect(() => {
-    checkAuthStatus();
-    const refreshInterval = setInterval(() => {
-      refreshAccessToken();
-    }, 14 * 60 * 1000); // 14 minutes
-
-    return () => clearInterval(refreshInterval); // Clean up on unmount
   }, []);
 
   const checkAuthStatus = async () => {
+    if (user || isAuthenticated) return;
+    setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        const response = await authService.verifyToken();
-        if (response.success) {
-          setUser(response.data.user);
-          setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem('accessToken');
-        }
+      const response = await authService.verifyToken();
+      if (response.success) {
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
       }
     } catch (error) {
-      localStorage.removeItem('accessToken');
+      console.error('Auth check failed:', error);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
   };
+
   const refreshAccessToken = async () => {
     setLoading(true)
     try {
       const response = await authService.refreshToken();
       if (response.success && response.data.user) {
-        setUser(response.data.user); // if your API sends updated user info
+        setUser(response.data.user);
         setIsAuthenticated(true);
+      } else {
+        throw new Error('Invalid token');
       }
     } catch (error) {
       console.error('Token refresh failed:', error);
@@ -131,6 +128,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     logoutAll,
     checkAuthStatus,
+    refreshAccessToken
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
