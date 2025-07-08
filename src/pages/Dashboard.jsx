@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../api'; // Update path as needed
+import { useApi, useAuth } from '../api'; // Update path as needed
 import { allMenuItems } from '../helper';
 import SidebarTabs from '../components/common/SidebarTabs';
 import RenderContent from './Dashboard/RenderContennt';
@@ -8,9 +8,10 @@ import RenderContent from './Dashboard/RenderContennt';
 const Dashboard = () => {
 
   const { user, isAuthenticated, logout, loading } = useAuth();
+  const { execute } = useApi(logout);
   let defaultTab; 
   if(user){
-    defaultTab = user.role === 'admin' ? 'dashboard' : 'issues';
+    defaultTab = user.role === 'admin' || user.role === 'super-admin' ? 'dashboard' : 'issues';
   }
 
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -48,9 +49,28 @@ const Dashboard = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async() => {
+    // try {
+    //   logout();
+    //   navigate('/login');
+      
+    // } catch (error) {
+      
+    // }
+    try {
+      const apiResp = await execute();
+      if (apiResp) {
+        alert.success("Log-out successful!")
+        navigate('/login');
+      }
+    } catch (error) {
+      if (error.message) {
+        alert.error(error.message || 'An error occurred. Please try again.');
+      } else {
+        alert.error("Login failed. Please try again.");
+      }
+      console.error('Login failed:', error);
+    }
   };
 
   // Define menu items with role-based access

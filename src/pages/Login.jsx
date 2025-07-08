@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from 'lucide-react';
-// import { useAuth } from '../api/hooks/useAuth';
-// import { useApi } from '../api/hooks/useApi';
+import { useToast } from '../components/StyledAlert/ToastContext';
+import StyledSpinner from '../components/StyledSpinner/StyledSpinner';
 import { useApi, useAuth } from '../api';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: 'gaurav@gmail.com',
+    password: 'Welcome@123'
   });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  const alert = useToast();
+
   const { login, isAuthenticated } = useAuth();
   const { loading, error, execute } = useApi(login);
 
@@ -34,7 +36,7 @@ const LoginPage = () => {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -46,42 +48,45 @@ const LoginPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     try {
       const apiResp = await execute(formData);
-      console.log("API Response:", apiResp);
-      
+      if (apiResp) {
+        alert.success("Login successful!")
+      }
       // Clear any previous errors on successful login
       setErrors({});
-      
+
       // Navigation will happen automatically due to useEffect above
     } catch (error) {
       // Handle different types of errors
       if (error.message) {
-        setErrors({ submit: error.message });
+        // setErrors({ submit: error.message });
+        alert.error(error.message || 'An error occurred. Please try again.');
       } else {
-        setErrors({ submit: 'Login failed. Please try again.' });
+        // setErrors({ submit: 'Login failed. Please try again.' });
+        alert.error("Login failed. Please try again.");
       }
       console.error('Login failed:', error);
     }
@@ -117,11 +122,11 @@ const LoginPage = () => {
                 <input
                   type="email"
                   name="email"
+                  defaultValue="gaurav@gmail.com"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 text-gray-700 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-purple-500 ${
-                    errors.email ? 'border-red-400' : 'border-purple-400 border-opacity-30'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 text-gray-700 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-purple-500 ${errors.email ? 'border-red-400' : 'border-purple-400 border-opacity-30'
+                    }`}
                   placeholder="Enter your email"
                   disabled={loading}
                 />
@@ -142,10 +147,10 @@ const LoginPage = () => {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
+                  defaultValue="Welcome@123"
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-500 ${
-                    errors.password ? 'border-red-400' : 'border-purple-400 border-opacity-30'
-                  }`}
+                  className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-500 ${errors.password ? 'border-red-400' : 'border-purple-400 border-opacity-30'
+                    }`}
                   placeholder="Enter your password"
                   disabled={loading}
                 />
@@ -169,18 +174,22 @@ const LoginPage = () => {
                 {error ? error.message : errors.submit}
               </div>
             )}
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-purple-600 cursor-pointer text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ?
+                <StyledSpinner
+                  borderWidth='3px'
+                  size='1.5rem'
+                  text='Signing In...'
+                  fontSize='semi bold'
+                /> :
+                'Sign In'
+              }
             </button>
           </form>
-
-          {/* Register Link */}
           <div className="mt-8 text-center">
             <p className="text-purple-700">
               Don't have an account?{' '}

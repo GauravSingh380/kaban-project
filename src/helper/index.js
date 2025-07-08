@@ -12,8 +12,8 @@ import {
   PlugIcon
 } from 'lucide-react';
 export const allMenuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: BarChart3, roles: ['super-admin', 'admin', 'qa'] },
-  { id: 'projects', label: 'Projects', icon: FolderIcon, roles: ['super-admin', 'admin', 'qa', 'user'] },
+  { id: 'dashboard', label: 'Dashboard', icon: BarChart3, roles: ['super-admin', 'admin'] },
+  { id: 'projects', label: 'Projects', icon: FolderIcon, roles: ['super-admin',] },
   { id: 'issues', label: 'Issues', icon: BugIcon, roles: ['super-admin', 'admin', 'qa', 'user'] },
   { id: 'reports', label: 'Reports', icon: BarChartIcon, roles: ['super-admin', 'admin', 'qa'] },
   // { id: 'backlog', label: 'Backlog', icon: ListIcon, roles: ['super-admin', 'admin', 'qa'] },

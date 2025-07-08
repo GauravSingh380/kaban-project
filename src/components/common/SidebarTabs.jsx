@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X, Menu, LogOut } from "lucide-react";
+import { useAuth } from "../../api";
+import StyledSpinner from "../StyledSpinner/StyledSpinner";
 
 const SidebarTabs = ({
   user,
@@ -12,6 +14,8 @@ const SidebarTabs = ({
   setActiveTab
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  // const { loading, error, execute } = useApi(login);
+  const {loading } = useAuth();
 //   const [activeTab, setActiveTab] = useState(defaultTab || menuItems[0]?.id);
   const isMobile = window.innerWidth < 768;
   const isVertical = orientation === "vertical";
@@ -61,7 +65,7 @@ const SidebarTabs = ({
               </div>
               <div>
                 <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-purple-200">{user.role}</p>
+                <p className="text-xs font-bold text-purple-300">{user?.role || ""}</p>
               </div>
             </div>
           </div>
@@ -108,7 +112,17 @@ const SidebarTabs = ({
               className="w-full flex items-center p-3 rounded-lg text-purple-200 hover:bg-purple-700"
             >
               <LogOut size={20} />
-              <span className="ml-3 font-medium">Logout</span>
+              <span className="ml-3 font-medium">
+              {loading ?
+                <StyledSpinner
+                  borderWidth='3px'
+                  size='1.5rem'
+                  text='Logging out...'
+                  fontSize='semi bold'
+                /> :
+                'Logout'
+              }
+                </span>
             </button>
           </div>
         )}
@@ -137,7 +151,7 @@ const SidebarTabs = ({
             {activeTab.replace("_", " ")}
           </h1>
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-500">{user.role}</div>
+            <div className="text-sm font-bold text-purple-500">{user?.role || ""}</div>
             <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
