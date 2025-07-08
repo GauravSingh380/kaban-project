@@ -8,6 +8,8 @@ import ProjectsContent1 from "../../components/Projects/ProjectContent1";
 import ProjectsContent2 from "../../components/Projects/ProjectContent2";
 import BugReportsDashboard1 from "../../components/BugReport/BugReportsDashboard1";
 import BugReportsDashboard2 from "../../components/BugReport/BugReportsDashboard2";
+import TeamsContent1 from "../../components/Teams/TeamsContent1";
+import TeamsContent2 from "../../components/Teams/TeamsContent2";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -52,6 +54,16 @@ const RenderContent = ({menuItems, activeTab, user}) => {
           <br />
           <br />
           <BugReportsDashboard2 />
+        </div>
+      ),
+      team: (
+        <div className="space-y-6">
+          <TeamsContent1 />
+          <br />
+          <br />
+          <br />
+          <br />
+          <TeamsContent2 />
         </div>
       ),
       sprints: (

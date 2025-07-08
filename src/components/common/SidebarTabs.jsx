@@ -61,7 +61,7 @@ const SidebarTabs = ({
           <div className="p-4 border-b border-purple-700">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {user?.name?.charAt(0).toUpperCase()}
+                {user?.name?.split(' ').map(word => word[0].toUpperCase()).join('')}
               </div>
               <div>
                 <p className="text-sm font-medium truncate">{user.name}</p>
@@ -153,7 +153,7 @@ const SidebarTabs = ({
           <div className="flex items-center space-x-4">
             <div className="text-sm font-bold text-purple-500">{user?.role || ""}</div>
             <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-              {user?.name?.charAt(0).toUpperCase()}
+             {user?.name?.split(' ').map(word => word[0].toUpperCase()).join('')}
             </div>
           </div>
         </header>
