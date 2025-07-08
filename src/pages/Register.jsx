@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, User, ArrowLeft, UserCheck } from 'lucide-react';
+import { useApi, useAuth } from '../api';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,9 +13,10 @@ const RegisterPage = () => {
     confirmPassword: '',
     role: 'User'
   });
-  const [isLoading, setIsLoading] = useState(false);
+  // const [loading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
 
   const roles = [
     { value: 'User', label: 'User' },
@@ -22,6 +24,19 @@ const RegisterPage = () => {
     { value: 'Admin', label: 'Admin' },
     { value: 'Super Admin', label: 'Super Admin' }
   ];
+  
+  
+  const { register, isAuthenticated } = useAuth();
+  const { loading, error, execute } = useApi(register);
+  // Get the page user was trying to access before login
+  const from = location.state?.from?.pathname || '/dashboard';
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -74,33 +89,22 @@ const RegisterPage = () => {
     
     if (!validateForm()) return;
     
-    setIsLoading(true);
+    // setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock registration - in real app, this would be an API call
-      const userData = {
-        id: Date.now(),
-        email: formData.email,
-        name: formData.name,
-        role: formData.role,
-        token: 'mock-jwt-token-' + Date.now(),
-        loginTime: Date.now()
-      };
-      
-      // Store in localStorage with expiration (1 hour)
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('loginTime', userData.loginTime.toString());
-      
-      // Navigate to dashboard
-      navigate('/dashboard');
+      const apiResp = await execute(formData);
+      console.log("API Response:", apiResp);
+      // Clear any previous errors on successful login
+      setErrors({});
+      // Navigation will happen automatically due to useEffect above
       
     } catch (error) {
-      setErrors({ submit: 'Registration failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
+      if (error.message) {
+        setErrors({ submit: error.message });
+      } else {
+        setErrors({ submit: 'Login failed. Please try again.' });
+      }
+      console.error('Register failed:', error);
     }
   };
 
@@ -253,17 +257,23 @@ const RegisterPage = () => {
             </div>
 
             {/* Submit Error */}
-            {errors.submit && (
+            {/* {errors.submit && (
               <p className="text-sm text-red-400 text-center">{errors.submit}</p>
+            )} */}
+            {/* API Error Display */}
+            {(error || errors.submit) && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error ? error.message : errors.submit}
+              </div>
             )}
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loading}
               className="w-full bg-purple-600 text-purple-200 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 

@@ -1,5 +1,5 @@
 // api/hooks/useAuth.js
-import { useState, useEffect, useContext, createContext } from 'react';
+import { useState, useEffect, useContext, createContext, useRef } from 'react';
 import { authService } from '../services/authService';
 
 const AuthContext = createContext();
@@ -16,10 +16,53 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [tokenCheckInterval, setTokenCheckInterval] = useState(null);
 
-  // Check if user is logged in on app start
+  const tokenCheckIntervalRef = useRef(null);
+
   useEffect(() => {
+    checkAuthStatus();
+  
+    return () => {
+      // Clear interval on unmount
+      if (tokenCheckIntervalRef.current) {
+        clearInterval(tokenCheckIntervalRef.current);
+      }
+    };
   }, []);
+  
+  useEffect(() => {
+    if (isAuthenticated && !tokenCheckIntervalRef.current) {
+      const refreshAccessTokenIfVisible = () => {
+        if (document.visibilityState === 'visible') {
+          refreshAccessToken();
+        }
+      };
+  
+      const interval = setInterval(refreshAccessTokenIfVisible, 10 * 60 * 1000); // 10 mins
+      tokenCheckIntervalRef.current = interval;
+    }
+  
+    if (!isAuthenticated && tokenCheckIntervalRef.current) {
+      clearInterval(tokenCheckIntervalRef.current);
+      tokenCheckIntervalRef.current = null;
+    }
+  }, [isAuthenticated]);
+  // // If you want instant token refresh when the user returns to the tab, you can also add:
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === 'visible' && isAuthenticated) {
+  //       refreshAccessToken();
+  //     }
+  //   };
+  
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+  
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, [isAuthenticated]);
+  
 
   const checkAuthStatus = async () => {
     if (user || isAuthenticated) return;
@@ -100,7 +143,6 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setIsAuthenticated(false);
-      localStorage.removeItem('accessToken');
       setLoading(false)
     }
   };
