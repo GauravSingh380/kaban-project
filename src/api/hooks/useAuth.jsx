@@ -20,6 +20,11 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in on app start
   useEffect(() => {
     checkAuthStatus();
+    const refreshInterval = setInterval(() => {
+      refreshAccessToken();
+    }, 14 * 60 * 1000); // 14 minutes
+
+    return () => clearInterval(refreshInterval); // Clean up on unmount
   }, []);
 
   const checkAuthStatus = async () => {
@@ -40,8 +45,23 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const refreshAccessToken = async () => {
+    setLoading(true)
+    try {
+      const response = await authService.refreshToken();
+      if (response.success && response.data.user) {
+        setUser(response.data.user); // if your API sends updated user info
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      logout(); // log out if refresh fails
+    }
+  };
+
 
   const login = async (credentials) => {
+    setLoading(true)
     try {
       const response = await authService.login(credentials);
       if (response.success) {
@@ -52,10 +72,13 @@ export const AuthProvider = ({ children }) => {
       throw new Error(response.message);
     } catch (error) {
       throw error;
+    } finally {
+      setLoading(false)
     }
   };
 
   const register = async (userData) => {
+    setLoading(true)
     try {
       const response = await authService.register(userData);
       if (response.success) {
@@ -66,10 +89,13 @@ export const AuthProvider = ({ children }) => {
       throw new Error(response.message);
     } catch (error) {
       throw error;
+    } finally{
+      setLoading(false)
     }
   };
 
   const logout = async () => {
+    setLoading(true)
     try {
       await authService.logout();
     } catch (error) {
@@ -78,10 +104,12 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem('accessToken');
+      setLoading(false)
     }
   };
 
   const logoutAll = async () => {
+    setLoading(true)
     try {
       await authService.logoutAll();
     } catch (error) {
@@ -90,6 +118,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem('accessToken');
+      setLoading(false)
     }
   };
 

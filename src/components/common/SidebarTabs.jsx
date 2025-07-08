@@ -15,7 +15,6 @@ const SidebarTabs = ({
 //   const [activeTab, setActiveTab] = useState(defaultTab || menuItems[0]?.id);
   const isMobile = window.innerWidth < 768;
   const isVertical = orientation === "vertical";
-  console.log("useruseruser---", user);
 
   return (
     <div className={`flex ${isVertical ? "h-screen" : "flex-col"} bg-gray-100`}>
