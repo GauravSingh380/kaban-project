@@ -19,12 +19,15 @@ export const AuthProvider = ({ children }) => {
   const [tokenCheckInterval, setTokenCheckInterval] = useState(null);
 
   const tokenCheckIntervalRef = useRef(null);
+  const hasCheckedRef = useRef(false); // 👈 NEW: prevents redundant auth checks
 
   useEffect(() => {
-    checkAuthStatus();
-  
+    if (!hasCheckedRef.current) {
+      checkAuthStatus();
+      hasCheckedRef.current = true;
+    }
+
     return () => {
-      // Clear interval on unmount
       if (tokenCheckIntervalRef.current) {
         clearInterval(tokenCheckIntervalRef.current);
       }
@@ -39,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         }
       };
   
-      const interval = setInterval(refreshAccessTokenIfVisible, 30 * 60 * 1000); // 10 mins
+      const interval = setInterval(refreshAccessTokenIfVisible, 14 * 60 * 1000); // 14 mins
       tokenCheckIntervalRef.current = interval;
     }
   

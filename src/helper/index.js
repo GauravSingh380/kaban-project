@@ -13,15 +13,15 @@ import {
 } from 'lucide-react';
 export const allMenuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, roles: ['super-admin', 'admin'] },
-  { id: 'projects', label: 'Projects', icon: FolderIcon, roles: ['super-admin',] },
+  { id: 'projects', label: 'Projects', icon: FolderIcon, roles: ['super-admin', 'admin'] },
   { id: 'issues', label: 'Issues', icon: BugIcon, roles: ['super-admin', 'admin', 'qa', 'user'] },
-  { id: 'reports', label: 'Reports', icon: BarChartIcon, roles: ['super-admin', 'admin', 'qa'] },
+  { id: 'reports', label: 'Reports', icon: BarChartIcon, roles: ['super-admin', 'admin'] },
   // { id: 'backlog', label: 'Backlog', icon: ListIcon, roles: ['super-admin', 'admin', 'qa'] },
   { id: 'team', label: 'Team', icon: Users, roles: ['super-admin', 'admin'] },
   { id: 'calendar', label: 'Calendar', icon: CalendarIcon, roles: ['super-admin', 'admin', 'qa', 'user'] },
-  { id: 'sprints', label: 'Sprints', icon: KanbanIcon, roles: ['super-admin', 'admin', 'qa'] },
+  { id: 'sprints', label: 'Sprints', icon: KanbanIcon, roles: ['super-admin', 'admin'] },
   // { id: 'activity_log', label: 'Activity Log', icon: HistoryIcon, roles: ['super-admin', 'admin'] },
-  { id: 'settings', label: 'Settings', icon: Settings, roles: ['super-admin'] },
+  { id: 'settings', label: 'Settings', icon: Settings, roles: ['super-admin', 'admin', 'qa', 'user'] },
   // { id: 'integrations', label: 'Integrations', icon: PlugIcon, roles: ['super-admin', 'admin'] },
 ];
 

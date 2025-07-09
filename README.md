@@ -68,12 +68,25 @@ PM will be able to see the developer or qa test performance like how may bugs he
 
 4. reports tab => will be same as it is now with best components and Ui choose also should be able to show according to the selected project
 
-5. team tab => use 1st and for 5 tabs => 1. overview 2. teams 3. members 4. permitions 5. analytics   and use combination of two teams code
- Note => in order to get team members data let the team member sign-up as a user with all required items so i can get easly later team member data,  so that suppose a team lead want to contact his mobile number or any information like in how may projects he have worked before what tech  stack he know's and all, so he ca easly contact him directly
+5. team tab => use 1st and for 5 tabs 
+=> 
+1. overview 
+2. teams 
+3. members 
+4. permitions 
+5. analytics  
+6. Leave tabs => in which a PM can see which user is applied for leave (with all information)
+ like first his TL has to approve or them PM will approve like that 
+and use combination of two teams code
+
+ ## Note 1
+ in order to get team members data let the team member sign-up as a user with all required items so i can get easly later team member data,  so that suppose a team lead want to contact his mobile number or any information like in how may projects he have worked before what tech  stack he know's and all, so he ca easly contact him directly
 
  ## Note 2 
  decide what kind of information team member should add.
  ex- type => Security Expert , UI/UX Designe, Lead Developer, DevOps Engineer etc take help of members tab in comp2 =>  also make user status => active in active and on-leave
+ a. later you can also let the supper admin allow user to view protected tabs based on allowed permission
+
 
 6. calender => keep same as it is for now
 7. sprints  =>

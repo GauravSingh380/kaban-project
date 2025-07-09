@@ -10,6 +10,12 @@ import BugReportsDashboard1 from "../../components/BugReport/BugReportsDashboard
 import BugReportsDashboard2 from "../../components/BugReport/BugReportsDashboard2";
 import TeamsContent1 from "../../components/Teams/TeamsContent1";
 import TeamsContent2 from "../../components/Teams/TeamsContent2";
+import TeamMemberSignup from "../../components/TeamSignUp/TeamMemberSignUp";
+import TeamMemberSignupExample from "../../components/TeamSignUp/TeamMemberSignupExample";
+import TeamMemberSignupDeepSeek from "../../components/TeamSignUp/SignupForm/TeamMemberSignupDeepSeek";
+import EditProfileDeepSeek from "../../components/TeamSignUp/SignupForm/EditProfileDeepSeek";
+import SignUpApp1 from "../../components/TeamSignUp/SignUp2/SignUpApp1";
+import SignUpApp2 from "../../components/TeamSignUp/SignUp2/SignUpApp2";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -26,6 +32,47 @@ const RenderContent = ({menuItems, activeTab, user}) => {
         </div>
       );
     }
+    const userdata = {
+      "id": "user_123",
+      "name": "Alex Johnson",
+      "email": "alex.johnson@example.com",
+      "avatar": "AJ",
+      "isOnline": true,
+      "role": "Frontend Developer",
+      "department": "Engineering",
+      "status": "active",
+      "workload": 75,
+      "phone": "+1 (555) 123-4567",
+      "location": "San Francisco, CA",
+      "joinDate": "2023-05-15",
+      "starred": false,
+      "performance": 92,
+      "completedTasks": 24,
+      "totalTasks": 26,
+      "projects": [
+        "Dashboard Redesign",
+        "Mobile App V2",
+        "API Integration"
+      ],
+      "skills": [
+        "React",
+        "TypeScript",
+        "CSS",
+        "GraphQL",
+        "Jest"
+      ],
+      "bio": "Frontend specialist with 5 years of experience building responsive web applications. Passionate about UI/UX and performance optimization.",
+      "socialLinks": {
+        "github": "https://github.com/alexjohnson",
+        "linkedin": "https://linkedin.com/in/alexjohnson",
+        "portfolio": "https://alexjohnson.dev"
+      },
+      "previousProjects": [
+        "E-commerce Platform",
+        "Admin Portal",
+        "Customer Dashboard"
+      ]
+    }
 
     const contentMap = {
       dashboard: (
@@ -33,6 +80,13 @@ const RenderContent = ({menuItems, activeTab, user}) => {
           <HomePageUser  user={user}/>
           <DashboardContent1 />
           {/* <DashboardContent2 /> */}
+          <h1>Deepseek 1</h1>
+          <TeamMemberSignupDeepSeek user={userdata}/>
+          <br />
+          <br />
+          <br />
+          <h1>Deepseek 2</h1>
+          <EditProfileDeepSeek />
         </div>
       ),
       projects: (
@@ -68,12 +122,32 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       sprints: (
         <div className="space-y-6">
-          <h1>tab 1</h1>
+          <TeamMemberSignup />
+          <br />
+          <br />
+          <br />
+          <br />
+          <TeamMemberSignupExample />
+          <br />
+          <br />
+          <br />
+          <br />
         </div>
       ),
       calendar: (
         <div className="space-y-6">
          <KanbanCalender />
+        </div>
+      ),
+      settings: (
+        <div className="space-y-6">
+         <SignUpApp1 />
+         <br />
+         <br />
+         <br />
+         <br />
+         <br />
+         <SignUpApp2 />
         </div>
       ),
     };
