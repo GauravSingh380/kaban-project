@@ -50,13 +50,6 @@ const Dashboard = () => {
   }, []);
 
   const handleLogout = async() => {
-    // try {
-    //   logout();
-    //   navigate('/login');
-      
-    // } catch (error) {
-      
-    // }
     try {
       const apiResp = await execute();
       if (apiResp) {

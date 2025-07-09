@@ -10,8 +10,8 @@ const sampleBugData = [
   { id: 4, priority: 'P1', status: 'closed', assignedTo: 'Sarah Davis', reportedBy: 'David Brown', issueEnv: ['Production'], reportedOn: '2024-01-08', updatedAt: '2024-01-12', resolutionTime: 4 },
   { id: 5, priority: 'P2', status: 'open', assignedTo: 'Tom Anderson', reportedBy: 'Emma Wilson', issueEnv: ['Staging', 'Production'], reportedOn: '2024-01-14', updatedAt: '2024-01-16', resolutionTime: null },
   { id: 6, priority: 'P3', status: 'closed', assignedTo: 'Lisa Garcia', reportedBy: 'Frank Miller', issueEnv: ['Development'], reportedOn: '2024-01-05', updatedAt: '2024-01-11', resolutionTime: 6 },
-  { id: 7, priority: 'P1', status: 'in-progress', assignedTo: 'Alex Johnson', reportedBy: 'Grace Lee', issueEnv: ['Production'], reportedOn: '2024-01-13', updatedAt: '2024-01-16', resolutionTime: null },
-  { id: 8, priority: 'P2', status: 'closed', assignedTo: 'Ryan Taylor', reportedBy: 'Helen Clark', issueEnv: ['Staging'], reportedOn: '2024-01-09', updatedAt: '2024-01-13', resolutionTime: 4 },
+  { id: 7, priority: 'P3', status: 'in-progress', assignedTo: 'Alex Johnson', reportedBy: 'Grace Lee', issueEnv: ['Production'], reportedOn: '2024-01-13', updatedAt: '2024-01-16', resolutionTime: null },
+  { id: 8, priority: 'P3', status: 'closed', assignedTo: 'Ryan Taylor', reportedBy: 'Helen Clark', issueEnv: ['Staging'], reportedOn: '2024-01-09', updatedAt: '2024-01-13', resolutionTime: 4 },
 ];
 
 const BugReportsDashboard1 = () => {
@@ -142,7 +142,7 @@ const BugReportsDashboard1 = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-8xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">

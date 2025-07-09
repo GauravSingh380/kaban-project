@@ -27,7 +27,7 @@ const SidebarTabs = ({
         className={`${
           sidebarOpen
             ? isVertical
-              ? "w-64"
+              ? "w-54"
               : "h-20 w-full"
             : isVertical
             ? "w-16"

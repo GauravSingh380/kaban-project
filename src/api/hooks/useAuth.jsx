@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         }
       };
   
-      const interval = setInterval(refreshAccessTokenIfVisible, 10 * 60 * 1000); // 10 mins
+      const interval = setInterval(refreshAccessTokenIfVisible, 30 * 60 * 1000); // 10 mins
       tokenCheckIntervalRef.current = interval;
     }
   
