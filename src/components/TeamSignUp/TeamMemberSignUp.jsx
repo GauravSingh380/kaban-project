@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, User, ArrowLeft, UserCheck, Phone, MapPin, Calendar, Building, Code, Award, Plus, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Reusable Input Component
 const FormInput = ({ 
@@ -207,6 +208,7 @@ const TeamMemberSignup = () => {
     availability: '',
     preferredWorkType: ''
   });
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -434,7 +436,7 @@ const TeamMemberSignup = () => {
       case 1:
         return (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-purple-700 mb-4">Basic Information</h2>
+            {/* <h2 className="text-lg font-semibold text-purple-700 mb-2">Basic Information</h2> */}
             
             <FormInput
               label="Full Name"
@@ -702,7 +704,16 @@ const TeamMemberSignup = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 flex items-center justify-center px-4 py-8">
-      <div className="max-w-2xl w-full">
+      <div className="max-w-xl w-full">
+      <button onClick={() => navigate('/')}>
+       <a
+            onClick={() => navigate('/')}
+            className="inline-flex cursor-pointer items-center text-purple-200 hover:text-purple-400 mb-8 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to home
+          </a>
+       </button>
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
@@ -719,9 +730,9 @@ const TeamMemberSignup = () => {
 
         {/* Form Container */}
         <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-8 border border-purple-400 border-opacity-20">
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             <h1 className="text-3xl font-bold text-purple-700 mb-2">Join Our Team</h1>
-            <p className="text-purple-700">Create your professional profile</p>
+            {/* <p className="text-purple-700">Create your professional profile</p> */}
           </div>
 
           <div>

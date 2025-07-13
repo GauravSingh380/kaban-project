@@ -10,7 +10,6 @@ import BugReportsDashboard1 from "../../components/BugReport/BugReportsDashboard
 import BugReportsDashboard2 from "../../components/BugReport/BugReportsDashboard2";
 import TeamsContent1 from "../../components/Teams/TeamsContent1";
 import TeamsContent2 from "../../components/Teams/TeamsContent2";
-import TeamMemberSignup from "../../components/TeamSignUp/TeamMemberSignUp";
 import TeamMemberSignupExample from "../../components/TeamSignUp/TeamMemberSignupExample";
 import TeamMemberSignupDeepSeek from "../../components/TeamSignUp/SignupForm/TeamMemberSignupDeepSeek";
 import EditProfileDeepSeek from "../../components/TeamSignUp/SignupForm/EditProfileDeepSeek";
@@ -122,16 +121,8 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       sprints: (
         <div className="space-y-6">
-          <TeamMemberSignup />
-          <br />
-          <br />
-          <br />
-          <br />
-          <TeamMemberSignupExample />
-          <br />
-          <br />
-          <br />
-          <br />
+          {/* <TeamMemberSignupExample /> */}
+          <SignUpApp1 />
         </div>
       ),
       calendar: (
@@ -141,13 +132,7 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       settings: (
         <div className="space-y-6">
-         <SignUpApp1 />
-         <br />
-         <br />
-         <br />
-         <br />
-         <br />
-         <SignUpApp2 />
+         <h1>Settings content</h1>
         </div>
       ),
     };

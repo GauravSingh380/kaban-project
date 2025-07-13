@@ -58,6 +58,12 @@ const LandingPage = () => {
               >
                 Create Account
               </button>
+              <button
+                onClick={() => navigate('/sign-up')}
+                className="bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-600 transition-colors border border-purple-600"
+              >
+                Sign Up As Team Member
+              </button>
             </div>
           </div>
         </div>

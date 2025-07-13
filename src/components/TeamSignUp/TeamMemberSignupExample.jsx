@@ -306,7 +306,7 @@ const ReusableSignupForm = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 flex items-center justify-center px-4 py-8">
-      <div className="max-w-2xl w-full">
+      <div className="max-w-3xl w-full">
         {showBackButton && (
           <a
             href={backButtonLink}
@@ -537,7 +537,7 @@ const TeamMemberSignupExample = () => {
       subtitle="Complete your team member profile"
       submitButtonText="Join Team"
       backButtonText="Back to Dashboard"
-      backButtonLink="/dashboard"
+      backButtonLink="/"
       loginLink="/login"
     />
   );

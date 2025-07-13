@@ -332,6 +332,7 @@ const ReusableSignupForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // onSubmit(formData);
     if (validateForm()) {
       onSubmit(formData);
     }
@@ -543,8 +544,9 @@ const ReusableSignupForm = ({
             {/* Submit Button */}
             <button
               type="submit"
+              onClick={handleSubmit}
               disabled={loading}
-              className="w-full bg-purple-600 text-purple-100 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-90 disabled:cursor-not-allowed"
+              className="w-full cursor-pointer bg-purple-600 text-purple-100 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-90 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <StyledSpinner
@@ -589,7 +591,7 @@ const SignUpApp1 = () => {
       console.log('Form submitted:', formData);
       setLoading(false);
       alert('Account created successfully!');
-    }, 2000);
+    }, 5000);
   };
 
   return (

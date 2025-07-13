@@ -7,6 +7,8 @@ import RegisterPage from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './pages/ProtectedRoute';
 import LoadingSpinner from './components/LoadingSpinner'; // Optional loading component
+import TeamMemberSignup from './components/TeamSignUp/TeamMemberSignUp';
+import TeamMemberSignupExample from './components/TeamSignUp/TeamMemberSignupExample';
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/member" element={<RegisterPage />} />
+          <Route path="/sign-up" element={<TeamMemberSignupExample />} />
           
           {/* Protected Routes */}
           <Route 
