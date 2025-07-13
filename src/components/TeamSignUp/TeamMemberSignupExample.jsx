@@ -385,162 +385,165 @@ const ReusableSignupForm = ({
 };
 
 // Example usage with team member signup configuration
-const TeamMemberSignupExample = () => {
-  // Team member form configuration
-  const teamMemberFormConfig = [
-    {
-      name: 'name',
-      label: 'Full Name',
-      type: 'text',
-      placeholder: 'Enter your full name',
-      required: true,
-      validation: (value) => {
-        if (value.length < 2) return 'Name must be at least 2 characters';
-        return true;
-      }
-    },
-    {
-      name: 'email',
-      label: 'Email Address',
-      type: 'email',
-      placeholder: 'Enter your email',
-      required: true,
-      validation: (value) => {
-        if (!/\S+@\S+\.\S+/.test(value)) return 'Please enter a valid email';
-        return true;
-      }
-    },
-    {
-      name: 'phone',
-      label: 'Phone Number',
-      type: 'tel',
-      placeholder: 'Enter your phone number',
-      required: true,
-      validation: (value) => {
-        if (!/^\+?[\d\s\-\(\)]+$/.test(value)) return 'Please enter a valid phone number';
-        return true;
-      }
-    },
-    {
-      name: 'location',
-      label: 'Location',
-      type: 'text',
-      placeholder: 'Enter your location',
-      required: true
-    },
-    {
-      name: 'department',
-      label: 'Department',
-      type: 'select',
-      placeholder: 'Select your department',
-      required: true,
-      options: [
-        { value: 'engineering', label: 'Engineering' },
-        { value: 'design', label: 'Design' },
-        { value: 'product', label: 'Product' },
-        { value: 'marketing', label: 'Marketing' },
-        { value: 'sales', label: 'Sales' },
-        { value: 'hr', label: 'Human Resources' },
-        { value: 'finance', label: 'Finance' }
-      ]
-    },
-    {
-      name: 'role',
-      label: 'Role',
-      type: 'select',
-      placeholder: 'Select your role',
-      required: true,
-      options: [
-        { value: 'junior', label: 'Junior Developer' },
-        { value: 'senior', label: 'Senior Developer' },
-        { value: 'lead', label: 'Team Lead' },
-        { value: 'manager', label: 'Manager' },
-        { value: 'designer', label: 'Designer' },
-        { value: 'analyst', label: 'Analyst' }
-      ]
-    },
-    {
-      name: 'experience',
-      label: 'Years of Experience',
-      type: 'number',
-      placeholder: 'Enter years of experience',
-      required: true,
-      min: 0,
-      max: 50
-    },
-    {
-      name: 'joinDate',
-      label: 'Join Date',
-      type: 'date',
-      required: true
-    },
-    {
-      name: 'skills',
-      label: 'Skills',
-      type: 'multiselect',
-      placeholder: 'Add a skill and press Enter',
-      required: true,
-      fullWidth: true
-    },
-    {
-      name: 'projects',
-      label: 'Previous Projects',
-      type: 'multiselect',
-      placeholder: 'Add a project and press Enter',
-      required: false,
-      fullWidth: true
-    },
-    {
-      name: 'bio',
-      label: 'Bio',
-      type: 'textarea',
-      placeholder: 'Tell us about yourself...',
-      required: false,
-      fullWidth: true,
-      rows: 3
-    },
-    {
-      name: 'password',
-      label: 'Password',
-      type: 'password',
-      placeholder: 'Create a password',
-      required: true,
-      validation: (value) => {
-        if (value.length < 6) return 'Password must be at least 6 characters';
-        return true;
-      }
-    },
-    {
-      name: 'confirmPassword',
-      label: 'Confirm Password',
-      type: 'password',
-      placeholder: 'Confirm your password',
-      required: true,
-      validation: (value, formData) => {
-        if (value !== formData.password) return 'Passwords do not match';
-        return true;
-      }
-    }
-  ];
+// const TeamMemberSignupExample = () => {
+//   // Team member form configuration
+//   const teamMemberFormConfig = [
+//     {
+//       name: 'name',
+//       label: 'Full Name',
+//       type: 'text',
+//       placeholder: 'Enter your full name',
+//       required: true,
+//       validation: (value) => {
+//         if (value.length < 2) return 'Name must be at least 2 characters';
+//         return true;
+//       }
+//     },
+//     {
+//       name: 'email',
+//       label: 'Email Address',
+//       type: 'email',
+//       placeholder: 'Enter your email',
+//       required: true,
+//       validation: (value) => {
+//         if (!/\S+@\S+\.\S+/.test(value)) return 'Please enter a valid email';
+//         return true;
+//       }
+//     },
+//     {
+//       name: 'phone',
+//       label: 'Phone Number',
+//       type: 'tel',
+//       placeholder: 'Enter your phone number',
+//       required: true,
+//       validation: (value) => {
+//         if (!/^\+?[\d\s\-\(\)]+$/.test(value)) return 'Please enter a valid phone number';
+//         return true;
+//       }
+//     },
+//     {
+//       name: 'location',
+//       label: 'Location',
+//       type: 'text',
+//       placeholder: 'Enter your location',
+//       required: true
+//     },
+//     {
+//       name: 'department',
+//       label: 'Department',
+//       type: 'select',
+//       placeholder: 'Select your department',
+//       required: true,
+//       options: [
+//         { value: 'engineering', label: 'Engineering' },
+//         { value: 'design', label: 'Design' },
+//         { value: 'product', label: 'Product' },
+//         { value: 'marketing', label: 'Marketing' },
+//         { value: 'sales', label: 'Sales' },
+//         { value: 'hr', label: 'Human Resources' },
+//         { value: 'finance', label: 'Finance' }
+//       ]
+//     },
+//     {
+//       name: 'role',
+//       label: 'Role',
+//       type: 'select',
+//       placeholder: 'Select your role',
+//       required: true,
+//       options: [
+//         { value: 'manager', label: 'Manager' },
+//         { value: 'qa_manager', label: 'QA Manager' },
+//         { value: 'lead', label: 'Team Lead' },
+//         { value: 'senior', label: 'Senior Developer' },
+//         { value: 'junior', label: 'Junior Developer' },
+//         { value: 'devops', label: 'DevOps Engineer' },
+//         { value: 'designer', label: 'UI/UX Designer' },
+//         { value: 'analyst', label: 'Analyst' }
+//       ]
+//     },
+//     {
+//       name: 'experience',
+//       label: 'Years of Experience',
+//       type: 'number',
+//       placeholder: 'Enter years of experience',
+//       required: true,
+//       min: 0,
+//       max: 50
+//     },
+//     {
+//       name: 'joinDate',
+//       label: 'Join Date',
+//       type: 'date',
+//       required: true
+//     },
+//     {
+//       name: 'skills',
+//       label: 'Skills',
+//       type: 'multiselect',
+//       placeholder: 'Add a skill and press Enter',
+//       required: true,
+//       fullWidth: true
+//     },
+//     {
+//       name: 'projects',
+//       label: 'Previous Projects',
+//       type: 'multiselect',
+//       placeholder: 'Add a project and press Enter',
+//       required: false,
+//       fullWidth: true
+//     },
+//     {
+//       name: 'bio',
+//       label: 'Bio',
+//       type: 'textarea',
+//       placeholder: 'Tell us about yourself...',
+//       required: false,
+//       fullWidth: true,
+//       rows: 3
+//     },
+//     {
+//       name: 'password',
+//       label: 'Password',
+//       type: 'password',
+//       placeholder: 'Create a password',
+//       required: true,
+//       validation: (value) => {
+//         if (value.length < 6) return 'Password must be at least 6 characters';
+//         return true;
+//       }
+//     },
+//     {
+//       name: 'confirmPassword',
+//       label: 'Confirm Password',
+//       type: 'password',
+//       placeholder: 'Confirm your password',
+//       required: true,
+//       validation: (value, formData) => {
+//         if (value !== formData.password) return 'Passwords do not match';
+//         return true;
+//       }
+//     }
+//   ];
 
-  const handleSubmit = async (formData) => {
-    console.log('Team member data:', formData);
-    // Here you would typically send the data to your API
-    alert('Team member registered successfully!');
-  };
+//   const handleSubmit = async (formData) => {
+//     console.log('Team member data:', formData);
+//     // Here you would typically send the data to your API
+//     alert('Team member registered successfully!');
+//   };
 
-  return (
-    <ReusableSignupForm
-      formConfig={teamMemberFormConfig}
-      onSubmit={handleSubmit}
-      title="Join Our Team"
-      subtitle="Complete your team member profile"
-      submitButtonText="Join Team"
-      backButtonText="Back to Dashboard"
-      backButtonLink="/"
-      loginLink="/login"
-    />
-  );
-};
+//   return (
+//     <ReusableSignupForm
+//       formConfig={teamMemberFormConfig}
+//       onSubmit={handleSubmit}
+//       title="Join Our Team"
+//       subtitle="Complete your team member profile"
+//       submitButtonText="Join Team"
+//       backButtonText="Back to Dashboard"
+//       backButtonLink="/"
+//       loginLink="/login"
+//     />
+//   );
+// };
 
-export default TeamMemberSignupExample;
+// export default TeamMemberSignupExample;
+export default ReusableSignupForm;

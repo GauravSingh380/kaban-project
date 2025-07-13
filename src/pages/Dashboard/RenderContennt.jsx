@@ -15,6 +15,8 @@ import TeamMemberSignupDeepSeek from "../../components/TeamSignUp/SignupForm/Tea
 import EditProfileDeepSeek from "../../components/TeamSignUp/SignupForm/EditProfileDeepSeek";
 import SignUpApp1 from "../../components/TeamSignUp/SignUp2/SignUpApp1";
 import SignUpApp2 from "../../components/TeamSignUp/SignUp2/SignUpApp2";
+import UserProfile from "../../components/UserProfile/UserProfile";
+import UserProfileV2 from "../../components/UserProfile/UserProfileV2";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -79,13 +81,6 @@ const RenderContent = ({menuItems, activeTab, user}) => {
           <HomePageUser  user={user}/>
           <DashboardContent1 />
           {/* <DashboardContent2 /> */}
-          <h1>Deepseek 1</h1>
-          <TeamMemberSignupDeepSeek user={userdata}/>
-          <br />
-          <br />
-          <br />
-          <h1>Deepseek 2</h1>
-          <EditProfileDeepSeek />
         </div>
       ),
       projects: (
@@ -128,6 +123,20 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       calendar: (
         <div className="space-y-6">
          <KanbanCalender />
+        </div>
+      ),
+      profile: (
+        <div className="space-y-6">
+         {/* <UserProfile />
+         <br />
+         <br /> */}
+         <UserProfileV2 />
+         <br />
+         <br />
+         <br />
+         <br />
+         <br />
+         <br />
         </div>
       ),
       settings: (

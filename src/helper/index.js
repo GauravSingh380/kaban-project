@@ -9,7 +9,8 @@ import {
   CalendarIcon,
   BarChartIcon,
   HistoryIcon,
-  PlugIcon
+  PlugIcon,
+  UserCog
 } from 'lucide-react';
 export const allMenuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, roles: ['super-admin', 'admin'] },
@@ -21,7 +22,8 @@ export const allMenuItems = [
   { id: 'calendar', label: 'Calendar', icon: CalendarIcon, roles: ['super-admin', 'admin', 'qa', 'user'] },
   { id: 'sprints', label: 'Sprints', icon: KanbanIcon, roles: ['super-admin', 'admin'] },
   // { id: 'activity_log', label: 'Activity Log', icon: HistoryIcon, roles: ['super-admin', 'admin'] },
-  { id: 'settings', label: 'Settings', icon: Settings, roles: ['super-admin', 'admin', 'qa', 'user'] },
+  { id: 'profile', label: 'Profile', icon: UserCog, roles: ['super-admin', 'admin', 'qa', 'user'] },
+  { id: 'settings', label: 'Settings', icon: Settings, roles: ['super-admin', 'admin'] },
   // { id: 'integrations', label: 'Integrations', icon: PlugIcon, roles: ['super-admin', 'admin'] },
 ];
 
