@@ -27,32 +27,41 @@ import {
 } from 'lucide-react';
 import GlobalModel from '../common/GlobalModel';
 import ReusableSignupForm from '../TeamSignUp/TeamMemberSignupExample';
+import { useApi, useAuth } from '../../api';
+import LoadingSpinner from '../LoadingSpinner';
+import { useToast } from '../StyledAlert/ToastContext';
 
 const UserProfileV2 = () => {
+    const { user,isAuthenticated, userDetails, getUserDetails } = useAuth();
+    
+    const { loading, error, execute } = useApi(getUserDetails);
+    const alert = useToast();
+    console.log("user----", user);
+
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [profileData, setProfileData] = useState({
         id: 1,
-        name: 'John Doe',
-        email: 'john.doe@company.com',
-        phone: '+1 (555) 123-4567',
-        location: 'New York, NY',
-        department: 'Engineering',
-        role: 'Senior Developer',
-        avatar: 'JD',
-        isOnline: true,
+        name: user?.name || '',
+        email: user?.email || '',
+        phone: '',
+        location: '',
+        department: '',
+        role: '',
+        avatar: '',
+        isOnline: user?.isActive || false,
         status: 'active',
-        workload: 85,
-        performance: 92,
-        completedTasks: 28,
-        totalTasks: 35,
-        joinDate: '2023-01-15',
-        experience: 5,
+        workload: 0,
+        performance: 0,
+        completedTasks: 0,
+        totalTasks: 0,
+        joinDate: user?.createdAt || '',
+        experience: 0,
         starred: false,
-        projects: ['E-commerce Platform', 'Mobile App', 'Analytics Dashboard'],
-        skills: ['React', 'Node.js', 'Python', 'AWS', 'Docker', 'GraphQL'],
-        bio: 'Passionate full-stack developer with 5+ years of experience in building scalable web applications. Love working with modern technologies and solving complex problems.',
-        recentAchievements: ['Completed React Certification', 'Led team of 5 developers', 'Delivered project 2 weeks early']
+        projects: [],
+        skills: [],
+        bio: '',
+        recentAchievements: []
     });
 
     const [editData, setEditData] = useState(profileData);
@@ -60,129 +69,27 @@ const UserProfileV2 = () => {
     const [newProject, setNewProject] = useState('');
     const [newAchievement, setNewAchievement] = useState('');
 
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-      // Team member form configuration
-  const teamMemberFormConfig = [
-    {
-      name: 'name',
-      label: 'Full Name',
-      type: 'text',
-      placeholder: 'Enter your full name',
-      required: true,
-      validation: (value) => {
-        if (value.length < 2) return 'Name must be at least 2 characters';
-        return true;
-      }
-    },
-    {
-      name: 'email',
-      label: 'Email Address',
-      type: 'email',
-      placeholder: 'Enter your email',
-      required: true,
-      validation: (value) => {
-        if (!/\S+@\S+\.\S+/.test(value)) return 'Please enter a valid email';
-        return true;
-      }
-    },
-    {
-      name: 'phone',
-      label: 'Phone Number',
-      type: 'tel',
-      placeholder: 'Enter your phone number',
-      required: true,
-      validation: (value) => {
-        if (!/^\+?[\d\s\-\(\)]+$/.test(value)) return 'Please enter a valid phone number';
-        return true;
-      }
-    },
-    {
-      name: 'location',
-      label: 'Location',
-      type: 'text',
-      placeholder: 'Enter your location',
-      required: true
-    },
-    {
-      name: 'department',
-      label: 'Department',
-      type: 'select',
-      placeholder: 'Select your department',
-      required: true,
-      options: [
-        { value: 'engineering', label: 'Engineering' },
-        { value: 'design', label: 'Design' },
-        { value: 'product', label: 'Product' },
-        { value: 'marketing', label: 'Marketing' },
-        { value: 'sales', label: 'Sales' },
-        { value: 'hr', label: 'Human Resources' },
-        { value: 'finance', label: 'Finance' }
-      ]
-    },
-    {
-      name: 'role',
-      label: 'Role',
-      type: 'select',
-      placeholder: 'Select your role',
-      required: true,
-      options: [
-        { value: 'manager', label: 'Manager' },
-        { value: 'qa_manager', label: 'QA Manager' },
-        { value: 'lead', label: 'Team Lead' },
-        { value: 'senior', label: 'Senior Developer' },
-        { value: 'junior', label: 'Junior Developer' },
-        { value: 'devops', label: 'DevOps Engineer' },
-        { value: 'designer', label: 'UI/UX Designer' },
-        { value: 'analyst', label: 'Analyst' }
-      ]
-    },
-    {
-      name: 'experience',
-      label: 'Years of Experience',
-      type: 'number',
-      placeholder: 'Enter years of experience',
-      required: true,
-      min: 0,
-      max: 50
-    },
-    {
-      name: 'joinDate',
-      label: 'Join Date',
-      type: 'date',
-      required: true
-    },
-    {
-      name: 'skills',
-      label: 'Skills',
-      type: 'multiselect',
-      placeholder: 'Add a skill and press Enter',
-      required: true,
-      fullWidth: true
-    },
-    {
-      name: 'projects',
-      label: 'Previous Projects',
-      type: 'multiselect',
-      placeholder: 'Add a project and press Enter',
-      required: false,
-      fullWidth: true
-    },
-    {
-      name: 'bio',
-      label: 'Bio',
-      type: 'textarea',
-      placeholder: 'Tell us about yourself...',
-      required: false,
-      fullWidth: true,
-      rows: 3
-    }
-  ];
+    const getCurrentUser = async () => {
+        try {
+          const apiResp = await execute();
+          console.log("apiResp-------", apiResp);
+          if (apiResp) {
+            alert.success(`${apiResp?.message || "User fetched successful!"}`)
+          }
+        } catch (error) {
+          if (error.message) {
+            alert.error(error.message || 'An error occurred. Please try again.');
+          } else {
+            alert.error("Failed to get user. Please try again.");
+          }
+          console.error('Failed:', error);
+        }
+      };
 
-  const handleSubmit = async (formData) => {
-    console.log('Team member data:', formData);
-    // Here you would typically send the data to your API
-    alert('Team member registered successfully!');
-  };
+    useEffect(() => {
+        getCurrentUser()
+    }, [isAuthenticated]);
+    console.log("userDetails-------", userDetails);
 
     const departmentOptions = [
         { value: 'engineering', label: 'Engineering' },
@@ -309,6 +216,10 @@ const UserProfileV2 = () => {
         { id: 'projects', label: 'Projects', icon: Target },
         { id: 'achievements', label: 'Achievements', icon: Award }
     ];
+    if (loading) {
+        // return <LoadingSpinner />;
+        return <h1>Loading...</h1>;
+    }
 
     return (
         <div className="">
@@ -362,7 +273,7 @@ const UserProfileV2 = () => {
                         <div className="flex items-start gap-6">
                             <div className="relative">
                                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl flex items-center justify-center font-medium shadow-lg">
-                                    {profileData.avatar}
+                                    {profileData.avatar || user?.name?.split(' ').map(word => word[0].toUpperCase()).join('')}   
                                 </div>
                                 {profileData.isOnline && (
                                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
@@ -486,7 +397,7 @@ const UserProfileV2 = () => {
                                                     <Mail className="w-4 h-4 text-gray-400" />
                                                     <div>
                                                         <p className="text-xs text-gray-500">Email</p>
-                                                        <p className="text-sm font-medium text-gray-900">{profileData.email}</p>
+                                                        <p className="text-sm font-medium text-gray-900">{profileData.email || user.email}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -845,26 +756,6 @@ const UserProfileV2 = () => {
                         )}
                     </div>
                 </div>
-                <GlobalModel
-                    isOpen={isAddModalOpen}
-                    onClose={() => setIsAddModalOpen(false)}
-                    header="Add new bug details"
-                    onSubmit={(e) => handleAddNewBug(e)}
-                    submitText="Add new bug"
-                    children={
-                        <ReusableSignupForm
-                            formConfig={teamMemberFormConfig}
-                            onSubmit={handleSubmit}
-                            title=""
-                            subtitle=""
-                            submitButtonText="Join Team"
-                            backButtonText=""
-                            backButtonLink="/"
-                            loginLink="/login"
-                            showBackButton={false}
-                        />
-                    }
-                />
             </div>
         </div>
     );

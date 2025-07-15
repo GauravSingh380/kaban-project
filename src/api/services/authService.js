@@ -49,7 +49,7 @@ export const authService = {
 
   getCurrentUser: async () => {
     try {
-      const response = await apiClient.get('/auth/me');
+      const response = await apiClient.get('/users/get-user');
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch user profile');

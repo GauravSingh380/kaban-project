@@ -14,6 +14,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tokenCheckInterval, setTokenCheckInterval] = useState(null);
@@ -119,6 +120,22 @@ export const AuthProvider = ({ children }) => {
       setLoading(false)
     }
   };
+  const getUserDetails = async () => {
+    setLoading(true)
+    try {
+      const response = await authService.getCurrentUser();
+      if (response.success) {
+        setUserDetails(response.data);
+        // setIsAuthenticated(true);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false)
+    }
+  };
 
   const register = async (userData) => {
     setLoading(true)
@@ -166,9 +183,11 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    userDetails,
     isAuthenticated,
     loading,
     login,
+    getUserDetails,
     register,
     logout,
     logoutAll,

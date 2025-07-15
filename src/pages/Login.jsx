@@ -122,8 +122,7 @@ const LoginPage = () => {
                 <input
                   type="email"
                   name="email"
-                  defaultValue="gaurav@gmail.com"
-                  value={formData.email}
+                  value={formData.email || "gaurav@gmail.com"}
                   onChange={handleInputChange}
                   className={`w-full pl-10 pr-4 py-3 text-gray-700 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-purple-500 ${errors.email ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                     }`}
@@ -146,8 +145,7 @@ const LoginPage = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  value={formData.password}
-                  defaultValue="Welcome@123"
+                  value={formData.password || "Welcome@123"}
                   onChange={handleInputChange}
                   className={`w-full pl-10 pr-12 py-3 bg-white bg-opacity-20 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700 placeholder-purple-500 ${errors.password ? 'border-red-400' : 'border-purple-400 border-opacity-30'
                     }`}
