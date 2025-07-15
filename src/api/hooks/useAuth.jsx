@@ -115,6 +115,18 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const updateUserDetails = useCallback(async (payload) => {
+    try {
+      const response = await authService.updateCurrentUser(payload);
+      if (response.success) {
+        setUserDetails(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
 
   const register = useCallback(async (userData) => {
     setLoading(true);
@@ -169,6 +181,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     getUserDetails,
+    updateUserDetails,
     register,
     logout,
     logoutAll,

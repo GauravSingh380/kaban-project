@@ -55,6 +55,14 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Failed to fetch user profile');
     }
   },
+  updateCurrentUser: async (payload) => {
+    try {
+      const response = await apiClient.post('/users/update-user', payload);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch user profile');
+    }
+  },
 
   verifyToken: async () => {
     try {

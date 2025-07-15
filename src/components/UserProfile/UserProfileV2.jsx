@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-    User, 
-    Mail, 
-    Phone, 
-    MapPin, 
-    Calendar, 
-    Briefcase, 
-    Users, 
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+    User,
+    Mail,
+    Phone,
+    MapPin,
+    Calendar,
+    Briefcase,
+    Users,
     Star,
     Edit3,
     Save,
@@ -30,98 +30,105 @@ import ReusableSignupForm from '../TeamSignUp/TeamMemberSignupExample';
 import { useApi, useAuth } from '../../api';
 import LoadingSpinner from '../LoadingSpinner';
 import { useToast } from '../StyledAlert/ToastContext';
+import ApiSpinner from '../ApiSpinner'
 
 const UserProfileV2 = () => {
-    const { user, isAuthenticated, userDetails, getUserDetails } = useAuth();
+    const { user, isAuthenticated, userDetails, getUserDetails, updateUserDetails } = useAuth();
     const { loading, error, execute } = useApi(getUserDetails);
+    const {
+        loading: loadingUpdate,
+        error: errorUpdate,
+        execute: executeUpdate
+    } = useApi(updateUserDetails);
     const alert = useToast();
-  
+    const hasFetched = useRef(false);
+
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [profileData, setProfileData] = useState({
-      id: 1,
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: '',
-      location: '',
-      department: '',
-      role: '',
-      avatar: '',
-      isOnline: user?.isActive || false,
-      status: 'active',
-      workload: 0,
-      performance: 0,
-      completedTasks: 0,
-      totalTasks: 0,
-      joinDate: user?.createdAt || '',
-      experience: 0,
-      starred: false,
-      projects: [],
-      skills: [],
-      bio: '',
-      recentAchievements: []
+        id: 1,
+        name: user?.name || '',
+        email: user?.email || '',
+        phone: '',
+        location: '',
+        department: '',
+        role: '',
+        avatar: '',
+        isOnline: user?.isActive || false,
+        status: 'active',
+        workload: 0,
+        performance: 0,
+        completedTasks: 0,
+        totalTasks: 0,
+        joinDate: user?.createdAt || '',
+        experience: 0,
+        starred: false,
+        projects: [],
+        skills: [],
+        bio: '',
+        recentAchievements: []
     });
-  
+
     const [editData, setEditData] = useState(profileData);
     const [newSkill, setNewSkill] = useState('');
     const [newProject, setNewProject] = useState('');
     const [newAchievement, setNewAchievement] = useState('');
-  
+
     // Memoize the API call function
     const getCurrentUserDetails = useCallback(async () => {
-      try {
-        const apiResp = await execute();
-        if (apiResp) {
-          alert.success(`${apiResp?.message || "User fetched successful!"}`);
-          
-          // Update profile data with fetched details
-          setProfileData(prev => ({
-            ...prev,
-            ...apiResp.data,
-            name: apiResp.data?.name || user?.name || '',
-            email: apiResp.data?.email || user?.email || '',
-            isOnline: apiResp.data?.isActive || user?.isActive || false,
-            joinDate: apiResp.data?.createdAt || user?.createdAt || '',
-          }));
+        try {
+            const apiResp = await execute();
+            if (apiResp) {
+                alert.success(`${apiResp?.message || "User fetched successful!"}`);
+
+                // Update profile data with fetched details
+                setProfileData(prev => ({
+                    ...prev,
+                    ...apiResp.data,
+                    name: apiResp.data?.name || user?.name || '',
+                    email: apiResp.data?.email || user?.email || '',
+                    isOnline: apiResp.data?.isActive || user?.isActive || false,
+                    joinDate: apiResp.data?.createdAt || user?.createdAt || '',
+                }));
+            }
+        } catch (error) {
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get user. Please try again.");
+            }
+            console.error('Failed:', error);
         }
-      } catch (error) {
-        if (error.message) {
-          alert.error(error.message || 'An error occurred. Please try again.');
-        } else {
-          alert.error("Failed to get user. Please try again.");
-        }
-        console.error('Failed:', error);
-      }
     }, [execute, alert, user]);
-  
-    // Use useEffect with proper dependencies
+
+
     useEffect(() => {
-      // Only fetch if we don't already have user details and user is authenticated
-      if (isAuthenticated && !userDetails) {
-        getCurrentUserDetails();
-      }
-    }, [isAuthenticated, userDetails, getCurrentUserDetails]);
-  
+        if (isAuthenticated && !userDetails && !loading && !hasFetched.current) {
+            hasFetched.current = true;
+            getCurrentUserDetails();
+        }
+    }, [isAuthenticated, userDetails, getCurrentUserDetails, loading, editData]);
+
     // Update profile data when user or userDetails change
     useEffect(() => {
-      if (user || userDetails) {
-        setProfileData(prev => ({
-          ...prev,
-          name: userDetails?.name || user?.name || '',
-          email: userDetails?.email || user?.email || '',
-          isOnline: userDetails?.isActive || user?.isActive || false,
-          joinDate: userDetails?.createdAt || user?.createdAt || '',
-          // Add other fields from userDetails as needed
-          ...(userDetails || {})
-        }));
-      }
+        if (user || userDetails) {
+            setProfileData(prev => ({
+                ...prev,
+                name: userDetails?.name || user?.name || '',
+                email: userDetails?.email || user?.email || '',
+                isOnline: userDetails?.isActive || user?.isActive || false,
+                joinDate: userDetails?.createdAt || user?.createdAt || '',
+                // Add other fields from userDetails as needed
+                ...(userDetails || {})
+            }));
+        }
     }, [user, userDetails]);
-  
+
     // Update editData when profileData changes
     useEffect(() => {
-      setEditData(profileData);
+        setEditData(profileData);
     }, [profileData]);
-  
+
 
     console.log("userDetails-------", userDetails);
 
@@ -174,11 +181,23 @@ const UserProfileV2 = () => {
         setIsEditing(true);
     };
 
-    const handleSave = () => {
-        setProfileData(editData);
-        setIsEditing(false);
-        // Here you would typically send the updated data to your API
-        alert('Profile updated successfully!');
+    const handleSave = async () => {
+        try {
+            const apiResp = await executeUpdate(editData);
+            if (apiResp) {
+                alert.success(`${apiResp?.message || "User updated successful!"}`);
+                setProfileData(profileData);
+                setIsEditing(false);
+            }
+        } catch (error) {
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get user. Please try again.");
+            }
+            console.error('Failed:', error);
+            setIsEditing(false);
+        }
     };
 
     const handleCancel = () => {
@@ -251,8 +270,13 @@ const UserProfileV2 = () => {
         { id: 'achievements', label: 'Achievements', icon: Award }
     ];
     if (loading) {
-        // return <LoadingSpinner />;
-        return <h1>Loading...</h1>;
+        return <ApiSpinner
+            borderWidth='3px'
+            size='1.5rem'
+            text='Loading...'
+            fontSize='font-semibold'
+            // color='white'
+        />;
     }
 
     return (
@@ -266,30 +290,38 @@ const UserProfileV2 = () => {
                             <div className="flex gap-2">
                                 {!isEditing ? (
                                     <>
-                                    <button
-                                        onClick={handleEdit}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                    >
-                                        <Edit3 className="w-4 h-4" />
-                                        Edit Profile
-                                    </button>
-                                    <button
-                                        onClick={() => setIsAddModalOpen(true)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                    >
-                                        <Edit3 className="w-4 h-4" />
-                                        Update profile
-                                    </button>
+                                        <button
+                                            onClick={handleEdit}
+                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        >
+                                            <Edit3 className="w-4 h-4" />
+                                            Edit Profile
+                                        </button>
+                                        {/* <button
+                                            onClick={() => setIsAddModalOpen(true)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        >
+                                            <Edit3 className="w-4 h-4" />
+                                            Update profile
+                                        </button> */}
                                     </>
-                                    
+
                                 ) : (
                                     <div className="flex gap-2">
                                         <button
                                             onClick={handleSave}
                                             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                                         >
-                                            <Save className="w-4 h-4" />
-                                            Save
+                                            {loadingUpdate ? "" : <Save className="w-4 h-4" />}
+                                                {loadingUpdate ?
+                                                    <ApiSpinner
+                                                        borderWidth='3px'
+                                                        size='1.5rem'
+                                                        text='Saving...'
+                                                        fontSize='font-semibold'
+                                                        color='white'
+                                                    /> : "Save"
+                                                } 
                                         </button>
                                         <button
                                             onClick={handleCancel}
@@ -307,7 +339,7 @@ const UserProfileV2 = () => {
                         <div className="flex items-start gap-6">
                             <div className="relative">
                                 <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl flex items-center justify-center font-medium shadow-lg">
-                                    {profileData.avatar || user?.name?.split(' ').map(word => word[0].toUpperCase()).join('')}   
+                                    {profileData.avatar || user?.name?.split(' ').map(word => word[0].toUpperCase()).join('')}
                                 </div>
                                 {profileData.isOnline && (
                                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
@@ -355,11 +387,10 @@ const UserProfileV2 = () => {
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                                            activeTab === tab.id
-                                                ? 'border-blue-500 text-blue-600'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }`}
+                                        className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
+                                            ? 'border-blue-500 text-blue-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            }`}
                                     >
                                         <Icon className="w-4 h-4" />
                                         {tab.label}
