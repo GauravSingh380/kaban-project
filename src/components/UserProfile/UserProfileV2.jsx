@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
     User, 
     Mail, 
@@ -32,63 +32,97 @@ import LoadingSpinner from '../LoadingSpinner';
 import { useToast } from '../StyledAlert/ToastContext';
 
 const UserProfileV2 = () => {
-    const { user,isAuthenticated, userDetails, getUserDetails } = useAuth();
-    
+    const { user, isAuthenticated, userDetails, getUserDetails } = useAuth();
     const { loading, error, execute } = useApi(getUserDetails);
     const alert = useToast();
-    console.log("user----", user);
-
+  
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [profileData, setProfileData] = useState({
-        id: 1,
-        name: user?.name || '',
-        email: user?.email || '',
-        phone: '',
-        location: '',
-        department: '',
-        role: '',
-        avatar: '',
-        isOnline: user?.isActive || false,
-        status: 'active',
-        workload: 0,
-        performance: 0,
-        completedTasks: 0,
-        totalTasks: 0,
-        joinDate: user?.createdAt || '',
-        experience: 0,
-        starred: false,
-        projects: [],
-        skills: [],
-        bio: '',
-        recentAchievements: []
+      id: 1,
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: '',
+      location: '',
+      department: '',
+      role: '',
+      avatar: '',
+      isOnline: user?.isActive || false,
+      status: 'active',
+      workload: 0,
+      performance: 0,
+      completedTasks: 0,
+      totalTasks: 0,
+      joinDate: user?.createdAt || '',
+      experience: 0,
+      starred: false,
+      projects: [],
+      skills: [],
+      bio: '',
+      recentAchievements: []
     });
-
+  
     const [editData, setEditData] = useState(profileData);
     const [newSkill, setNewSkill] = useState('');
     const [newProject, setNewProject] = useState('');
     const [newAchievement, setNewAchievement] = useState('');
-
-    const getCurrentUser = async () => {
-        try {
-          const apiResp = await execute();
-          console.log("apiResp-------", apiResp);
-          if (apiResp) {
-            alert.success(`${apiResp?.message || "User fetched successful!"}`)
-          }
-        } catch (error) {
-          if (error.message) {
-            alert.error(error.message || 'An error occurred. Please try again.');
-          } else {
-            alert.error("Failed to get user. Please try again.");
-          }
-          console.error('Failed:', error);
+  
+    // Memoize the API call function
+    const getCurrentUserDetails = useCallback(async () => {
+      try {
+        const apiResp = await execute();
+        if (apiResp) {
+          alert.success(`${apiResp?.message || "User fetched successful!"}`);
+          
+          // Update profile data with fetched details
+          setProfileData(prev => ({
+            ...prev,
+            ...apiResp.data,
+            name: apiResp.data?.name || user?.name || '',
+            email: apiResp.data?.email || user?.email || '',
+            isOnline: apiResp.data?.isActive || user?.isActive || false,
+            joinDate: apiResp.data?.createdAt || user?.createdAt || '',
+          }));
         }
-      };
-
+      } catch (error) {
+        if (error.message) {
+          alert.error(error.message || 'An error occurred. Please try again.');
+        } else {
+          alert.error("Failed to get user. Please try again.");
+        }
+        console.error('Failed:', error);
+      }
+    }, [execute, alert, user]);
+  
+    // Use useEffect with proper dependencies
     useEffect(() => {
-        getCurrentUser()
-    }, [isAuthenticated]);
+      // Only fetch if we don't already have user details and user is authenticated
+      if (isAuthenticated && !userDetails) {
+        getCurrentUserDetails();
+      }
+    }, [isAuthenticated, userDetails, getCurrentUserDetails]);
+  
+    // Update profile data when user or userDetails change
+    useEffect(() => {
+      if (user || userDetails) {
+        setProfileData(prev => ({
+          ...prev,
+          name: userDetails?.name || user?.name || '',
+          email: userDetails?.email || user?.email || '',
+          isOnline: userDetails?.isActive || user?.isActive || false,
+          joinDate: userDetails?.createdAt || user?.createdAt || '',
+          // Add other fields from userDetails as needed
+          ...(userDetails || {})
+        }));
+      }
+    }, [user, userDetails]);
+  
+    // Update editData when profileData changes
+    useEffect(() => {
+      setEditData(profileData);
+    }, [profileData]);
+  
+
     console.log("userDetails-------", userDetails);
 
     const departmentOptions = [

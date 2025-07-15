@@ -1,5 +1,5 @@
 // api/hooks/useAuth.js
-import { useState, useEffect, useContext, createContext, useRef } from 'react';
+import { useState, useEffect, useContext, createContext, useRef, useCallback } from 'react';
 import { authService } from '../services/authService';
 
 const AuthContext = createContext();
@@ -17,10 +17,9 @@ export const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [tokenCheckInterval, setTokenCheckInterval] = useState(null);
 
   const tokenCheckIntervalRef = useRef(null);
-  const hasCheckedRef = useRef(false); // 👈 NEW: prevents redundant auth checks
+  const hasCheckedRef = useRef(false);
 
   useEffect(() => {
     if (!hasCheckedRef.current) {
@@ -52,23 +51,8 @@ export const AuthProvider = ({ children }) => {
       tokenCheckIntervalRef.current = null;
     }
   }, [isAuthenticated]);
-  // // If you want instant token refresh when the user returns to the tab, you can also add:
-  // useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === 'visible' && isAuthenticated) {
-  //       refreshAccessToken();
-  //     }
-  //   };
-  
-  //   document.addEventListener('visibilitychange', handleVisibilityChange);
-  
-  //   return () => {
-  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  //   };
-  // }, [isAuthenticated]);
-  
 
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = useCallback(async () => {
     if (user || isAuthenticated) return;
     setLoading(true);
     try {
@@ -85,10 +69,9 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, isAuthenticated]);
 
-  const refreshAccessToken = async () => {
-    setLoading(true)
+  const refreshAccessToken = useCallback(async () => {
     try {
       const response = await authService.refreshToken();
       if (response.success && response.data.user) {
@@ -101,11 +84,10 @@ export const AuthProvider = ({ children }) => {
       console.error('Token refresh failed:', error);
       logout(); // log out if refresh fails
     }
-  };
+  }, []);
 
-
-  const login = async (credentials) => {
-    setLoading(true)
+  const login = useCallback(async (credentials) => {
+    setLoading(true);
     try {
       const response = await authService.login(credentials);
       if (response.success) {
@@ -117,28 +99,25 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       throw error;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  };
-  const getUserDetails = async () => {
-    setLoading(true)
+  }, []);
+
+  const getUserDetails = useCallback(async () => {
     try {
       const response = await authService.getCurrentUser();
       if (response.success) {
         setUserDetails(response.data);
-        // setIsAuthenticated(true);
         return response;
       }
       throw new Error(response.message);
     } catch (error) {
       throw error;
-    } finally {
-      setLoading(false)
     }
-  };
+  }, []);
 
-  const register = async (userData) => {
-    setLoading(true)
+  const register = useCallback(async (userData) => {
+    setLoading(true);
     try {
       const response = await authService.register(userData);
       if (response.success) {
@@ -149,37 +128,39 @@ export const AuthProvider = ({ children }) => {
       throw new Error(response.message);
     } catch (error) {
       throw error;
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
-    setLoading(true)
+  const logout = useCallback(async () => {
+    setLoading(true);
     try {
       await authService.logout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      setUserDetails(null);
       setIsAuthenticated(false);
-      setLoading(false)
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const logoutAll = async () => {
-    setLoading(true)
+  const logoutAll = useCallback(async () => {
+    setLoading(true);
     try {
       await authService.logoutAll();
     } catch (error) {
       console.error('Logout all error:', error);
     } finally {
       setUser(null);
+      setUserDetails(null);
       setIsAuthenticated(false);
       localStorage.removeItem('accessToken');
-      setLoading(false)
+      setLoading(false);
     }
-  };
+  }, []);
 
   const value = {
     user,
