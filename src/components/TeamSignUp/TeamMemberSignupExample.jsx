@@ -305,7 +305,7 @@ const ReusableSignupForm = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 flex items-center justify-center px-4 py-8">
+    // <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-600 flex items-center justify-center px-4 py-8">
       <div className="max-w-3xl w-full">
         {showBackButton && (
           <a
@@ -380,7 +380,7 @@ const ReusableSignupForm = ({
           )}
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 

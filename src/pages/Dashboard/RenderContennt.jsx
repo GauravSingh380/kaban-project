@@ -131,12 +131,6 @@ const RenderContent = ({menuItems, activeTab, user}) => {
          <br />
          <br /> */}
          <UserProfileV2 />
-         <br />
-         <br />
-         <br />
-         <br />
-         <br />
-         <br />
         </div>
       ),
       settings: (
