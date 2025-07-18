@@ -8,6 +8,7 @@ import {
     GitPullRequestDraft
 } from 'lucide-react';
 import TeamMemberSignup from '../TeamSignUp/TeamMemberSignUp';
+import MemberTable from './MemberTable';
 
 const TeamsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -364,12 +365,12 @@ const TeamsContent1 = ({ user }) => {
             <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <input
+                        {/* <input
                             type="checkbox"
                             checked={selectedMembers.includes(member.id)}
                             onChange={() => toggleMemberSelection(member.id)}
                             className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
+                        /> */}
                         <div className="relative">
                             <div className="w-12 h-12 rounded-full bg-blue-500 text-white text-lg flex items-center justify-center font-medium">
                                 {member.avatar}
@@ -596,7 +597,7 @@ const TeamsContent1 = ({ user }) => {
     );
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-8xl px-6 mx-auto">
             {/* Header */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-6">
@@ -843,32 +844,43 @@ const TeamsContent1 = ({ user }) => {
                             ))}
                         </div>
                     ) : (
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedMembers.length === sortedMembers.length && sortedMembers.length > 0}
-                                            onChange={selectAllMembers}
-                                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                        />
-                                        <span className="text-sm font-medium text-gray-900">Member</span>
-                                    </div>
-                                    <div className="flex items-center gap-6 text-sm font-medium text-gray-900">
-                                        <span className="text-center">Role</span>
-                                        <span className="text-center">Performance</span>
-                                        <span className="text-center">Tasks</span>
-                                        <span className="text-center">Workload</span>
-                                        <span className="text-center">Status</span>
-                                        <span className="text-center">Actions</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {sortedMembers.map(member => (
-                                <MemberListItem key={member.id} member={member} />
-                            ))}
-                        </div>
+                        // <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        //     <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+                        //         <div className="flex items-center justify-between">
+                        //             <div className="flex items-center gap-4">
+                        //                 <input
+                        //                     type="checkbox"
+                        //                     checked={selectedMembers.length === sortedMembers.length && sortedMembers.length > 0}
+                        //                     onChange={selectAllMembers}
+                        //                     className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        //                 />
+                        //                 <span className="text-sm font-medium text-gray-900">Member</span>
+                        //             </div>
+                        //             <div className="flex items-center gap-6 text-sm font-medium text-gray-900">
+                        //                 <span className="text-center">Role</span>
+                        //                 <span className="text-center">Performance</span>
+                        //                 <span className="text-center">Tasks</span>
+                        //                 <span className="text-center">Workload</span>
+                        //                 <span className="text-center">Status</span>
+                        //                 <span className="text-center">Actions</span>
+                        //             </div>
+                        //         </div>
+                        //     </div>
+                        //     {sortedMembers.map(member => (
+                        //         <MemberListItem key={member.id} member={member} />
+                        //     ))}
+                        // </div>
+                        <MemberTable
+                        sortedMembers={sortedMembers}
+                        selectedMembers={selectedMembers}
+                        selectAllMembers={selectAllMembers}
+                        toggleMemberSelection={toggleMemberSelection}
+                        toggleStar={toggleStar}
+                        getRoleIcon={getRoleIcon}
+                        getWorkloadColor={getWorkloadColor}
+                        getStatusColor={getStatusColor}
+                        getTimeAgo={getTimeAgo}
+                    />
                     )}
 
                     {sortedMembers.length === 0 && (

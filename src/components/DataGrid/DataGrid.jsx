@@ -57,17 +57,32 @@ const BugManagementSystem = () => {
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.reportedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.assignedTo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.slNo.toString().includes(searchTerm) ||
-        item.comments.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.priority.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.issueEnv.map((item) => item.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())).some((lowerCase) => Boolean(lowerCase))
-      );
+      filtered = filtered.filter(item => {
+        const searchLower = searchTerm.toLowerCase();
+        
+        // Safe string conversion helper
+        const safeToString = (value) => {
+          if (value === null || value === undefined) return '';
+          if (Array.isArray(value)) return value.join(' ');
+          return String(value);
+        };
+    
+        return (
+          safeToString(item.title).toLowerCase().includes(searchLower) ||
+          safeToString(item.description).toLowerCase().includes(searchLower) ||
+          safeToString(item.reportedBy).toLowerCase().includes(searchLower) ||
+          safeToString(item.assignedTo).toLowerCase().includes(searchLower) ||
+          safeToString(item.slNo).includes(searchTerm) || // Numbers don't need lowercase
+          safeToString(item.comments).toLowerCase().includes(searchLower) ||
+          safeToString(item.status).toLowerCase().includes(searchLower) ||
+          safeToString(item.priority).toLowerCase().includes(searchLower) ||
+          (Array.isArray(item.issueEnv) && 
+            item.issueEnv.some(env => 
+              safeToString(env).toLowerCase().includes(searchLower)
+            )
+          )
+        );
+      });
     }
 
     // Advanced filters

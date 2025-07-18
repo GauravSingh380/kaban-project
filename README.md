@@ -87,7 +87,24 @@ and use combination of two teams code
  ex- type => Security Expert , UI/UX Designe, Lead Developer, DevOps Engineer etc take help of members tab in comp2 =>  also make user status => active in active and on-leave
  a. later you can also let the supper admin allow user to view protected tabs based on allowed permission
 
+ ## Note 3
+
+super-admin, ad admin can see the how may running projects are there in company and who is working on which projects like who is project lead or who is project TL, how may developer's
+are there in that project from backend and front end , with duration of project start ?
+ A. from how may days project is runninng in month's with day's (4 month, 25 day (optional project progress bar)), ad which developer is working from(from start to end date with day' like Gaurav Singh, 4 Month 12 days (backend));
+
+ Optional = > developer project performance , like Number of bugs assined to developer (Average time of buf resolution)
+
 
 6. calender => keep same as it is for now
 7. sprints  =>
 8. setting  => user profile menus items add more later.  all kind of user or team member related information so that he can change later. so it will going to reflect on  team member card when super admin role user see's the team member card.
+
+
+## New Feature's
+
+1. implement chat functionality in app like any one can talk to each other
+   with notification (use canba project notification ui).
+2. any one can see the user real time online offline away status with last seen. and hiding
+   read reciept feature.
+3. make chat functionality like premium subscription wise.
