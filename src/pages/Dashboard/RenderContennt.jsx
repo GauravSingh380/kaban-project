@@ -17,6 +17,9 @@ import SignUpApp1 from "../../components/TeamSignUp/SignUp2/SignUpApp1";
 import SignUpApp2 from "../../components/TeamSignUp/SignUp2/SignUpApp2";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import UserProfileV2 from "../../components/UserProfile/UserProfileV2";
+import SettingsPage1 from "../../components/Settings/SettingsPage1";
+import SettingsTab from "../../components/Settings/SettingsTab";
+import SettingsPage2 from "../../components/Settings/SettingsPage2";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -135,7 +138,18 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       settings: (
         <div className="space-y-6">
+         <SettingsPage1 />
          <h1>Settings content</h1>
+         <h1>Settings content</h1>
+         <h1>Settings content</h1>
+         <h1>Settings content</h1>
+         <h1>Settings content</h1>
+         <h1>Settings content</h1>
+         <SettingsPage2 />
+
+         <h1>Settings content</h1>
+         <h1>DeepSeek</h1>
+         <SettingsTab />
         </div>
       ),
     };
