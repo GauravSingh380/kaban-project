@@ -12,6 +12,10 @@ import ApiSpinner from '../ApiSpinner';
 import { useToast } from '../StyledAlert/ToastContext';
 import TeamMemberCard from './contents/TeamMemberCard';
 import { LoadingContent, Spinner } from '../common/SpinnerDemo';
+import Teams from './contents/Teams';
+import Permissions from './contents/Permissions';
+import Analytics from './contents/Analytics';
+import LeaveRequests from './contents/LeaveRequests';
 
 const TeamsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -32,7 +36,6 @@ const TeamsContent1 = ({ user }) => {
 
     // Mock team data
     const [allTeamMember, setAllTeamMember] = useState([]);
-    console.log("allTeamMember-----", allTeamMember);
     const [teamMembers, setTeamMembers] = useState([
         {
             id: 1,
@@ -312,7 +315,7 @@ const TeamsContent1 = ({ user }) => {
         return `${diffInDays}d ago`;
     };
 
-    const filteredMembers = teamMembers.filter(member => {
+    const filteredMembers = allTeamMember.filter(member => {
         const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             member.role.toLowerCase().includes(searchTerm.toLowerCase());
@@ -798,14 +801,14 @@ const TeamsContent1 = ({ user }) => {
                     {/* Members Grid/List View */}
                     {viewMode === 'grid' ? (
                         <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {teamMembers.map(member => (
                                     <MemberCard key={member.id} member={member} />
                                 ))}
-                            </div>
+                            </div> */}
                             <br />
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {allTeamMember.map(member => (
+                                {filteredMembers.map(member => (
                                     <TeamMemberCard
                                         getRoleIcon={getRoleIcon}
                                         selectedMembers={selectedMembers}
@@ -846,153 +849,18 @@ const TeamsContent1 = ({ user }) => {
             )}
 
             {activeTab === 'teams' && (
-                <div className="space-y-6">
-                    {teams.map(team => (
-                        <div key={team.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">{team.name}</h3>
-                                    <p className="text-gray-600">{team.description}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                        team.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                    }`}>
-                                        {team.status}
-                                    </span>
-                                    <button className="p-1 text-gray-400 hover:text-gray-600">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                <div>
-                                    <p className="text-sm text-gray-500">Department</p>
-                                    <p className="font-medium">{team.department}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Members</p>
-                                    <p className="font-medium">{team.members.length}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-500">Projects</p>
-                                    <p className="font-medium">{team.projects.length}</p>
-                                </div>
-                            </div>
-                            
-                            <div className="flex items-center gap-4">
-                                <div className="flex -space-x-2">
-                                    {team.members.slice(0, 5).map(memberId => {
-                                        const member = teamMembers.find(m => m.id === memberId);
-                                        return member ? (
-                                            <div key={memberId} className="w-8 h-8 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white">
-                                                {member.avatar}
-                                            </div>
-                                        ) : null;
-                                    })}
-                                    {team.members.length > 5 && (
-                                        <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-700 text-xs flex items-center justify-center border-2 border-white">
-                                            +{team.members.length - 5}
-                                        </div>
-                                    )}
-                                </div>
-                                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                    View Team
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <Teams teams={teams} teamMembers={teamMembers}/>
             )}
 
             {activeTab === 'permissions' && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Role Permissions</h3>
-                    <div className="space-y-4">
-                        {roleOptions.filter(role => role.value !== 'all').map(role => (
-                            <div key={role.value} className="border border-gray-200 rounded-lg p-4">
-                                <h4 className="font-medium text-gray-900 mb-2">{role.label}</h4>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                    <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">View Projects</span>
-                                    <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">Edit Tasks</span>
-                                    <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">View Reports</span>
-                                    <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">Manage Team</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <Permissions />
             )}
 
             {activeTab === 'analytics' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Team Performance</h3>
-                            <TrendingUp className="w-5 h-5 text-green-500" />
-                        </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">92%</div>
-                        <p className="text-sm text-gray-600">Average performance across all members</p>
-                    </div>
-                    
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Active Members</h3>
-                            <Users className="w-5 h-5 text-blue-500" />
-                        </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                            {teamMembers.filter(m => m.status === 'active').length}
-                        </div>
-                        <p className="text-sm text-gray-600">Out of {teamMembers.length} total members</p>
-                    </div>
-                    
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Workload</h3>
-                            <Activity className="w-5 h-5 text-orange-500" />
-                        </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                            {Math.round(teamMembers.reduce((sum, m) => sum + m.workload, 0) / teamMembers.length)}%
-                        </div>
-                        <p className="text-sm text-gray-600">Average team workload</p>
-                    </div>
-                </div>
+               <Analytics teamMembers={teamMembers} />
             )}
             {activeTab === 'leaveRequests' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Leave requests of team members</h3>
-                            <TrendingUp className="w-5 h-5 text-green-500" />
-                        </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">92%</div>
-                        <p className="text-sm text-gray-600">Average performance across all members</p>
-                    </div>
-{/*                     
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Active Members</h3>
-                            <Users className="w-5 h-5 text-blue-500" />
-                        </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                            {teamMembers.filter(m => m.status === 'active').length}
-                        </div>
-                        <p className="text-sm text-gray-600">Out of {teamMembers.length} total members</p>
-                    </div>
-                    
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Workload</h3>
-                            <Activity className="w-5 h-5 text-orange-500" />
-                        </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                            {Math.round(teamMembers.reduce((sum, m) => sum + m.workload, 0) / teamMembers.length)}%
-                        </div>
-                        <p className="text-sm text-gray-600">Average team workload</p>
-                    </div> */}
-                    
-                </div>
+                <LeaveRequests teamMembers={teamMembers} />
             )}
 
             {/* Invite Member Modal */}
