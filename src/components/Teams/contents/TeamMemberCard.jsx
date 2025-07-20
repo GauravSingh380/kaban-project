@@ -4,6 +4,7 @@ import {
     MapPin, Star, Edit, Trash2,
     CheckCircle2, Clock, AlertCircle, Settings, Eye, Download, Upload,
     Activity, Award, TrendingUp, Target, MessageSquare, Video, Slack,
+    PhoneCall,
 } from 'lucide-react';
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -12,49 +13,6 @@ const formatDate = (dateString) => {
         day: 'numeric'
     });
 };
-
-const apiResp =         {
-    "loginAttempts": 0,
-    "_id": "687a55dbb1d1952367beab74",
-    "name": "Sapan Burman",
-    "email": "sapan@gmail.com",
-    "role": "user",
-    "isActive": true,
-    "isEmailVerified": false,
-    "userGuid": "17b04f32-d9dc-4627-9509-8be53a395876",
-    "createdAt": "2025-07-18T14:10:35.648Z",
-    "updatedAt": "2025-07-18T14:11:40.626Z",
-    "__v": 2,
-    "lastLogin": "2025-07-18T14:11:40.621Z",
-    "userDetails": {
-        "_id": "687a56472b001c00ee9351fd",
-        "userGuid": "17b04f32-d9dc-4627-9509-8be53a395876",
-        "__v": 0,
-        "avatar": "",
-        "bio": "Let me know if you want to persist the selected tab in localStorage or via URL params too (to remember it even on full reload).",
-        "completedTasks": 0,
-        "createdAt": "2025-07-18T14:12:23.235Z",
-        "department": "Engineering",
-        "experience": 5,
-        "isActive": true,
-        "joinDate": "2025-07-18T14:12:23.236Z",
-        "location": "jaipur",
-        "name": "Sapan Burman",
-        "performance": "0",
-        "phone": "",
-        "projects": [],
-        "recentAchievements": [],
-        "role": "Senior Developer",
-        "skills": [
-            "Nodejs"
-        ],
-        "starred": false,
-        "status": "active",
-        "totalTasks": 0,
-        "updatedAt": "2025-07-18T14:12:23.235Z",
-        "workload": 0
-    }
-}
 
 const TeamMemberCard = ({ member, getRoleIcon,getStatusColor,toggleStar, getWorkloadColor }) => (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
@@ -113,10 +71,14 @@ const TeamMemberCard = ({ member, getRoleIcon,getStatusColor,toggleStar, getWork
                 </div>
             </div>
 
-            <div className="space-y-3 mb-4">
+            <div className="space-y-3 mb-4 grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Mail className="w-4 h-4" />
                     <span>{member.email}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <PhoneCall className="w-4 h-4" />
+                    <span>{member?.userDetails?.phone || 'Not provided'}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                     <MapPin className="w-4 h-4" />
@@ -144,7 +106,7 @@ const TeamMemberCard = ({ member, getRoleIcon,getStatusColor,toggleStar, getWork
                 <div>
                     <p className="text-xs text-gray-500 mb-1">Tasks</p>
                     <p className="text-sm font-medium text-gray-900">
-                        {member.completedTasks}/{member.totalTasks}
+                        {member.completedTasks || '-'}/{member.totalTasks || '-'}
                     </p>
                 </div>
             </div>

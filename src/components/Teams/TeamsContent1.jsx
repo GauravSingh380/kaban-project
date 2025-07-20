@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-    Plus, Search, Filter, MoreHorizontal, Calendar, Users, Mail, Phone, Globe,
-    MapPin, Star, Edit, Trash2, Archive, X, User, UserPlus, Crown, Shield,
-    CheckCircle2, Clock, AlertCircle, Settings, Eye, Download, Upload,
-    Activity, Award, TrendingUp, Target, MessageSquare, Video, Slack,
-    Github, Briefcase, GraduationCap, Building, UserCheck,
-    GitPullRequestDraft
+     Search, Filter, MoreHorizontal, Calendar, Users, Mail,
+    MapPin, Star, Edit, Trash2, X, User, UserPlus, Crown, Shield,
+    CheckCircle2, Clock, AlertCircle, Eye,Activity, TrendingUp, MessageSquare, 
+    Video, Slack, Building,GitPullRequestDraft
 } from 'lucide-react';
 import TeamMemberSignup from '../TeamSignUp/TeamMemberSignUp';
 import MemberTable from './MemberTable';
@@ -13,6 +11,7 @@ import { useApi, useAuth } from '../../api';
 import ApiSpinner from '../ApiSpinner';
 import { useToast } from '../StyledAlert/ToastContext';
 import TeamMemberCard from './contents/TeamMemberCard';
+import { LoadingContent, Spinner } from '../common/SpinnerDemo';
 
 const TeamsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -549,13 +548,11 @@ const TeamsContent1 = ({ user }) => {
     }, [loading]);
 
     if (loading) {
-        return <ApiSpinner
-            borderWidth='3px'
-            size='1.5rem'
-            text='Loading...'
-            fontSize='font-semibold'
-            // color='white'
-        />;
+        return (
+            <div>
+                <Spinner text="Default" />
+            </div>
+        )
     }
 
     return (

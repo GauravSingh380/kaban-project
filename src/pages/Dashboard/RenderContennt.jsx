@@ -20,6 +20,7 @@ import UserProfileV2 from "../../components/UserProfile/UserProfileV2";
 import SettingsPage1 from "../../components/Settings/SettingsPage1";
 import SettingsTab from "../../components/Settings/SettingsTab";
 import SettingsPage2 from "../../components/Settings/SettingsPage2";
+import SpinnerDemo from "../../components/common/SpinnerDemo";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -145,6 +146,10 @@ const RenderContent = ({menuItems, activeTab, user}) => {
          <h1>Settings content</h1>
          <h1>Settings content</h1>
          <h1>Settings content</h1> */}
+         <SpinnerDemo />
+         <br />
+         <br />
+         <br />
          <SettingsPage2 />
 {/* 
          <h1>Settings content</h1>
