@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Plus, Search, Filter, MoreHorizontal, Calendar, Users, Mail, Phone, Globe,
     MapPin, Star, Edit, Trash2, Archive, X, User, UserPlus, Crown, Shield,
@@ -9,6 +9,10 @@ import {
 } from 'lucide-react';
 import TeamMemberSignup from '../TeamSignUp/TeamMemberSignUp';
 import MemberTable from './MemberTable';
+import { useApi, useAuth } from '../../api';
+import ApiSpinner from '../ApiSpinner';
+import { useToast } from '../StyledAlert/ToastContext';
+import TeamMemberCard from './contents/TeamMemberCard';
 
 const TeamsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -21,8 +25,15 @@ const TeamsContent1 = ({ user }) => {
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [activeTab, setActiveTab] = useState('members');
+    const hasFetched = useRef(false);
+
+    const { getAllUserDetails } = useAuth();
+    const { loading, error, execute } = useApi(getAllUserDetails);
+    const alert = useToast();
 
     // Mock team data
+    const [allTeamMember, setAllTeamMember] = useState([]);
+    console.log("allTeamMember-----", allTeamMember);
     const [teamMembers, setTeamMembers] = useState([
         {
             id: 1,
@@ -40,10 +51,10 @@ const TeamsContent1 = ({ user }) => {
             projects: ['E-commerce Platform', 'API Integration Platform'],
             skills: ['Project Management', 'Agile', 'Scrum', 'Leadership'],
             permissions: ['admin', 'project_create', 'user_management'],
-            workload: 85,
+            workload: 65,
             completedTasks: 47,
             totalTasks: 52,
-            performance: 92,
+            performance: 52,
             socialLinks: {
                 github: 'https://github.com/sarahwilson',
                 linkedin: 'https://linkedin.com/in/sarahwilson',
@@ -513,88 +524,39 @@ const TeamsContent1 = ({ user }) => {
         </div>
     );
 
-    const MemberListItem = ({ member }) => (
-        <div className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
-            <div className="px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                        <input
-                            type="checkbox"
-                            checked={selectedMembers.includes(member.id)}
-                            onChange={() => toggleMemberSelection(member.id)}
-                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
+    const fetchAllUserDetails = useCallback(async () => {
+        try {
+            const apiResp = await execute();
+            if (apiResp) {
+                alert.success(`${apiResp?.message || "All user fetched successful!"}`);
+                setAllTeamMember(apiResp.data)
+            }
+        } catch (error) {
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get user. Please try again.");
+            }
+            console.error('Failed:', error);
+        }
+    }, [execute]);
 
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
-                                <div className="w-10 h-10 rounded-full bg-blue-500 text-white text-sm flex items-center justify-center font-medium">
-                                    {member.avatar}
-                                </div>
-                                {member.isOnline && (
-                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                                )}
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                                    <button
-                                        onClick={() => toggleStar(member.id)}
-                                        className={`p-1 rounded-full ${member.starred ? 'text-yellow-500' : 'text-gray-400'} hover:bg-gray-100`}
-                                    >
-                                        <Star className="w-4 h-4" fill={member.starred ? 'currentColor' : 'none'} />
-                                    </button>
-                                </div>
-                                <p className="text-sm text-gray-600">{member.email}</p>
-                            </div>
-                        </div>
-                    </div>
+    useEffect(() => {
+        if ( !hasFetched.current) {
+            hasFetched.current = true;
+            fetchAllUserDetails();
+        }
+    }, [loading]);
 
-                    <div className="flex items-center gap-6">
-                        <div className="text-center">
-                            <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
-                                {getRoleIcon(member.role)}
-                                {member.role}
-                            </p>
-                            <p className="text-xs text-gray-500">{member.department}</p>
-                        </div>
-
-                        <div className="text-center">
-                            <p className="text-sm font-medium text-gray-900">{member.performance}%</p>
-                            <p className="text-xs text-gray-500">Performance</p>
-                        </div>
-
-                        <div className="text-center">
-                            <p className="text-sm font-medium text-gray-900">{member.completedTasks}/{member.totalTasks}</p>
-                            <p className="text-xs text-gray-500">Tasks</p>
-                        </div>
-
-                        <div className="text-center">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getWorkloadColor(member.workload)}`}>
-                                {member.workload}%
-                            </span>
-                            <p className="text-xs text-gray-500 mt-1">Workload</p>
-                        </div>
-
-                        <div className="text-center">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(member.status)}`}>
-                                {member.status.charAt(0).toUpperCase() + member.status.slice(1).replace('_', ' ')}
-                            </span>
-                            <p className="text-xs text-gray-500 mt-1">Last active {getTimeAgo(member.lastActive)}</p>
-                        </div>
-
-                        <div className="flex gap-2">
-                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-full">
-                                <MessageSquare className="w-4 h-4" />
-                            </button>
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
-                                <MoreHorizontal className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    if (loading) {
+        return <ApiSpinner
+            borderWidth='3px'
+            size='1.5rem'
+            text='Loading...'
+            fontSize='font-semibold'
+            // color='white'
+        />;
+    }
 
     return (
         <div className="max-w-8xl px-6 mx-auto">
@@ -838,38 +800,31 @@ const TeamsContent1 = ({ user }) => {
                 <div>
                     {/* Members Grid/List View */}
                     {viewMode === 'grid' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {sortedMembers.map(member => (
-                                <MemberCard key={member.id} member={member} />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {teamMembers.map(member => (
+                                    <MemberCard key={member.id} member={member} />
+                                ))}
+                            </div>
+                            <br />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {allTeamMember.map(member => (
+                                    <TeamMemberCard
+                                        getRoleIcon={getRoleIcon}
+                                        selectedMembers={selectedMembers}
+                                        selectAllMembers={selectAllMembers}
+                                        toggleMemberSelection={toggleMemberSelection}
+                                        toggleStar={toggleStar}
+                                        getWorkloadColor={getWorkloadColor}
+                                        getStatusColor={getStatusColor}
+                                        getTimeAgo={getTimeAgo}
+                                        key={member.id}
+                                        member={member}
+                                    />
+                                ))}
+                            </div>
+                        </>
                     ) : (
-                        // <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        //     <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                        //         <div className="flex items-center justify-between">
-                        //             <div className="flex items-center gap-4">
-                        //                 <input
-                        //                     type="checkbox"
-                        //                     checked={selectedMembers.length === sortedMembers.length && sortedMembers.length > 0}
-                        //                     onChange={selectAllMembers}
-                        //                     className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        //                 />
-                        //                 <span className="text-sm font-medium text-gray-900">Member</span>
-                        //             </div>
-                        //             <div className="flex items-center gap-6 text-sm font-medium text-gray-900">
-                        //                 <span className="text-center">Role</span>
-                        //                 <span className="text-center">Performance</span>
-                        //                 <span className="text-center">Tasks</span>
-                        //                 <span className="text-center">Workload</span>
-                        //                 <span className="text-center">Status</span>
-                        //                 <span className="text-center">Actions</span>
-                        //             </div>
-                        //         </div>
-                        //     </div>
-                        //     {sortedMembers.map(member => (
-                        //         <MemberListItem key={member.id} member={member} />
-                        //     ))}
-                        // </div>
                         <MemberTable
                         sortedMembers={sortedMembers}
                         selectedMembers={selectedMembers}

@@ -138,18 +138,18 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       ),
       settings: (
         <div className="space-y-6">
-         <SettingsPage1 />
+         {/* <SettingsPage1 />
          <h1>Settings content</h1>
          <h1>Settings content</h1>
          <h1>Settings content</h1>
          <h1>Settings content</h1>
          <h1>Settings content</h1>
-         <h1>Settings content</h1>
+         <h1>Settings content</h1> */}
          <SettingsPage2 />
-
+{/* 
          <h1>Settings content</h1>
          <h1>DeepSeek</h1>
-         <SettingsTab />
+         <SettingsTab /> */}
         </div>
       ),
     };
