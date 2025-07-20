@@ -206,6 +206,15 @@ const TeamsContent1 = ({ user }) => {
             isOnline: false
         }
     ]);
+    const departments = [
+        { value: 'engineering', label: 'Engineering' },
+        { value: 'design', label: 'Design' },
+        { value: 'marketing', label: 'Marketing' },
+        { value: 'sales', label: 'Sales' },
+        { value: 'hr', label: 'Human Resources' },
+        { value: 'finance', label: 'Finance' },
+        { value: 'operations', label: 'Operations' }
+      ];
 
     const [teams, setTeams] = useState([
         {
@@ -334,13 +343,7 @@ const TeamsContent1 = ({ user }) => {
             case 'role':
                 return a.role.localeCompare(b.role);
             case 'department':
-                return a.department.localeCompare(b.department);
-            case 'joinDate':
-                return new Date(b.joinDate) - new Date(a.joinDate);
-            case 'performance':
-                return b.performance - a.performance;
-            case 'workload':
-                return b.workload - a.workload;
+                return a.userDetails.department.localeCompare(b.userDetails.department);
             default:
                 return 0;
         }
@@ -372,159 +375,6 @@ const TeamsContent1 = ({ user }) => {
         setStatusFilter('all');
         setDepartmentFilter('all');
     };
-
-    const MemberCard = ({ member }) => (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                        {/* <input
-                            type="checkbox"
-                            checked={selectedMembers.includes(member.id)}
-                            onChange={() => toggleMemberSelection(member.id)}
-                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        /> */}
-                        <div className="relative">
-                            <div className="w-12 h-12 rounded-full bg-blue-500 text-white text-lg flex items-center justify-center font-medium">
-                                {member.avatar}
-                            </div>
-                            {member.isOnline && (
-                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                            )}
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-900 text-lg">{member.name}</h3>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                                {getRoleIcon(member.role)}
-                                {member.role}
-                            </p>
-                            <p className="text-sm text-gray-500">{member.department}</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => toggleStar(member.id)}
-                            className={`p-1 rounded-full ${member.starred ? 'text-yellow-500' : 'text-gray-400'} hover:bg-gray-100`}
-                        >
-                            <Star className="w-4 h-4" fill={member.starred ? 'currentColor' : 'none'} />
-                        </button>
-                        <button className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
-                            <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(member.status)}`}>
-                            {member.status === 'active' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                            {member.status === 'inactive' && <AlertCircle className="w-3 h-3 mr-1" />}
-                            {member.status === 'on_leave' && <Clock className="w-3 h-3 mr-1" />}
-                            {member.status.charAt(0).toUpperCase() + member.status.slice(1).replace('_', ' ')}
-                        </span>
-                    </div>
-                    <div>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getWorkloadColor(member.workload)}`}>
-                            {member.workload}% workload
-                        </span>
-                    </div>
-                </div>
-
-                <div className="space-y-3 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Mail className="w-4 h-4" />
-                        <span>{member.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span>{member.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>Joined {formatDate(member.joinDate)}</span>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <p className="text-xs text-gray-500 mb-1">Performance</p>
-                        <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-gray-200 rounded-full h-2">
-                                <div
-                                    className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                                    style={{ width: `${member.performance}%` }}
-                                />
-                            </div>
-                            <span className="text-sm font-medium text-gray-900">{member.performance}%</span>
-                        </div>
-                    </div>
-                    <div>
-                        <p className="text-xs text-gray-500 mb-1">Tasks</p>
-                        <p className="text-sm font-medium text-gray-900">
-                            {member.completedTasks}/{member.totalTasks}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <p className="text-xs text-gray-500 mb-2">Current Projects</p>
-                    <div className="flex flex-wrap gap-1">
-                        {member.projects.slice(0, 2).map((project, index) => (
-                            <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                                {project}
-                            </span>
-                        ))}
-                        {member.projects.length > 2 && (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                                +{member.projects.length - 2} more
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <p className="text-xs text-gray-500 mb-2">Skills</p>
-                    <div className="flex flex-wrap gap-1">
-                        {member.skills.slice(0, 3).map((skill, index) => (
-                            <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                                {skill}
-                            </span>
-                        ))}
-                        {member.skills.length > 3 && (
-                            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                                +{member.skills.length - 3} more
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <div className="flex gap-2">
-                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-full" title="Message">
-                            <MessageSquare className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-green-600 hover:bg-green-50 rounded-full" title="Video Call">
-                            <Video className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-purple-600 hover:bg-purple-50 rounded-full" title="Slack">
-                            <Slack className="w-4 h-4" />
-                        </button>
-                    </div>
-                    <div className="flex gap-2">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
-                            <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
-                            <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full">
-                            <Trash2 className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
 
     const fetchAllUserDetails = useCallback(async () => {
         try {
@@ -561,8 +411,8 @@ const TeamsContent1 = ({ user }) => {
     return (
         <div className="max-w-8xl px-6 mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex justify-between items-center mb-6">
+            <div className="mb-2">
+                <div className="flex justify-between items-center mb-4">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Team Management</h1>
                         <p className="text-gray-600 mt-1">Manage your team members and collaborators</p>
@@ -577,7 +427,7 @@ const TeamsContent1 = ({ user }) => {
                 </div>
 
                 {/* Tabs */}
-                <div className="border-b border-gray-200 mb-6">
+                <div className="border-b border-gray-200 mb-4">
                     <nav className="flex space-x-8">
                         <button
                             onClick={() => setActiveTab('members')}
@@ -668,10 +518,15 @@ const TeamsContent1 = ({ user }) => {
                                 <option value="name">Sort by Name</option>
                                 <option value="role">Sort by Role</option>
                                 <option value="department">Sort by Department</option>
-                                <option value="joinDate">Sort by Join Date</option>
-                                <option value="performance">Sort by Performance</option>
-                                <option value="workload">Sort by Workload</option>
                             </select>
+
+                            <button
+                                onClick={clearFilters}
+                                className="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:text-red-800"
+                            >
+                                <X className="w-4 h-4" />
+                                <span>Clear All</span>
+                            </button>
                             
                             <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                                 <button
@@ -807,8 +662,8 @@ const TeamsContent1 = ({ user }) => {
                                 ))}
                             </div> */}
                             <br />
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredMembers.map(member => (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {sortedMembers.map(member => (
                                     <TeamMemberCard
                                         getRoleIcon={getRoleIcon}
                                         selectedMembers={selectedMembers}

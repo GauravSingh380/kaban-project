@@ -16,9 +16,9 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <div className="w-10 h-10 rounded-full bg-blue-500 text-white text-sm flex items-center justify-center font-medium">
-                                {member.avatar}
+                                {member?.userDetails?.name?.split(' ').map(word => word[0].toUpperCase()).join('') || "NA"}
                             </div>
-                            {member.isOnline && (
+                            {member?.userDetails?.status && (
                                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                             )}
                         </div>
@@ -42,7 +42,7 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
                 <div>
                     <p className="text-sm font-medium text-gray-900 flex items-center justify-center gap-1">
                         {getRoleIcon(member.role)}
-                        {member.role}
+                        {member.role.toUpperCase()}
                     </p>
                     <p className="text-xs text-gray-500">{member.department}</p>
                 </div>
@@ -73,10 +73,10 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
             
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(member.status)}`}>
-                        {member.status.charAt(0).toUpperCase() + member.status.slice(1).replace('_', ' ')}
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(member?.userDetails?.status)}`}>
+                        {member?.userDetails?.status.charAt(0).toUpperCase() + member?.userDetails?.status.slice(1).replace('_', ' ')}
                     </span>
-                    <p className="text-xs text-gray-500 mt-1">Last active {getTimeAgo(member.lastActive)}</p>
+                    <p className="text-xs text-gray-500 mt-1">Last active {getTimeAgo(member?.lastLogin|| "")}</p>
                 </div>
             </td>
             
@@ -142,87 +142,3 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
 };
 
 export default MemberTable;
-
-
-// const MemberListItem = ({ member }) => (
-//     <div className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
-//         <div className="px-6 py-4">
-//             <div className="flex items-center justify-between">
-//                 <div className="flex items-center gap-4 flex-1">
-//                     <input
-//                         type="checkbox"
-//                         checked={selectedMembers.includes(member.id)}
-//                         onChange={() => toggleMemberSelection(member.id)}
-//                         className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-//                     />
-
-//                     <div className="flex items-center gap-3">
-//                         <div className="relative">
-//                             <div className="w-10 h-10 rounded-full bg-blue-500 text-white text-sm flex items-center justify-center font-medium">
-//                                 {member.avatar}
-//                             </div>
-//                             {member.isOnline && (
-//                                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-//                             )}
-//                         </div>
-//                         <div>
-//                             <div className="flex items-center gap-2">
-//                                 <h3 className="font-semibold text-gray-900">{member.name}</h3>
-//                                 <button
-//                                     onClick={() => toggleStar(member.id)}
-//                                     className={`p-1 rounded-full ${member.starred ? 'text-yellow-500' : 'text-gray-400'} hover:bg-gray-100`}
-//                                 >
-//                                     <Star className="w-4 h-4" fill={member.starred ? 'currentColor' : 'none'} />
-//                                 </button>
-//                             </div>
-//                             <p className="text-sm text-gray-600">{member.email}</p>
-//                         </div>
-//                     </div>
-//                 </div>
-
-//                 <div className="flex items-center gap-6">
-//                     <div className="text-center">
-//                         <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
-//                             {getRoleIcon(member.role)}
-//                             {member.role}
-//                         </p>
-//                         <p className="text-xs text-gray-500">{member.department}</p>
-//                     </div>
-
-//                     <div className="text-center">
-//                         <p className="text-sm font-medium text-gray-900">{member.performance}%</p>
-//                         <p className="text-xs text-gray-500">Performance</p>
-//                     </div>
-
-//                     <div className="text-center">
-//                         <p className="text-sm font-medium text-gray-900">{member.completedTasks}/{member.totalTasks}</p>
-//                         <p className="text-xs text-gray-500">Tasks</p>
-//                     </div>
-
-//                     <div className="text-center">
-//                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getWorkloadColor(member.workload)}`}>
-//                             {member.workload}%
-//                         </span>
-//                         <p className="text-xs text-gray-500 mt-1">Workload</p>
-//                     </div>
-
-//                     <div className="text-center">
-//                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(member.status)}`}>
-//                             {member.status.charAt(0).toUpperCase() + member.status.slice(1).replace('_', ' ')}
-//                         </span>
-//                         <p className="text-xs text-gray-500 mt-1">Last active {getTimeAgo(member.lastActive)}</p>
-//                     </div>
-
-//                     <div className="flex gap-2">
-//                         <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-full">
-//                             <MessageSquare className="w-4 h-4" />
-//                         </button>
-//                         <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
-//                             <MoreHorizontal className="w-4 h-4" />
-//                         </button>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-// );

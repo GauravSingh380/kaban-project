@@ -13,6 +13,16 @@ const formatDate = (dateString) => {
         day: 'numeric'
     });
 };
+const getRoleColor = (role) => {
+    switch (role.toLowerCase()) {
+        case 'team lead': return 'text-purple-600 bg-purple-50';
+        case 'senior developer': return 'text-blue-600 bg-blue-50';
+        case 'qa manager': return 'text-green-600 bg-green-50';
+        case 'devops engineer': return 'text-orange-600 bg-orange-50';
+        case 'junior developer': return 'text-gray-600 bg-gray-50';
+        default: return 'text-gray-600 bg-gray-50';
+    }
+};
 
 const TeamMemberCard = ({ member, getRoleIcon,getStatusColor,toggleStar, getWorkloadColor }) => (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
@@ -36,10 +46,16 @@ const TeamMemberCard = ({ member, getRoleIcon,getStatusColor,toggleStar, getWork
                     <div>
                         <h3 className="font-semibold text-gray-900 text-lg">{member.name}</h3>
                         <p className="text-sm text-gray-600 flex items-center gap-1">
-                            {getRoleIcon(member.role)}
+                            <span>Role:</span>
+                            {/* {getRoleIcon(member.role)} */}
                             {member.role.toUpperCase()}
                         </p>
-                        <p className="text-sm text-gray-500">{member?.userDetails?.department || ""}</p>
+                        <p className="text-sm text-gray-500">Department: {member?.userDetails?.department || ""}</p>
+                        <p className="text-sm text-gray-500">Position:
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(member?.userDetails?.role)}`}>
+                                {member?.userDetails?.role || ""}
+                            </span>
+                        </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
