@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
-     Search, Filter, MoreHorizontal, Calendar, Users, Mail,
+    Search, Filter, MoreHorizontal, Calendar, Users, Mail,
     MapPin, Star, Edit, Trash2, X, User, UserPlus, Crown, Shield,
-    CheckCircle2, Clock, AlertCircle, Eye,Activity, TrendingUp, MessageSquare, 
-    Video, Slack, Building,GitPullRequestDraft
+    CheckCircle2, Clock, AlertCircle, Eye, Activity, TrendingUp, MessageSquare,
+    Video, Slack, Building, GitPullRequestDraft,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import TeamMemberSignup from '../TeamSignUp/TeamMemberSignUp';
 import MemberTable from './MemberTable';
@@ -29,6 +31,9 @@ const TeamsContent1 = ({ user }) => {
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [activeTab, setActiveTab] = useState('members');
     const hasFetched = useRef(false);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(6);
 
     const { getAllUserDetails } = useAuth();
     const { loading, error, execute } = useApi(getAllUserDetails);
@@ -214,7 +219,7 @@ const TeamsContent1 = ({ user }) => {
         { value: 'hr', label: 'Human Resources' },
         { value: 'finance', label: 'Finance' },
         { value: 'operations', label: 'Operations' }
-      ];
+    ];
 
     const [teams, setTeams] = useState([
         {
@@ -317,7 +322,7 @@ const TeamsContent1 = ({ user }) => {
         const now = new Date();
         const time = new Date(timestamp);
         const diffInHours = Math.floor((now - time) / (1000 * 60 * 60));
-        
+
         if (diffInHours < 1) return 'Just now';
         if (diffInHours < 24) return `${diffInHours}h ago`;
         const diffInDays = Math.floor(diffInHours / 24);
@@ -394,11 +399,18 @@ const TeamsContent1 = ({ user }) => {
     }, [execute]);
 
     useEffect(() => {
-        if ( !hasFetched.current) {
+        if (!hasFetched.current) {
             hasFetched.current = true;
             fetchAllUserDetails();
         }
     }, [loading]);
+    // Pagination logic
+    const paginatedData = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return sortedMembers.slice(startIndex, startIndex + itemsPerPage);
+    }, [sortedMembers, currentPage, itemsPerPage]);
+
+    const totalPages = Math.ceil(sortedMembers.length / itemsPerPage);
 
     if (loading) {
         return (
@@ -417,7 +429,7 @@ const TeamsContent1 = ({ user }) => {
                         <h1 className="text-2xl font-bold text-gray-900">Team Management</h1>
                         <p className="text-gray-600 mt-1">Manage your team members and collaborators</p>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setShowInviteModal(true)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                     >
@@ -431,55 +443,50 @@ const TeamsContent1 = ({ user }) => {
                     <nav className="flex space-x-8">
                         <button
                             onClick={() => setActiveTab('members')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'members'
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'members'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             <Users className="w-4 h-4 inline mr-1" />
                             Members ({teamMembers.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('teams')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'teams'
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'teams'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             <Building className="w-4 h-4 inline mr-1" />
                             Teams ({teams.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('permissions')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'permissions'
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'permissions'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             <Shield className="w-4 h-4 inline mr-1" />
                             Permissions
                         </button>
                         <button
                             onClick={() => setActiveTab('analytics')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'analytics'
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'analytics'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             <Activity className="w-4 h-4 inline mr-1" />
                             Analytics
                         </button>
                         <button
                             onClick={() => setActiveTab('leaveRequests')}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'leaveRequests'
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'leaveRequests'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
+                                }`}
                         >
                             <GitPullRequestDraft className="w-4 h-4 inline mr-1" />
                             leaveRequests
@@ -500,7 +507,7 @@ const TeamsContent1 = ({ user }) => {
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
-                        
+
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
@@ -509,7 +516,7 @@ const TeamsContent1 = ({ user }) => {
                                 <Filter className="w-4 h-4" />
                                 Filters
                             </button>
-                            
+
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
@@ -527,7 +534,7 @@ const TeamsContent1 = ({ user }) => {
                                 <X className="w-4 h-4" />
                                 <span>Clear All</span>
                             </button>
-                            
+
                             <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                                 <button
                                     onClick={() => setViewMode('grid')}
@@ -573,7 +580,7 @@ const TeamsContent1 = ({ user }) => {
                                     ))}
                                 </select>
                             </div>
-                            
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                                 <select
@@ -588,7 +595,7 @@ const TeamsContent1 = ({ user }) => {
                                     ))}
                                 </select>
                             </div>
-                            
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
                                 <select
@@ -604,7 +611,7 @@ const TeamsContent1 = ({ user }) => {
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div className="flex justify-between items-center mt-4">
                             <button
                                 onClick={clearFilters}
@@ -653,17 +660,29 @@ const TeamsContent1 = ({ user }) => {
             {/* Tab Content */}
             {activeTab === 'members' && (
                 <div>
+                    <div className="flex items-center space-x-4">
+                        <span className="text-sm text-gray-500">
+                            Showing {paginatedData.length} of {sortedMembers.length} results
+                        </span>
+                        <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                                setItemsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                            className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+                        >
+                            <option value={5}>5 per page</option>
+                            <option value={10}>10 per page</option>
+                            <option value={15}>15 per page</option>
+                            <option value={20}>20 per page</option>
+                        </select>
+                    </div>
                     {/* Members Grid/List View */}
                     {viewMode === 'grid' ? (
                         <>
-                            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {teamMembers.map(member => (
-                                    <MemberCard key={member.id} member={member} />
-                                ))}
-                            </div> */}
-                            <br />
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {sortedMembers.map(member => (
+                                {paginatedData.map(member => (
                                     <TeamMemberCard
                                         getRoleIcon={getRoleIcon}
                                         selectedMembers={selectedMembers}
@@ -678,19 +697,75 @@ const TeamsContent1 = ({ user }) => {
                                     />
                                 ))}
                             </div>
+                            {/* Pagination */}
+                            {totalPages > 1 && (
+                                <div className="px-6 py-4 border-t border-gray-200">
+                                    <div className="flex items-center justify-between">
+                                        <div className="text-sm text-gray-700">
+                                            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedMembers.length)} of {sortedMembers.length} results
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <button
+                                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                                disabled={currentPage === 1}
+                                                className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                                            >
+                                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                                Previous
+                                            </button>
+
+                                            <div className="flex items-center space-x-1">
+                                                {[...Array(totalPages)].map((_, index) => {
+                                                    const page = index + 1;
+                                                    const isVisible = page === 1 || page === totalPages || (page >= currentPage - 2 && page <= currentPage + 2);
+
+                                                    if (!isVisible) {
+                                                        if (page === currentPage - 3 || page === currentPage + 3) {
+                                                            return <span key={page} className="px-2 text-gray-400">...</span>;
+                                                        }
+                                                        return null;
+                                                    }
+
+                                                    return (
+                                                        <button
+                                                            key={page}
+                                                            onClick={() => setCurrentPage(page)}
+                                                            className={`px-3 py-2 text-sm border rounded-md ${currentPage === page
+                                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                                : 'border-gray-300 hover:bg-gray-50'
+                                                                }`}
+                                                        >
+                                                            {page}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <button
+                                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                                disabled={currentPage === totalPages}
+                                                className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                                            >
+                                                Next
+                                                <ChevronRight className="w-4 h-4 ml-1" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <MemberTable
-                        sortedMembers={sortedMembers}
-                        selectedMembers={selectedMembers}
-                        selectAllMembers={selectAllMembers}
-                        toggleMemberSelection={toggleMemberSelection}
-                        toggleStar={toggleStar}
-                        getRoleIcon={getRoleIcon}
-                        getWorkloadColor={getWorkloadColor}
-                        getStatusColor={getStatusColor}
-                        getTimeAgo={getTimeAgo}
-                    />
+                            sortedMembers={paginatedData}
+                            selectedMembers={selectedMembers}
+                            selectAllMembers={selectAllMembers}
+                            toggleMemberSelection={toggleMemberSelection}
+                            toggleStar={toggleStar}
+                            getRoleIcon={getRoleIcon}
+                            getWorkloadColor={getWorkloadColor}
+                            getStatusColor={getStatusColor}
+                            getTimeAgo={getTimeAgo}
+                        />
                     )}
 
                     {sortedMembers.length === 0 && (
@@ -704,7 +779,7 @@ const TeamsContent1 = ({ user }) => {
             )}
 
             {activeTab === 'teams' && (
-                <Teams teams={teams} teamMembers={teamMembers}/>
+                <Teams teams={teams} teamMembers={teamMembers} />
             )}
 
             {activeTab === 'permissions' && (
@@ -712,7 +787,7 @@ const TeamsContent1 = ({ user }) => {
             )}
 
             {activeTab === 'analytics' && (
-               <Analytics teamMembers={teamMembers} />
+                <Analytics teamMembers={teamMembers} />
             )}
             {activeTab === 'leaveRequests' && (
                 <LeaveRequests teamMembers={teamMembers} />
@@ -731,7 +806,7 @@ const TeamsContent1 = ({ user }) => {
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        
+
                         <form className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -743,7 +818,7 @@ const TeamsContent1 = ({ user }) => {
                                     placeholder="Enter email address"
                                 />
                             </div>
-                            
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Role
@@ -756,7 +831,7 @@ const TeamsContent1 = ({ user }) => {
                                     <option>QA Engineer</option>
                                 </select>
                             </div>
-                            
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Department
@@ -769,7 +844,7 @@ const TeamsContent1 = ({ user }) => {
                                     <option>Quality Assurance</option>
                                 </select>
                             </div>
-                            
+
                             <div className="flex justify-end gap-3 pt-4">
                                 <button
                                     type="button"

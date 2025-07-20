@@ -52,7 +52,7 @@ const TeamMemberCard = ({ member, getRoleIcon,getStatusColor,toggleStar, getWork
                         </p>
                         <p className="text-sm text-gray-500">Department: {member?.userDetails?.department || ""}</p>
                         <p className="text-sm text-gray-500">Position:
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(member?.userDetails?.role)}`}>
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getRoleColor(member?.userDetails?.role) || ""}`}>
                                 {member?.userDetails?.role || ""}
                             </span>
                         </p>
