@@ -21,6 +21,10 @@ import SettingsPage1 from "../../components/Settings/SettingsPage1";
 import SettingsTab from "../../components/Settings/SettingsTab";
 import SettingsPage2 from "../../components/Settings/SettingsPage2";
 import SpinnerDemo from "../../components/common/SpinnerDemo";
+import SprintManagement1 from "../../components/Sprints/SprintManagement1";
+import SprintManagement2 from "../../components/Sprints/Sprints2";
+import SprintManagement4 from "../../components/Sprints/SprintManagement4";
+import SprintManagement3 from "../../components/Sprints/SprintManagement3";
 
 const RenderContent = ({menuItems, activeTab, user}) => {
     // Check if user has access to current tab
@@ -121,7 +125,29 @@ const RenderContent = ({menuItems, activeTab, user}) => {
       sprints: (
         <div className="space-y-6">
           {/* <TeamMemberSignupExample /> */}
-          <SignUpApp1 />
+          <SprintManagement1 />
+          <h3>TEST</h3>
+          <h3>TEST</h3>
+          <h3>TEST</h3>
+          <h3>TEST</h3>
+          <h3>TEST</h3>
+          <SprintManagement2 />
+          <h4>3</h4>
+          <h4>3</h4>
+          <h4>3</h4>
+          <h4>3</h4>
+          <h4>3</h4>
+          <h4>3</h4>
+          <SprintManagement3 />
+          <h4>4</h4>
+          <h4>4</h4>
+          <h4>4</h4>
+          <h4>4</h4>
+          <h4>4</h4>
+          <h4>4</h4>
+          <h4>4</h4>
+          <h4>4</h4>
+          <SprintManagement4 />
         </div>
       ),
       calendar: (
