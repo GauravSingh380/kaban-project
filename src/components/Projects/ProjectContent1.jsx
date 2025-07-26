@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {Plus,Search,Filter,MoreHorizontal,Calendar,Users,Bug,AlertCircle,CheckCircle2,Clock,
     TrendingUp,TrendingDown,FolderOpen,Settings,Eye,Edit,Trash2,Archive,Star,
-    GitBranch,Activity,Target,Download,Upload,X
+    GitBranch,Activity,Target,Download,Upload,X,
+    LayoutGrid,
+    List
 } from 'lucide-react';
 
 const ProjectsContent1 = ({ user }) => {
@@ -535,7 +537,7 @@ const ProjectsContent1 = ({ user }) => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-8xl mx-auto">
             {/* Header */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-6">
@@ -612,13 +614,29 @@ const ProjectsContent1 = ({ user }) => {
                             <X className="w-4 h-4" />
                             <span>Clear</span>
                         </button>
+                        <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                        >
+                            {/* <FolderOpen className="w-4 h-4" /> */}
+                            <LayoutGrid />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('list')}
+                            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                        >
+                            {/* <GitBranch className="w-4 h-4" /> */}
+                            <List />
+                        </button>
+                    </div>
                     </div>
                 </div>
 
                 {/* View Toggle and Bulk Actions */}
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
+                        {/* <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 checked={selectedProjects.length === sortedProjects.length && sortedProjects.length > 0}
@@ -628,7 +646,7 @@ const ProjectsContent1 = ({ user }) => {
                             <span className="text-sm text-gray-600">
                                 {selectedProjects.length > 0 ? `${selectedProjects.length} selected` : 'Select all'}
                             </span>
-                        </div>
+                        </div> */}
 
                         {selectedProjects.length > 0 && (
                             <div className="flex gap-2">
@@ -644,7 +662,7 @@ const ProjectsContent1 = ({ user }) => {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                         <button
                             onClick={() => setViewMode('grid')}
                             className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
@@ -657,7 +675,7 @@ const ProjectsContent1 = ({ user }) => {
                         >
                             <GitBranch className="w-4 h-4" />
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Additional Filters (shown when showFilters is true) */}
