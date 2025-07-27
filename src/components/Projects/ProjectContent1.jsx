@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {Plus,Search,Filter,MoreHorizontal,Calendar,Users,Bug,AlertCircle,CheckCircle2,Clock,
-    TrendingUp,TrendingDown,FolderOpen,Settings,Eye,Edit,Trash2,Archive,Star,
-    GitBranch,Activity,Target,Download,Upload,X,
+import {
+    Plus, Search, Filter, MoreHorizontal, Calendar, Users, Bug, AlertCircle, CheckCircle2, Clock,
+    TrendingUp, TrendingDown, FolderOpen, Settings, Eye, Edit, Trash2, Archive, Star,
+    GitBranch, Activity, Target, Download, Upload, X,
     LayoutGrid,
     List
 } from 'lucide-react';
@@ -14,6 +15,7 @@ const ProjectsContent1 = ({ user }) => {
     const [viewMode, setViewMode] = useState('grid'); // grid or list
     const [showFilters, setShowFilters] = useState(false);
     const [selectedProjects, setSelectedProjects] = useState([]);
+
 
     // Mock projects data - replace with your actual data
     const [projects, setProjects] = useState([
@@ -142,7 +144,69 @@ const ProjectsContent1 = ({ user }) => {
         },
         {
             id: 5,
-            name: 'Analytics Dashboard',
+            name: 'Analytics Dashboard 2',
+            description: 'Advanced analytics dashboard with real-time data visualization and reporting.',
+            status: 'active',
+            priority: 'medium',
+            progress: 67,
+            startDate: '2024-02-15',
+            dueDate: '2024-08-30',
+            budget: 40000,
+            spent: 26800,
+            team: [
+                { name: 'Chris Lee', role: 'Data Analyst', avatar: 'CL' },
+                { name: 'Maya Singh', role: 'Frontend Developer', avatar: 'MS' },
+                { name: 'Rob Wilson', role: 'Backend Developer', avatar: 'RW' }
+            ],
+            bugs: {
+                total: 12,
+                open: 6,
+                critical: 1,
+                resolved: 6
+            },
+            milestones: {
+                total: 7,
+                completed: 4,
+                upcoming: 3
+            },
+            client: 'DataInsights Inc.',
+            tags: ['Analytics', 'Dashboard', 'D3.js', 'Python'],
+            starred: true
+        },
+        {
+            id: 6,
+            name: 'Analytics Dashboard 3',
+            description: 'Advanced analytics dashboard with real-time data visualization and reporting.',
+            status: 'active',
+            priority: 'medium',
+            progress: 67,
+            startDate: '2024-02-15',
+            dueDate: '2024-08-30',
+            budget: 40000,
+            spent: 26800,
+            team: [
+                { name: 'Chris Lee', role: 'Data Analyst', avatar: 'CL' },
+                { name: 'Maya Singh', role: 'Frontend Developer', avatar: 'MS' },
+                { name: 'Rob Wilson', role: 'Backend Developer', avatar: 'RW' }
+            ],
+            bugs: {
+                total: 12,
+                open: 6,
+                critical: 1,
+                resolved: 6
+            },
+            milestones: {
+                total: 7,
+                completed: 4,
+                upcoming: 3
+            },
+            client: 'DataInsights Inc.',
+            tags: ['Analytics', 'Dashboard', 'D3.js', 'Python'],
+            starred: true
+        },
+        {
+            id: 7,
+            name: 'Analytics Dashboard 4',
             description: 'Advanced analytics dashboard with real-time data visualization and reporting.',
             status: 'active',
             priority: 'medium',
@@ -536,10 +600,25 @@ const ProjectsContent1 = ({ user }) => {
         setPriorityFilter('all')
     };
 
+    // Add these state variables at the top of your component with other state declarations
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5); // You can make this configurable
+
+    // Add this pagination logic after your sorting logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedProjects.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(sortedProjects.length / itemsPerPage);
+
+    // Pagination functions
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+    const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+
     return (
-        <div className="max-w-8xl mx-auto">
+        <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-8 p-4 bg-white rounded-lg shadow-lg">
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
@@ -601,12 +680,12 @@ const ProjectsContent1 = ({ user }) => {
                             <option value="budget">Sort by Budget</option>
                         </select>
 
-                        <button
+                        {/* <button
                             onClick={() => setShowFilters(!showFilters)}
                             className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                         >
                             <Filter className="w-4 h-4" />
-                        </button>
+                        </button> */}
                         <button
                             onClick={clearFilters}
                             className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-800"
@@ -614,22 +693,38 @@ const ProjectsContent1 = ({ user }) => {
                             <X className="w-4 h-4" />
                             <span>Clear</span>
                         </button>
+                        <div className="flex items-center space-x-4">
+                            <span className="text-sm text-gray-500">
+                                Showing {currentItems.length} of {sortedProjects.length} results
+                            </span>
+                            <select
+                                value={itemsPerPage}
+                                onChange={(e) => {
+                                    setItemsPerPage(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                                className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+                            >
+                                <option value={5}>5 per page</option>
+                                <option value={10}>10 per page</option>
+                                <option value={15}>15 per page</option>
+                                <option value={20}>20 per page</option>
+                            </select>
+                        </div>
                         <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
-                        >
-                            {/* <FolderOpen className="w-4 h-4" /> */}
-                            <LayoutGrid />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
-                        >
-                            {/* <GitBranch className="w-4 h-4" /> */}
-                            <List />
-                        </button>
-                    </div>
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                            >
+                                <LayoutGrid />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                            >
+                                <List />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -661,21 +756,6 @@ const ProjectsContent1 = ({ user }) => {
                             </div>
                         )}
                     </div>
-
-                    {/* <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
-                        >
-                            <FolderOpen className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
-                        >
-                            <GitBranch className="w-4 h-4" />
-                        </button>
-                    </div> */}
                 </div>
 
                 {/* Additional Filters (shown when showFilters is true) */}
@@ -813,7 +893,7 @@ const ProjectsContent1 = ({ user }) => {
                     </div>
                 </div>
                 {/* Projects Display */}
-                {sortedProjects.length === 0 ? (
+                {currentItems.length === 0 ? (
                     <div className="text-center py-12">
                         <FolderOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
@@ -832,7 +912,7 @@ const ProjectsContent1 = ({ user }) => {
                     <>
                         {viewMode === 'grid' ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {sortedProjects.map(project => (
+                                {currentItems.map(project => (
                                     <ProjectCard key={project.id} project={project} />
                                 ))}
                             </div>
@@ -859,7 +939,7 @@ const ProjectsContent1 = ({ user }) => {
                                         </div>
                                     </div>
                                 </div>
-                                {sortedProjects.map(project => (
+                                {currentItems.map(project => (
                                     <ProjectListItem key={project.id} project={project} />
                                 ))}
                             </div>
@@ -869,36 +949,77 @@ const ProjectsContent1 = ({ user }) => {
 
                 {/* Pagination */}
                 {sortedProjects.length > 0 && (
-                    <div className="flex justify-between items-center mt-6">
+                    <div className="px-6 py-4">
+                    <div className="flex justify-between items-center">
                         <p className="text-sm text-gray-600">
-                            Showing {sortedProjects.length} of {projects.length} projects
+                            Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedProjects.length)} of {sortedProjects.length} projects
                         </p>
                         <div className="flex gap-2">
-                            <button className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
+                            <button
+                                onClick={prevPage}
+                                disabled={currentPage === 1}
+                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                            >
                                 Previous
                             </button>
-                            <button className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                1
-                            </button>
-                            <button className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
-                                2
-                            </button>
-                            <button className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+
+                            {/* Display page numbers */}
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                // Show pages around current page
+                                let pageNumber;
+                                if (totalPages <= 5) {
+                                    pageNumber = i + 1;
+                                } else if (currentPage <= 3) {
+                                    pageNumber = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNumber = totalPages - 4 + i;
+                                } else {
+                                    pageNumber = currentPage - 2 + i;
+                                }
+
+                                return (
+                                    <button
+                                        key={pageNumber}
+                                        onClick={() => paginate(pageNumber)}
+                                        className={`px-3 py-2 text-sm rounded-lg ${currentPage === pageNumber
+                                                ? 'bg-blue-600 text-white'
+                                                : 'border border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {pageNumber}
+                                    </button>
+                                );
+                            })}
+
+                            {/* Show ellipsis if there are more pages */}
+                            {totalPages > 5 && currentPage < totalPages - 2 && (
+                                <span className="px-3 py-2 text-sm">...</span>
+                            )}
+
+                            {/* Show last page if not in current range */}
+                            {totalPages > 5 && currentPage < totalPages - 2 && (
+                                <button
+                                    onClick={() => paginate(totalPages)}
+                                    className={`px-3 py-2 text-sm rounded-lg ${currentPage === totalPages
+                                            ? 'bg-blue-600 text-white'
+                                            : 'border border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    {totalPages}
+                                </button>
+                            )}
+
+                            <button
+                                onClick={nextPage}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                            >
                                 Next
                             </button>
                         </div>
                     </div>
+                    </div>
                 )}
-                {/* Export Options */}
-                <div className="fixed bottom-6 right-6 flex flex-col gap-2">
-                    <button className="bg-white border border-gray-300 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow">
-                        <Download className="w-5 h-5 text-gray-600" />
-                    </button>
-                    <button className="bg-white border border-gray-300 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow">
-                        <Upload className="w-5 h-5 text-gray-600" />
-                    </button>
-                </div>
-
             </div>
         </div>
     );
