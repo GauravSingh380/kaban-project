@@ -509,88 +509,74 @@ const ProjectsContent1 = ({ user }) => {
     );
 
     const ProjectListItem = ({ project }) => (
-        <div className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
-            <div className="px-6 py-4">
-                <div className="flex items-center justify-evenly">
-                    <div className="flex items-center gap-4 flex-1">
-                        <input
-                            type="checkbox"
-                            checked={selectedProjects.includes(project.id)}
-                            onChange={() => toggleProjectSelection(project.id)}
-                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold text-gray-900">{project.name}</h3>
-                                <button
-                                    onClick={() => toggleStar(project.id)}
-                                    className={`p-1 rounded-full ${project.starred ? 'text-yellow-500' : 'text-gray-400'} hover:bg-gray-100`}
-                                >
-                                    <Star className="w-4 h-4" fill={project.starred ? 'currentColor' : 'none'} />
-                                </button>
-                            </div>
-                            <p className="text-sm text-gray-600 truncate">{project.description}</p>
-                            <p className="text-xs text-gray-500 mt-1">Client: {project.client}</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <div className="text-center">
-                            <p className="text-sm font-medium text-gray-900">{project.progress}%</p>
-                            <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
-                                <div
-                                    className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(project.progress)}`}
-                                    style={{ width: `${project.progress}%` }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="text-right">
-                            <p className="text-sm font-medium text-gray-900">{formatCurrency(project.budget)}</p>
-                            <p className="text-xs text-gray-500">{formatCurrency(project.spent)} spent</p>
-                        </div>
-
-                        <div className="text-right">
-                            <p className="text-sm font-medium text-gray-900">{formatDate(project.dueDate)}</p>
-                            <p className={`text-xs ${getDaysRemaining(project.dueDate) < 0 ? 'text-red-600' : getDaysRemaining(project.dueDate) < 7 ? 'text-orange-600' : 'text-gray-500'}`}>
-                                {getDaysRemaining(project.dueDate) < 0 ? 'Overdue' : `${getDaysRemaining(project.dueDate)} days left`}
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
-                                {project.status.charAt(0).toUpperCase() + project.status.slice(1).replace('_', ' ')}
-                            </span>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(project.priority)}`}>
-                                {project.priority.charAt(0).toUpperCase() + project.priority.slice(1)}
-                            </span>
-                        </div>
-
-                        <div className="flex -space-x-2">
-                            {project.team.slice(0, 3).map((member, index) => (
-                                <div
-                                    key={index}
-                                    className="w-8 h-8 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white"
-                                    title={`${member.name} - ${member.role}`}
-                                >
-                                    {member.avatar}
-                                </div>
-                            ))}
-                            {project.team.length > 3 && (
-                                <div className="w-8 h-8 rounded-full bg-gray-500 text-white text-xs flex items-center justify-center border-2 border-white">
-                                    +{project.team.length - 3}
-                                </div>
-                            )}
-                        </div>
-
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
-                            <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                    </div>
+        <tr className="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
+            <td className="px-2 py-4 whitespace-wrap">
+                <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-gray-900 text-wrap">{project.name}</h3>
+                    <button
+                        onClick={() => toggleStar(project.id)}
+                        className={`p-1 rounded-full ${project.starred ? 'text-yellow-500' : 'text-gray-400'} hover:bg-gray-100`}
+                    >
+                        <Star className="w-4 h-4" fill={project.starred ? 'currentColor' : 'none'} />
+                    </button>
                 </div>
-            </div>
-        </div>
+                <p className="text-sm text-gray-600 truncate">{project.description}</p>
+                <p className="text-xs text-gray-500 mt-1">Client: {project.client}</p>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-center">
+                <p className="text-sm font-medium text-gray-900">{project.progress}%</p>
+                <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
+                    <div
+                        className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(project.progress)}`}
+                        style={{ width: `${project.progress}%` }}
+                    />
+                </div>
+            </td>
+
+            <td className="px-6 py-4 whitespace-nowrap text-center">
+                <p className="text-sm font-medium text-gray-900">{formatCurrency(project.budget)}</p>
+                <p className="text-xs text-gray-500">{formatCurrency(project.spent)} spent</p>
+            </td>
+
+            <td className="px-6 py-4 whitespace-nowrap text-center">
+                <p className="text-sm font-medium text-gray-900">{formatDate(project.dueDate)}</p>
+                <p className={`text-xs ${getDaysRemaining(project.dueDate) < 0 ? 'text-red-600' : getDaysRemaining(project.dueDate) < 7 ? 'text-orange-600' : 'text-gray-500'}`}>
+                    {getDaysRemaining(project.dueDate) < 0 ? 'Overdue' : `${getDaysRemaining(project.dueDate)} days left`}
+                </p>
+            </td>
+
+            <td className="px-6 py-4 whitespace-nowrap text-center">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
+                    {project.status.charAt(0).toUpperCase() + project.status.slice(1).replace('_', ' ')}
+                </span>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(project.priority)}`}>
+                    {project.priority.charAt(0).toUpperCase() + project.priority.slice(1)}
+                </span>
+            </td>
+
+            <td className="px-6 py-4 whitespace-nowrap text-center">
+                {project.team.slice(0, 3).map((member, index) => (
+                    <div
+                        key={index}
+                        className="w-8 h-8 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white"
+                        title={`${member.name} - ${member.role}`}
+                    >
+                        {member.avatar}
+                    </div>
+                ))}
+                {project.team.length > 3 && (
+                    <div className="w-8 h-8 rounded-full bg-gray-500 text-white text-xs flex items-center justify-center border-2 border-white">
+                        +{project.team.length - 3}
+                    </div>
+                )}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-center">
+
+                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
+                    <MoreHorizontal className="w-4 h-4" />
+                </button>
+            </td>
+        </tr>
     );
 
     // const hasActiveFilters = Object.values(statusFilter).some(filter => filter) || searchTerm;
@@ -917,31 +903,41 @@ const ProjectsContent1 = ({ user }) => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedProjects.length === sortedProjects.length && sortedProjects.length > 0}
-                                                onChange={selectAllProjects}
-                                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="text-sm font-medium text-gray-900">Project Name</span>
-                                        </div>
-                                        <div className="flex items-center gap-6">
-                                            <span className="text-sm font-medium text-gray-900">Progress</span>
-                                            <span className="text-sm font-medium text-gray-900">Budget</span>
-                                            <span className="text-sm font-medium text-gray-900">Due Date</span>
-                                            <span className="text-sm font-medium text-gray-900">Status</span>
-                                            <span className="text-sm font-medium text-gray-900">Team</span>
-                                            <span className="text-sm font-medium text-gray-900">Actions</span>
-                                        </div>
-                                    </div>
+                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Project Name</span>
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Progress</span>
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Budget</span>
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Due Date</span>
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Status</span>
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Team</span>
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <span className="text-sm font-medium text-gray-900">Actions</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {currentItems.map(project => (
+                                                <ProjectListItem key={project.id} project={project} />
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                                {currentItems.map(project => (
-                                    <ProjectListItem key={project.id} project={project} />
-                                ))}
                             </div>
                         )}
                     </>
@@ -950,74 +946,74 @@ const ProjectsContent1 = ({ user }) => {
                 {/* Pagination */}
                 {sortedProjects.length > 0 && (
                     <div className="px-6 py-4">
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm text-gray-600">
-                            Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedProjects.length)} of {sortedProjects.length} projects
-                        </p>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={prevPage}
-                                disabled={currentPage === 1}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                            >
-                                Previous
-                            </button>
+                        <div className="flex justify-between items-center">
+                            <p className="text-sm text-gray-600">
+                                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedProjects.length)} of {sortedProjects.length} projects
+                            </p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={prevPage}
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                                >
+                                    Previous
+                                </button>
 
-                            {/* Display page numbers */}
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                // Show pages around current page
-                                let pageNumber;
-                                if (totalPages <= 5) {
-                                    pageNumber = i + 1;
-                                } else if (currentPage <= 3) {
-                                    pageNumber = i + 1;
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNumber = totalPages - 4 + i;
-                                } else {
-                                    pageNumber = currentPage - 2 + i;
-                                }
+                                {/* Display page numbers */}
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    // Show pages around current page
+                                    let pageNumber;
+                                    if (totalPages <= 5) {
+                                        pageNumber = i + 1;
+                                    } else if (currentPage <= 3) {
+                                        pageNumber = i + 1;
+                                    } else if (currentPage >= totalPages - 2) {
+                                        pageNumber = totalPages - 4 + i;
+                                    } else {
+                                        pageNumber = currentPage - 2 + i;
+                                    }
 
-                                return (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => paginate(pageNumber)}
-                                        className={`px-3 py-2 text-sm rounded-lg ${currentPage === pageNumber
+                                    return (
+                                        <button
+                                            key={pageNumber}
+                                            onClick={() => paginate(pageNumber)}
+                                            className={`px-3 py-2 text-sm rounded-lg ${currentPage === pageNumber
                                                 ? 'bg-blue-600 text-white'
                                                 : 'border border-gray-300 hover:bg-gray-50'
-                                            }`}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                );
-                            })}
+                                                }`}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    );
+                                })}
 
-                            {/* Show ellipsis if there are more pages */}
-                            {totalPages > 5 && currentPage < totalPages - 2 && (
-                                <span className="px-3 py-2 text-sm">...</span>
-                            )}
+                                {/* Show ellipsis if there are more pages */}
+                                {totalPages > 5 && currentPage < totalPages - 2 && (
+                                    <span className="px-3 py-2 text-sm">...</span>
+                                )}
 
-                            {/* Show last page if not in current range */}
-                            {totalPages > 5 && currentPage < totalPages - 2 && (
-                                <button
-                                    onClick={() => paginate(totalPages)}
-                                    className={`px-3 py-2 text-sm rounded-lg ${currentPage === totalPages
+                                {/* Show last page if not in current range */}
+                                {totalPages > 5 && currentPage < totalPages - 2 && (
+                                    <button
+                                        onClick={() => paginate(totalPages)}
+                                        className={`px-3 py-2 text-sm rounded-lg ${currentPage === totalPages
                                             ? 'bg-blue-600 text-white'
                                             : 'border border-gray-300 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    {totalPages}
-                                </button>
-                            )}
+                                            }`}
+                                    >
+                                        {totalPages}
+                                    </button>
+                                )}
 
-                            <button
-                                onClick={nextPage}
-                                disabled={currentPage === totalPages}
-                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                            >
-                                Next
-                            </button>
+                                <button
+                                    onClick={nextPage}
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 )}
             </div>
