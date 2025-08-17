@@ -302,6 +302,259 @@ export const formConfig = [
     }
   },
 ]
+const jsoData =     {
+  id: 1,
+  name: 'E-commerce Platform',
+  description: 'Complete redesign of the e-commerce.',
+  status: 'active',
+  priority: 'high',
+  progress: 78,
+  startDate: '2024-01-15',
+  dueDate: '2024-08-15',
+  budget: 45000,
+  spent: 35000,
+  team: [
+      { name: 'John Doe', role: 'Project Manager', avatar: 'JD' },
+      { name: 'Sarah Wilson', role: 'Frontend Developer', avatar: 'SW' },
+      { name: 'Mike Johnson', role: 'Backend Developer', avatar: 'MJ' },
+      { name: 'Emily Davis', role: 'UI/UX Designer', avatar: 'ED' }
+  ],
+  bugs: {
+      total: 15,
+      open: 12,
+      critical: 3,
+      resolved: 3
+  },
+  milestones: {
+      total: 8,
+      completed: 6,
+      upcoming: 2
+  },
+  client: 'TechCorp Inc.',
+  tags: ['E-commerce', 'React', 'Node.js', 'MongoDB'],
+  starred: true
+}
+export const projectConfig = [
+  {
+    "id": "1",
+    "type": "text",
+    "label": "Project Name",
+    "name": "name",
+    "required": true,
+    "placeholder": "Enter project name",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "2",
+    "type": "textarea",
+    "label": "Project Description",
+    "name": "description",
+    "required": true,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "3",
+    "type": "select",
+    "label": "Status",
+    "name": "status",
+    "required": false,
+    "placeholder": "",
+    "options": ['active', 'inActive', 'pending'],
+    "conditions": [],
+    "alignment": 'grid grid-cols-4 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "4",
+    "type": "select",
+    "label": "Priority",
+    "name": "priority",
+    "required": true,
+    "placeholder": "",
+    "options": ['high', 'medium','low'],
+    "conditions": [],
+    "alignment": 'grid grid-cols-4 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "5",
+    "type": "date",
+    "label": "Start Date",
+    "name": "startDate",
+    "required": true,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "alignment": 'grid grid-cols-4 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "6",
+    "type": "date",
+    "label": "Due Date",
+    "name": "dueDate",
+    "required": false,
+    "placeholder": "",
+    "options": [],
+    "conditions": [],
+    "alignment": 'grid grid-cols-4 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "7",
+    "type": "text",
+    "label": "Client Name",
+    "name": "client",
+    "required": false,
+    "placeholder": "Enter your client name.",
+    "options": [],
+    "conditions": [],
+    "alignment": 'grid grid-cols-3 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "8",
+    "type": "number",
+    "label": "Budget",
+    "name": "budget",
+    "required": false,
+    "placeholder": "Enter budget..",
+    "options": [
+      "dev",
+      "prod",
+      "stg",
+      "demo",
+    ],
+    "conditions": [],
+    "alignment": 'grid grid-cols-3 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "9",
+    "type": "number",
+    "label": " Budget Spent",
+    "name": "spent",
+    "required": false,
+    "placeholder": "Enter budget spend...",
+    "options": [],
+    "conditions": [],
+    "alignment": 'grid grid-cols-3 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "10",
+    "type": "select",
+    "label": "Select teams members",
+    "name": "team",
+    "required": false,
+    "placeholder": "",
+    "options": ["John Doe", "Sarah Wilson", "Mike Johnson", "Emily Davis"],
+    "conditions": [],
+    "alignment": 'grid grid-cols-3 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "11",
+    "type": "select",
+    "label": "Tags",
+    "name": "tags",
+    "required": false,
+    "placeholder": "Enter your client name...",
+    "options": ['E-commerce', 'React', 'Node.js', 'MongoDB'],
+    "conditions": [],
+    "alignment": 'grid grid-cols-3 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "12",
+    "type": "checkbox",
+    "label": "Stared",
+    "name": "starred",
+    "required": false,
+    "placeholder": "Enter your client name...",
+    "options": ["Yes", "No"],
+    "conditions": [],
+    "alignment": 'grid grid-cols-3 gap-4',
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+]
 
 const sampleFormConfigJson= {
   "title": "Dynamic Form",

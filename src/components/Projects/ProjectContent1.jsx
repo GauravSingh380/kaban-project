@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Plus, Search, Filter, MoreHorizontal, Calendar, Users, Bug, AlertCircle, CheckCircle2, Clock,
-    TrendingUp, TrendingDown, FolderOpen, Settings, Eye, Edit, Trash2, Archive, Star,
-    GitBranch, Activity, Target, Download, Upload, X,
-    LayoutGrid,
-    List
+    Plus, Search, MoreHorizontal, Calendar, Bug, AlertCircle, CheckCircle2, Clock,
+    TrendingUp, TrendingDown, FolderOpen, Eye, Edit, Trash2, Archive, Star,
+     Activity, Target, X, LayoutGrid, List
 } from 'lucide-react';
 import { projectData } from './ProjectItems/projectData';
+import { projectConfig } from '../../helper';
+import GlobalModel from '../common/GlobalModel';
+import RenderHtmlFields from '../common/RenderHtmlFields';
 
 const ProjectsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +17,67 @@ const ProjectsContent1 = ({ user }) => {
     const [viewMode, setViewMode] = useState('grid'); // grid or list
     const [showFilters, setShowFilters] = useState(false);
     const [selectedProjects, setSelectedProjects] = useState([]);
+    const [isAddModelOpen, setIsAddModelOpen] = useState(false)
+
+    const [projectFormData, setProjectFormData] = useState({
+        name: "",
+        description: "",
+        status: "",
+        priority: "",
+        progress: 0,
+        startDate: "",
+        dueDate: "",
+        budget: 0,
+        spent: 0,
+        team: [],
+        bugs: {
+            total: 0,
+            open: 0,
+            critical: 0,
+            resolved: 0
+        },
+        milestones: {
+            total: 0,
+            completed: 0,
+            upcoming: 0
+        },
+        client: "",
+        tags: [],
+        starred: false
+    });
+
+    const jsoData =     {
+        id: 1,
+        name: 'E-commerce Platform',
+        description: 'Complete redesign of the e-commerce.',
+        status: 'active',
+        priority: 'high',
+        progress: 78,
+        startDate: '2024-01-15',
+        dueDate: '2024-08-15',
+        budget: 45000,
+        spent: 35000,
+        team: [
+            { name: 'John Doe', role: 'Project Manager', avatar: 'JD' },
+            { name: 'Sarah Wilson', role: 'Frontend Developer', avatar: 'SW' },
+            { name: 'Mike Johnson', role: 'Backend Developer', avatar: 'MJ' },
+            { name: 'Emily Davis', role: 'UI/UX Designer', avatar: 'ED' }
+        ],
+        bugs: {
+            total: 15,
+            open: 12,
+            critical: 3,
+            resolved: 3
+        },
+        milestones: {
+            total: 8,
+            completed: 6,
+            upcoming: 2
+        },
+        client: 'TechCorp Inc.',
+        tags: ['E-commerce', 'React', 'Node.js', 'MongoDB'],
+        starred: true
+    }
 
 
     // Mock projects data - replace with your actual data
@@ -396,6 +458,22 @@ const ProjectsContent1 = ({ user }) => {
     const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
     const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
+    const handleProjectInputChange = (fieldName, value) => {
+        setProjectFormData(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
+    };
+    const handleAddProject = () => {
+        console.log("----form data----", projectFormData)
+        setProjects((prev) => {
+            return [...prev, {
+                ...projectFormData,
+                id: prev.length + 1
+            }]
+        })
+    }
+
     return (
         <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
             {/* Header */}
@@ -405,7 +483,7 @@ const ProjectsContent1 = ({ user }) => {
                         <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
                         <p className="text-gray-600 mt-1">Manage and track your project portfolio</p>
                     </div>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <button onClick={() => setIsAddModelOpen(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
                         <Plus className="w-4 h-4" />
                         New Project
                     </button>
@@ -811,6 +889,21 @@ const ProjectsContent1 = ({ user }) => {
                         </div>
                     </div>
                 )}
+                {/* add project */}
+                <GlobalModel
+                    isOpen={isAddModelOpen}
+                    onClose={() => setIsAddModelOpen(false)}
+                    header="Add new projects"
+                    onSubmit={handleAddProject}
+                    submitText="Add project"
+                    children={
+                        <RenderHtmlFields
+                            fieldItems={projectConfig}
+                            formData={projectFormData}
+                            handleInputChange={handleProjectInputChange}
+                        />
+                    }
+                />
             </div>
         </div>
     );
