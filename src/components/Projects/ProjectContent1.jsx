@@ -8,6 +8,8 @@ import { projectData } from './ProjectItems/projectData';
 import { projectConfig } from '../../helper';
 import GlobalModel from '../common/GlobalModel';
 import RenderHtmlFields from '../common/RenderHtmlFields';
+import GlobalModelP from './ProjectItems/GlobalModel';
+import RenderHtmlFieldsP from './ProjectItems/RenderHtmlFields';
 
 const ProjectsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -27,20 +29,20 @@ const ProjectsContent1 = ({ user }) => {
         progress: 0,
         startDate: "",
         dueDate: "",
-        budget: 0,
-        spent: 0,
+        budget: "",
+        spent: "",
         team: [],
-        bugs: {
-            total: 0,
-            open: 0,
-            critical: 0,
-            resolved: 0
-        },
-        milestones: {
-            total: 0,
-            completed: 0,
-            upcoming: 0
-        },
+        // bugs: {
+        //     total: 0,
+        //     open: 0,
+        //     critical: 0,
+        //     resolved: 0
+        // },
+        // milestones: {
+        //     total: 0,
+        //     completed: 0,
+        //     upcoming: 0
+        // },
         client: "",
         tags: [],
         starred: false
@@ -293,7 +295,7 @@ const ProjectsContent1 = ({ user }) => {
                         <span className="text-xs text-gray-500">{project.team.length} members</span>
                     </div>
                     <div className="flex -space-x-2">
-                        {project.team.slice(0, 4).map((member, index) => (
+                        {/* {project.team.slice(0, 4).map((member, index) => (
                             <div
                                 key={index}
                                 className="w-8 h-8 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white"
@@ -306,31 +308,31 @@ const ProjectsContent1 = ({ user }) => {
                             <div className="w-8 h-8 rounded-full bg-gray-500 text-white text-xs flex items-center justify-center border-2 border-white">
                                 +{project.team.length - 4}
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center">
-                        <p className="text-sm font-medium text-gray-900">{project.bugs.open}</p>
+                        {/* <p className="text-sm font-medium text-gray-900">{project.bugs.open}</p> */}
                         <p className="text-xs text-gray-500">Open Bugs</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-gray-900">{project.milestones.completed}/{project.milestones.total}</p>
+                        {/* <p className="text-sm font-medium text-gray-900">{project.milestones.completed}/{project.milestones.total}</p> */}
                         <p className="text-xs text-gray-500">Milestones</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-gray-900">{Math.round((project.spent / project.budget) * 100)}%</p>
+                        {/* <p className="text-sm font-medium text-gray-900">{Math.round((project.spent / project.budget) * 100)}%</p> */}
                         <p className="text-xs text-gray-500">Budget Used</p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap gap-1 mb-4">
-                    {project.tags.map((tag, index) => (
+                    {/* {project.tags.map((tag, index) => (
                         <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                             {tag}
                         </span>
-                    ))}
+                    ))} */}
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-100">
@@ -401,7 +403,7 @@ const ProjectsContent1 = ({ user }) => {
             </td>
 
             <td className="px-6 py-4 whitespace-nowrap text-center">
-                {project.team.slice(0, 3).map((member, index) => (
+                {/* {project.team.slice(0, 3).map((member, index) => (
                     <div
                         key={index}
                         className="w-8 h-8 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white"
@@ -409,12 +411,12 @@ const ProjectsContent1 = ({ user }) => {
                     >
                         {member.avatar}
                     </div>
-                ))}
-                {project.team.length > 3 && (
+                ))} */}
+                {/* {project.team.length > 3 && (
                     <div className="w-8 h-8 rounded-full bg-gray-500 text-white text-xs flex items-center justify-center border-2 border-white">
                         +{project.team.length - 3}
                     </div>
-                )}
+                )} */}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-center">
 
@@ -464,15 +466,176 @@ const ProjectsContent1 = ({ user }) => {
             [fieldName]: value
         }));
     };
+    // const handleAddProject = () => {
+    //     console.log("----form data----", projectFormData)
+    //     setProjects((prev) => {
+    //         return [...prev, {
+    //             ...projectFormData,
+    //             id: prev.length + 1
+    //         }]
+    //     })
+    // }
     const handleAddProject = () => {
-        console.log("----form data----", projectFormData)
+        // Validate required fields
+        const requiredFields = projectConfig.filter(field => field.required);
+        const missingFields = requiredFields.filter(field => 
+          !projectFormData[field.name] || 
+          (typeof projectFormData[field.name] === 'string' && projectFormData[field.name].trim() === '')
+        );
+      
+        if (missingFields.length > 0) {
+          alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+          return;
+        }
+      
+        console.log("----form data----", projectFormData);
+        
         setProjects((prev) => {
-            return [...prev, {
-                ...projectFormData,
-                id: prev.length + 1
-            }]
-        })
-    }
+          return [...prev, {
+            ...projectFormData,
+            id: prev.length + 1,
+            // Set default values for missing optional fields
+            bugs: {
+              total: 0,
+              open: 0,
+              critical: 0,
+              resolved: 0
+            },
+            milestones: {
+              total: 0,
+              completed: 0,
+              upcoming: 0
+            }
+          }];
+        });
+      
+        // Reset form and close modal
+        setProjectFormData({
+          name: "",
+          description: "",
+          status: "",
+          priority: "",
+          progress: 0,
+          startDate: "",
+          dueDate: "",
+          budget: 0,
+          spent: 0,
+          team: [],
+          client: "",
+          tags: [],
+          starred: false
+        });
+        
+        setIsAddModelOpen(false);
+      };
+    const projectConfigV2 = [
+        {
+          name: 'name',
+          type: 'text',
+          label: 'Project Name',
+          placeholder: 'Enter project name',
+          required: true,
+          containerClass: 'col-span-2'
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          label: 'Description',
+          placeholder: 'Enter project description',
+          rows: 3,
+          containerClass: 'col-span-2'
+        },
+        {
+          name: 'status',
+          type: 'select',
+          label: 'Status',
+          placeholder: 'Select status',
+          required: true,
+          options: [
+            { value: 'active', label: 'Active' },
+            { value: 'testing', label: 'Testing' },
+            { value: 'planning', label: 'Planning' },
+            { value: 'completed', label: 'Completed' },
+            { value: 'on_hold', label: 'On Hold' }
+          ]
+        },
+        {
+          name: 'priority',
+          type: 'select',
+          label: 'Priority',
+          placeholder: 'Select priority',
+          required: true,
+          options: [
+            { value: 'critical', label: 'Critical' },
+            { value: 'high', label: 'High' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'low', label: 'Low' }
+          ]
+        },
+        {
+          name: 'progress',
+          type: 'range',
+          label: 'Progress (%)',
+          min: 0,
+          max: 100,
+          step: 5,
+          containerClass: 'col-span-2'
+        },
+        {
+          name: 'startDate',
+          type: 'date',
+          label: 'Start Date',
+          required: true
+        },
+        {
+          name: 'dueDate',
+          type: 'date',
+          label: 'Due Date',
+          required: true
+        },
+        {
+          name: 'budget',
+          type: 'number',
+          label: 'Budget ($)',
+          placeholder: '0',
+          min: 0,
+          icon: 'DollarSign'
+        },
+        {
+          name: 'spent',
+          type: 'number',
+          label: 'Amount Spent ($)',
+          placeholder: '0',
+          min: 0,
+          icon: 'DollarSign'
+        },
+        {
+          name: 'client',
+          type: 'text',
+          label: 'Client',
+          placeholder: 'Enter client name',
+          icon: 'Users',
+          containerClass: 'col-span-2'
+        },
+        {
+          name: 'tags',
+          type: 'tags',
+          label: 'Tags',
+          placeholder: 'Add project tags',
+          containerClass: 'col-span-2'
+        },
+        {
+          name: 'team',
+          type: 'team',
+          label: 'Team Members',
+          containerClass: 'col-span-2'
+        },
+        {
+          name: 'starred',
+          type: 'checkbox',
+          label: 'Mark as starred project'
+        }
+      ];
 
     return (
         <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -722,7 +885,7 @@ const ProjectsContent1 = ({ user }) => {
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Open Issues</p>
                                 <p className="text-2xl font-bold text-gray-900">
-                                    {projects.reduce((sum, p) => sum + p.bugs.open, 0)}
+                                    {/* {projects.reduce((sum, p) => sum + p.bugs.open, 0) || "NA"} */}
                                 </p>
                             </div>
                             <div className="p-3 bg-orange-100 rounded-full">
@@ -730,7 +893,7 @@ const ProjectsContent1 = ({ user }) => {
                             </div>
                         </div>
                         <p className="text-xs text-gray-500 mt-2">
-                            {projects.reduce((sum, p) => sum + p.bugs.critical, 0)} critical
+                            {/* {projects.reduce((sum, p) => sum + p.bugs.critical, 0) || "NA"} critical */}
                         </p>
                     </div>
 
@@ -890,7 +1053,7 @@ const ProjectsContent1 = ({ user }) => {
                     </div>
                 )}
                 {/* add project */}
-                <GlobalModel
+                {/* <GlobalModel
                     isOpen={isAddModelOpen}
                     onClose={() => setIsAddModelOpen(false)}
                     header="Add new projects"
@@ -903,7 +1066,23 @@ const ProjectsContent1 = ({ user }) => {
                             handleInputChange={handleProjectInputChange}
                         />
                     }
-                />
+                /> */}
+                <GlobalModelP
+                    isOpen={isAddModelOpen}
+                    onClose={() => setIsAddModelOpen(false)}
+                    header="Add New Project"
+                    onSubmit={handleAddProject}
+                    submitText="Add Project"
+                    size="large"
+                >
+                    <div className="grid grid-cols-2 gap-4">
+                        <RenderHtmlFieldsP
+                            fieldItems={projectConfigV2}
+                            formData={projectFormData}
+                            handleInputChange={handleProjectInputChange}
+                        />
+                    </div>
+                </GlobalModelP>
             </div>
         </div>
     );

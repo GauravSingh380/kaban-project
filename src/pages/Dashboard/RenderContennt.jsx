@@ -29,6 +29,7 @@ import ProjectsPage from "../../components/DataView/usage/DataUsage3";
 import DataView2 from "../../components/DataView/DataView2";
 import DataUsage1 from "../../components/DataView/usage/DataUsage1";
 import { Activity, AlertCircle, Archive, CheckCircle2, Clock, Download, FolderOpen } from "lucide-react";
+import ProjectsComponent from "../../components/Projects/ProjectsComponent";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -412,6 +413,7 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
       <div className="space-y-2">
         <ProjectsContent1 />
         {/* <ProjectsContent2 /> */}
+        <ProjectsComponent />
       </div>
     ),
     issues: (
