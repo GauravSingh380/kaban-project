@@ -413,7 +413,7 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
       <div className="space-y-2">
         <ProjectsContent1 />
         {/* <ProjectsContent2 /> */}
-        <ProjectsComponent />
+        {/* <ProjectsComponent /> */}
       </div>
     ),
     issues: (
