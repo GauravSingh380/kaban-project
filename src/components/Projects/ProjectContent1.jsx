@@ -10,6 +10,7 @@ import GlobalModel from '../common/GlobalModel';
 import RenderHtmlFields from '../common/RenderHtmlFields';
 import GlobalModelP from './ProjectItems/GlobalModel';
 import RenderHtmlFieldsP from './ProjectItems/RenderHtmlFields';
+import { addProjectJsonConfig } from './projectComp';
 
 const ProjectsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -47,40 +48,6 @@ const ProjectsContent1 = ({ user }) => {
         tags: [],
         starred: false
     });
-
-    const jsoData =     {
-        id: 1,
-        name: 'E-commerce Platform',
-        description: 'Complete redesign of the e-commerce.',
-        status: 'active',
-        priority: 'high',
-        progress: 78,
-        startDate: '2024-01-15',
-        dueDate: '2024-08-15',
-        budget: 45000,
-        spent: 35000,
-        team: [
-            { name: 'John Doe', role: 'Project Manager', avatar: 'JD' },
-            { name: 'Sarah Wilson', role: 'Frontend Developer', avatar: 'SW' },
-            { name: 'Mike Johnson', role: 'Backend Developer', avatar: 'MJ' },
-            { name: 'Emily Davis', role: 'UI/UX Designer', avatar: 'ED' }
-        ],
-        bugs: {
-            total: 15,
-            open: 12,
-            critical: 3,
-            resolved: 3
-        },
-        milestones: {
-            total: 8,
-            completed: 6,
-            upcoming: 2
-        },
-        client: 'TechCorp Inc.',
-        tags: ['E-commerce', 'React', 'Node.js', 'MongoDB'],
-        starred: true
-    }
-
 
     // Mock projects data - replace with your actual data
     const [projects, setProjects] = useState(projectData);
@@ -295,7 +262,7 @@ const ProjectsContent1 = ({ user }) => {
                         <span className="text-xs text-gray-500">{project.team.length} members</span>
                     </div>
                     <div className="flex -space-x-2">
-                        {/* {project.team.slice(0, 4).map((member, index) => (
+                        {project.team.slice(0, 4).map((member, index) => (
                             <div
                                 key={index}
                                 className="w-8 h-8 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center border-2 border-white"
@@ -308,31 +275,31 @@ const ProjectsContent1 = ({ user }) => {
                             <div className="w-8 h-8 rounded-full bg-gray-500 text-white text-xs flex items-center justify-center border-2 border-white">
                                 +{project.team.length - 4}
                             </div>
-                        )} */}
+                        )}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center">
-                        {/* <p className="text-sm font-medium text-gray-900">{project.bugs.open}</p> */}
+                        <p className="text-sm font-medium text-gray-900">{project.bugs.open}</p>
                         <p className="text-xs text-gray-500">Open Bugs</p>
                     </div>
                     <div className="text-center">
-                        {/* <p className="text-sm font-medium text-gray-900">{project.milestones.completed}/{project.milestones.total}</p> */}
+                        <p className="text-sm font-medium text-gray-900">{project.milestones.completed}/{project.milestones.total}</p>
                         <p className="text-xs text-gray-500">Milestones</p>
                     </div>
                     <div className="text-center">
-                        {/* <p className="text-sm font-medium text-gray-900">{Math.round((project.spent / project.budget) * 100)}%</p> */}
+                        <p className="text-sm font-medium text-gray-900">{Math.round((project.spent / project.budget) * 100)}%</p>
                         <p className="text-xs text-gray-500">Budget Used</p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap gap-1 mb-4">
-                    {/* {project.tags.map((tag, index) => (
+                    {project.tags.map((tag, index) => (
                         <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                             {tag}
                         </span>
-                    ))} */}
+                    ))}
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-100">
@@ -528,115 +495,6 @@ const ProjectsContent1 = ({ user }) => {
         
         setIsAddModelOpen(false);
       };
-    const projectConfigV2 = [
-        {
-          name: 'name',
-          type: 'text',
-          label: 'Project Name',
-          placeholder: 'Enter project name',
-          required: true,
-          containerClass: 'col-span-2'
-        },
-        {
-          name: 'description',
-          type: 'textarea',
-          label: 'Description',
-          placeholder: 'Enter project description',
-          rows: 3,
-          containerClass: 'col-span-2'
-        },
-        {
-          name: 'status',
-          type: 'select',
-          label: 'Status',
-          placeholder: 'Select status',
-          required: true,
-          options: [
-            { value: 'active', label: 'Active' },
-            { value: 'testing', label: 'Testing' },
-            { value: 'planning', label: 'Planning' },
-            { value: 'completed', label: 'Completed' },
-            { value: 'on_hold', label: 'On Hold' }
-          ]
-        },
-        {
-          name: 'priority',
-          type: 'select',
-          label: 'Priority',
-          placeholder: 'Select priority',
-          required: true,
-          options: [
-            { value: 'critical', label: 'Critical' },
-            { value: 'high', label: 'High' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'low', label: 'Low' }
-          ]
-        },
-        {
-          name: 'progress',
-          type: 'range',
-          label: 'Progress (%)',
-          min: 0,
-          max: 100,
-          step: 5,
-          containerClass: 'col-span-2'
-        },
-        {
-          name: 'startDate',
-          type: 'date',
-          label: 'Start Date',
-          required: true
-        },
-        {
-          name: 'dueDate',
-          type: 'date',
-          label: 'Due Date',
-          required: true
-        },
-        {
-          name: 'budget',
-          type: 'number',
-          label: 'Budget ($)',
-          placeholder: '0',
-          min: 0,
-          icon: 'DollarSign'
-        },
-        {
-          name: 'spent',
-          type: 'number',
-          label: 'Amount Spent ($)',
-          placeholder: '0',
-          min: 0,
-          icon: 'DollarSign'
-        },
-        {
-          name: 'client',
-          type: 'text',
-          label: 'Client',
-          placeholder: 'Enter client name',
-          icon: 'Users',
-          containerClass: 'col-span-2'
-        },
-        {
-          name: 'tags',
-          type: 'tags',
-          label: 'Tags',
-          placeholder: 'Add project tags',
-          containerClass: 'col-span-2'
-        },
-        {
-          name: 'team',
-          type: 'team',
-          label: 'Team Members',
-          containerClass: 'col-span-2'
-        },
-        {
-          name: 'starred',
-          type: 'checkbox',
-          label: 'Mark as starred project'
-        }
-      ];
-
     return (
         <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
             {/* Header */}
@@ -1052,21 +910,6 @@ const ProjectsContent1 = ({ user }) => {
                         </div>
                     </div>
                 )}
-                {/* add project */}
-                {/* <GlobalModel
-                    isOpen={isAddModelOpen}
-                    onClose={() => setIsAddModelOpen(false)}
-                    header="Add new projects"
-                    onSubmit={handleAddProject}
-                    submitText="Add project"
-                    children={
-                        <RenderHtmlFields
-                            fieldItems={projectConfig}
-                            formData={projectFormData}
-                            handleInputChange={handleProjectInputChange}
-                        />
-                    }
-                /> */}
                 <GlobalModelP
                     isOpen={isAddModelOpen}
                     onClose={() => setIsAddModelOpen(false)}
@@ -1075,9 +918,9 @@ const ProjectsContent1 = ({ user }) => {
                     submitText="Add Project"
                     size="large"
                 >
-                    <div className="grid grid-cols-2 gap-4">
+                    <div>
                         <RenderHtmlFieldsP
-                            fieldItems={projectConfigV2}
+                            fieldItems={addProjectJsonConfig}
                             formData={projectFormData}
                             handleInputChange={handleProjectInputChange}
                         />

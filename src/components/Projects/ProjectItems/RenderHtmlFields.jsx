@@ -6,7 +6,7 @@ import {
   AlertCircle, TrendingUp, Target, TrendingDown 
 } from 'lucide-react';
 
-const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange }) => {
+const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange, gridClasses = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" }) => {
   const [newMember, setNewMember] = useState({ name: '', role: '', avatar: '' });
   const [newTag, setNewTag] = useState('');
 
@@ -25,6 +25,15 @@ const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange }) => {
                          icon === 'TrendingUp' ? TrendingUp :
                          icon === 'Target' ? Target :
                          icon === 'TrendingDown' ? TrendingDown : null;
+    const roles = [
+      { value: "Project Manager", label: "Project Manager" },
+      { value: "Frontend Developer", label: "Frontend Developer" },
+      { value: "Backend Developer", label: "Backend Developer" },
+      { value: "UI/UX Designer", label: "UI/UX Designer" },
+      { value: "QA Engineer", label: "QA Engineer" },
+      { value: "DevOps Engineer", label: "DevOps Engineer" },
+      { value: "Business Analyst", label: "Business Analyst" },
+    ];
 
     switch (type) {
       case 'text':
@@ -240,13 +249,27 @@ const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange }) => {
                   onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
-                <input
+                {/* <input
                   type="text"
                   placeholder="Role"
                   value={newMember.role}
                   onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
+                /> */}
+                <select
+                  value={newMember.role}
+                  // onChange={(e) => setMemberRole(e.target.value)}
+                  onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+                  // disabled={disabled}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select role</option>
+                  {roles.map(role => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
                 <button
                   type="button"
                   onClick={() => {
@@ -295,7 +318,7 @@ const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className={gridClasses}>
       {fieldItems.map((field, index) => (
         <div key={field.name || index} className={field.containerClass || ""}>
           {field.type !== 'checkbox' && field.label && (
