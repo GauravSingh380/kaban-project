@@ -102,7 +102,7 @@ export const addProjectJsonConfig  = [
       label: 'Client',
       placeholder: 'Enter client name',
       icon: 'Users',
-      containerClass: 'col-span-full' // Full width for better UX
+      containerClass: 'col-span-2' // Full width for better UX
     },
   
     // Tags Section - Full width
@@ -111,7 +111,7 @@ export const addProjectJsonConfig  = [
       type: 'tags',
       label: 'Tags',
       placeholder: 'Add project tags',
-      containerClass: 'col-span-full' // Full width for tag management
+      containerClass: 'col-span-2' // Full width for tag management
     },
   
     // Team Section - Full width
@@ -129,4 +129,159 @@ export const addProjectJsonConfig  = [
       label: 'Mark as starred project',
       containerClass: 'col-span-full' // Full width for consistent alignment
     }
+  ];
+
+  const roles = [
+    // Leadership & Management (Highest Level)
+    { value: "Tech Lead", label: "Tech Lead" },
+    
+    // Project & Product Management
+    { value: "Project Manager", label: "Project Manager" },
+    { value: "Product Manager", label: "Product Manager" },
+    
+    // Senior Level Development
+    { value: "Senior Software Developer", label: "Senior Software Developer" },
+    
+    // Mid Level Development
+    { value: "Software Developer", label: "Software Developer" },
+    { value: "Full Stack Developer", label: "Full Stack Developer" },
+    { value: "Frontend Developer", label: "Frontend Developer" },
+    { value: "Backend Developer", label: "Backend Developer" },
+    { value: "DevOps Engineer", label: "DevOps Engineer" },
+    { value: "Cloud Engineer", label: "Cloud Engineer" },
+    
+    // Quality Assurance
+    { value: "QA Engineer", label: "QA Engineer" },
+    { value: "QA Analyst", label: "QA Analyst" },
+    
+    // Design & Analysis
+    { value: "UI/UX Designer", label: "UI/UX Designer" },
+    { value: "Business Analyst", label: "Business Analyst" },
+    { value: "Data Analyst", label: "Data Analyst" },
+    
+    // Support
+    { value: "Technical Support", label: "Technical Support" },
+    
+    // Entry Level (Lowest Level)
+    { value: "Junior Software Developer", label: "Junior Software Developer" },
+    { value: "Trainee", label: "Trainee" },
+    { value: "Intern", label: "Intern" },
+  ];
+  
+  export const rolesV3 = [
+    // Leadership & Management
+    { value: "Engineering Manager", label: "Engineering Manager" },
+    { value: "Team Lead", label: "Team Lead" },
+    { value: "Tech Lead", label: "Tech Lead" },
+  
+    // Project & Product Management
+    { value: "Project Manager", label: "Project Manager" },
+    { value: "Product Manager", label: "Product Manager" },
+    { value: "Scrum Master", label: "Scrum Master" },
+  
+    // Software Development
+    { value: "Senior Software Developer", label: "Senior Software Developer" },
+    { value: "Software Developer", label: "Software Developer" },
+    { value: "Junior Software Developer", label: "Junior Software Developer" },
+    { value: "Full Stack Developer", label: "Full Stack Developer" },
+    { value: "Frontend Developer", label: "Frontend Developer" },
+    { value: "Backend Developer", label: "Backend Developer" },
+  
+    // Mobile Development
+    { value: "Mobile Developer", label: "Mobile Developer" },
+    { value: "Android Developer", label: "Android Developer" },
+    { value: "iOS Developer", label: "iOS Developer" },
+  
+    // DevOps & Infrastructure
+    { value: "DevOps Engineer", label: "DevOps Engineer" },
+    { value: "Cloud Engineer", label: "Cloud Engineer" },
+  
+    // Quality Assurance
+    { value: "QA Engineer", label: "QA Engineer" },
+    { value: "Test Engineer", label: "Test Engineer" },
+    { value: "QA Analyst", label: "QA Analyst" },
+  
+    // Design
+    { value: "UI/UX Designer", label: "UI/UX Designer" },
+    { value: "UI Designer", label: "UI Designer" },
+    { value: "UX Designer", label: "UX Designer" },
+  
+    // Analysis & Documentation
+    { value: "Business Analyst", label: "Business Analyst" },
+    { value: "Systems Analyst", label: "Systems Analyst" },
+    { value: "Technical Writer", label: "Technical Writer" },
+  
+    // Data
+    { value: "Data Analyst", label: "Data Analyst" },
+  
+    // Support
+    { value: "Technical Support", label: "Technical Support" },
+  
+    // Entry Level
+    { value: "Intern", label: "Intern" },
+    { value: "Trainee", label: "Trainee" },
+  ];
+
+  export const rolesV2 = [
+    // Management & Leadership
+    { value: "CEO", label: "CEO" },
+    { value: "CTO", label: "CTO" },
+    { value: "Engineering Manager", label: "Engineering Manager" },
+    { value: "Team Lead", label: "Team Lead" },
+    { value: "Technical Lead", label: "Technical Lead" },
+  
+    // Project Management
+    { value: "Project Manager", label: "Project Manager" },
+    { value: "Product Manager", label: "Product Manager" },
+    { value: "Product Owner", label: "Product Owner" },
+    { value: "Scrum Master", label: "Scrum Master" },
+  
+    // Development
+    { value: "Senior Software Engineer", label: "Senior Software Engineer" },
+    { value: "Software Engineer", label: "Software Engineer" },
+    { value: "Junior Software Engineer", label: "Junior Software Engineer" },
+    { value: "Full Stack Developer", label: "Full Stack Developer" },
+    { value: "Frontend Developer", label: "Frontend Developer" },
+    { value: "Backend Developer", label: "Backend Developer" },
+    { value: "Mobile Developer", label: "Mobile Developer" },
+  
+    // DevOps & Infrastructure
+    { value: "Senior DevOps Engineer", label: "Senior DevOps Engineer" },
+    { value: "DevOps Engineer", label: "DevOps Engineer" },
+    { value: "Cloud Engineer", label: "Cloud Engineer" },
+    { value: "Site Reliability Engineer", label: "Site Reliability Engineer" },
+  
+    // Quality Assurance
+    { value: "Senior QA Engineer", label: "Senior QA Engineer" },
+    { value: "QA Engineer", label: "QA Engineer" },
+    { value: "Test Engineer", label: "Test Engineer" },
+    { value: "Automation Engineer", label: "Automation Engineer" },
+  
+    // Design
+    { value: "Senior UI/UX Designer", label: "Senior UI/UX Designer" },
+    { value: "UI/UX Designer", label: "UI/UX Designer" },
+    { value: "Product Designer", label: "Product Designer" },
+    { value: "UX Researcher", label: "UX Researcher" },
+  
+    // Data & Analytics
+    { value: "Data Scientist", label: "Data Scientist" },
+    { value: "Data Engineer", label: "Data Engineer" },
+    { value: "Data Analyst", label: "Data Analyst" },
+  
+    // Business & Analysis
+    { value: "Business Analyst", label: "Business Analyst" },
+    { value: "Systems Analyst", label: "Systems Analyst" },
+    { value: "Technical Writer", label: "Technical Writer" },
+  
+    // Security
+    { value: "Security Engineer", label: "Security Engineer" },
+    { value: "Cybersecurity Analyst", label: "Cybersecurity Analyst" },
+  
+    // Support
+    { value: "Technical Support Engineer", label: "Technical Support Engineer" },
+    { value: "Customer Success Manager", label: "Customer Success Manager" },
+  
+    // Intern & Entry Level
+    { value: "Software Engineer Intern", label: "Software Engineer Intern" },
+    { value: "Graduate Developer", label: "Graduate Developer" },
   ];

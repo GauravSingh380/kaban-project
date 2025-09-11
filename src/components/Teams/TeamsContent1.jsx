@@ -18,6 +18,10 @@ import Teams from './contents/Teams';
 import Permissions from './contents/Permissions';
 import Analytics from './contents/Analytics';
 import LeaveRequests from './contents/LeaveRequests';
+import TeamAnalytics1 from './contents/TeamAnalytics1';
+import TeamAnalytics2 from './contents/TeamAnalytics2';
+import LeaveRequests1 from './contents/LeaveRequests1';
+import LeaveRequests2 from './contents/LeaveRequests2';
 
 const TeamsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -787,10 +791,26 @@ const TeamsContent1 = ({ user }) => {
             )}
 
             {activeTab === 'analytics' && (
-                <Analytics teamMembers={teamMembers} />
+                // <Analytics teamMembers={teamMembers} />
+                <>
+                <TeamAnalytics1 />
+                <br />
+                <br />
+                <br />
+                <br />
+                <TeamAnalytics2 />
+                </>
             )}
             {activeTab === 'leaveRequests' && (
-                <LeaveRequests teamMembers={teamMembers} />
+                // <LeaveRequests teamMembers={teamMembers} />
+                <>
+                <LeaveRequests1 />
+                <br />
+                <br />
+                <br />
+                <br />
+                <LeaveRequests2 />
+</>
             )}
 
             {/* Invite Member Modal */}

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Plus, Search, Calendar, Bug, AlertCircle, CheckCircle2, Clock,
-    TrendingUp, TrendingDown, FolderOpen, Eye, Edit, Trash2, Archive, Star,
-    Activity, Target, X, LayoutGrid, List
+    Plus, Search, Calendar, FolderOpen, Trash2, Archive,X, LayoutGrid, List
 } from 'lucide-react';
 import { projectData } from './ProjectItems/projectData';
 import { projectConfig } from '../../helper';
@@ -430,7 +428,7 @@ const ProjectsContent1 = ({ user }) => {
                 ) : (
                     <>
                         {viewMode === 'grid' ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6">
                                 {currentItems.map(project => (
                                     <ProjectCard key={project.id}
                                         project={project}
