@@ -15,6 +15,8 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
+  const [projectDetails, setProjectDetails] = useState([]);
+  const [newProject, setNewProject] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         }
       };
   
-      const interval = setInterval(refreshAccessTokenIfVisible, 14 * 60 * 1000); // 14 mins
+      const interval = setInterval(refreshAccessTokenIfVisible, 25 * 60 * 1000); // 25 mins
       tokenCheckIntervalRef.current = interval;
     }
   
@@ -139,6 +141,30 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const getAllProjectDetails = useCallback(async () => {
+    try {
+      const response = await authService.getProjects();
+      if (response.success) {
+        setProjectDetails(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const createNewProject = useCallback(async (payload) => {
+    try {
+      const response = await authService.createProjects(payload);
+      if (response.success) {
+        setNewProject(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
 
   const register = useCallback(async (userData) => {
     setLoading(true);
@@ -199,7 +225,11 @@ export const AuthProvider = ({ children }) => {
     logout,
     logoutAll,
     checkAuthStatus,
-    refreshAccessToken
+    refreshAccessToken,
+    projectDetails,
+    newProject,
+    createNewProject,
+    getAllProjectDetails
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -111,7 +111,7 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection }) => (
             <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium text-gray-700">Progress</span>
-                    <span className="text-sm font-medium text-gray-900">{project.progress}%</span>
+                    <span className="text-sm font-medium text-gray-900">{project.progress || 0}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -175,7 +175,7 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection }) => (
                     <p className="text-xs text-gray-500">Milestones</p>
                 </div>
                 <div className="text-center">
-                    <p className="text-sm font-medium text-gray-900">{Math.round((project.spent / project.budget) * 100)}%</p>
+                    <p className="text-sm font-medium text-gray-900">{Math.round((project.spent / project.budget || 0) * 100)}%</p>
                     <p className="text-xs text-gray-500">Budget Used</p>
                 </div>
             </div>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-    Plus, Search, Calendar, FolderOpen, Trash2, Archive,X, LayoutGrid, List
+    Plus, Search, Calendar, FolderOpen, Trash2, Archive, X, LayoutGrid, List
 } from 'lucide-react';
 import { projectData } from './ProjectItems/projectData';
 import { projectConfig } from '../../helper';
@@ -12,6 +12,8 @@ import { addProjectJsonConfig } from './projectComp';
 import ProjectCard from './projectComp/ProjectCard';
 import ProjectListItem from './projectComp/ProjectListItem';
 import StatisticsCard from './projectComp/StatisticsCard';
+import { useApi, useAuth } from '../../api';
+import { useToast } from '../StyledAlert/ToastContext';
 
 const ProjectsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +24,21 @@ const ProjectsContent1 = ({ user }) => {
     const [showFilters, setShowFilters] = useState(false);
     const [selectedProjects, setSelectedProjects] = useState([]);
     const [isAddModelOpen, setIsAddModelOpen] = useState(false)
+
+    const alert = useToast();
+    const hasFetchedProjects = useRef(false);
+
+    const { isAuthenticated, projectDetails, getAllProjectDetails, newProject, createNewProject } = useAuth();
+    const {
+        loading: loadingGetProjectDetails,
+        error: errorGetProjectDetails,
+        execute: executeGetProjectDetails
+    } = useApi(getAllProjectDetails);
+    const {
+        loading: loadingCreateProject,
+        error: errorCreateProject,
+        execute: executeCreateProject
+    } = useApi(createNewProject);
 
     const [projectFormData, setProjectFormData] = useState({
         name: "",
@@ -51,7 +68,7 @@ const ProjectsContent1 = ({ user }) => {
     });
 
     // Mock projects data - replace with your actual data
-    const [projects, setProjects] = useState(projectData);
+    const [projects, setProjects] = useState([]);
 
     const statusOptions = [
         { value: 'all', label: 'All Status' },
@@ -147,7 +164,7 @@ const ProjectsContent1 = ({ user }) => {
             [fieldName]: value
         }));
     };
-    const handleAddProject = () => {
+    const handleAddProject = async () => {
         // Validate required fields
         const requiredFields = projectConfig.filter(field => field.required);
         const missingFields = requiredFields.filter(field =>
@@ -156,48 +173,94 @@ const ProjectsContent1 = ({ user }) => {
         );
 
         if (missingFields.length > 0) {
-            alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+            alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
             return;
         }
+
+        try {
+            const apiResp = await executeCreateProject(projectFormData);
+            console.log("apiResp------", apiResp);
+            if (apiResp) {
+                alert.success(`${apiResp?.message || "User updated successful!"}`);
+                setProjects(prev => [...prev, apiResp.data]);
+
+                // Reset form
+                // setProjectFormData({ ...initialFormData });
+                setIsAddModelOpen(false);
+            }
+        } catch (error) {
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get projects. Please try again.");
+            }
+            console.log('Failed to get projects:', error.message || error);
+        }
+
+
         console.log("----form data----", projectFormData);
-        setProjects((prev) => {
-            return [...prev, {
-                ...projectFormData,
-                id: prev.length + 1,
-                // Set default values for missing optional fields
-                bugs: {
-                    total: 0,
-                    open: 0,
-                    critical: 0,
-                    resolved: 0
-                },
-                milestones: {
-                    total: 0,
-                    completed: 0,
-                    upcoming: 0
-                }
-            }];
-        });
+        // setProjects((prev) => {
+        //     return [...prev, {
+        //         ...projectFormData,
+        //         id: prev.length + 1,
+        //         // Set default values for missing optional fields
+        //         bugs: {
+        //             total: 0,
+        //             open: 0,
+        //             critical: 0,
+        //             resolved: 0
+        //         },
+        //         milestones: {
+        //             total: 0,
+        //             completed: 0,
+        //             upcoming: 0
+        //         }
+        //     }];
+        // });
 
-        // Reset form and close modal
-        setProjectFormData({
-            name: "",
-            description: "",
-            status: "",
-            priority: "",
-            progress: 0,
-            startDate: "",
-            dueDate: "",
-            budget: 0,
-            spent: 0,
-            team: [],
-            client: "",
-            tags: [],
-            starred: false
-        });
+        // // Reset form and close modal
+        // setProjectFormData({
+        //     name: "",
+        //     description: "",
+        //     status: "",
+        //     priority: "",
+        //     progress: 0,
+        //     startDate: "",
+        //     dueDate: "",
+        //     budget: 0,
+        //     spent: 0,
+        //     team: [],
+        //     client: "",
+        //     tags: [],
+        //     starred: false
+        // });
 
-        setIsAddModelOpen(false);
+        // setIsAddModelOpen(false);
     };
+    const getProjectDetails = useCallback(async () => {
+        try {
+            const apiResp = await executeGetProjectDetails();
+            if (apiResp) {
+                alert.success(`${apiResp?.message || "Project fetched successful!"}`);
+                setProjects(apiResp?.data.projects || []);
+            }
+        } catch (error) {
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get projects. Please try again.");
+            }
+            console.log('Failed to get projects:', error.message || error);
+        }
+    }, [executeGetProjectDetails]);
+
+    useEffect(() => {
+        if (isAuthenticated && !loadingGetProjectDetails && !hasFetchedProjects.current) {
+            hasFetchedProjects.current = true;
+            getProjectDetails();
+        }
+    }, [isAuthenticated, projects, projectDetails, getProjectDetails, loadingGetProjectDetails]);
+
     return (
         <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
             {/* Header */}
@@ -428,9 +491,9 @@ const ProjectsContent1 = ({ user }) => {
                 ) : (
                     <>
                         {viewMode === 'grid' ? (
-                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
                                 {currentItems.map(project => (
-                                    <ProjectCard key={project.id}
+                                    <ProjectCard key={project._id}
                                         project={project}
                                         selectedProjects={selectedProjects}
                                         toggleProjectSelection={toggleProjectSelection}

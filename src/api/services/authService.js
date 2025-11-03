@@ -80,6 +80,22 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
+  getProjects: async () => {
+    try {
+      const response = await apiClient.get('/projects/get');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
+  createProjects: async (payload) => {
+    try {
+      const response = await apiClient.post('/projects/create', payload);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
 };
 
 

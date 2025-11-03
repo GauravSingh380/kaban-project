@@ -49,7 +49,7 @@ const StatisticsCard = ({ projects }) => {
                     <div>
                         <p className="text-sm font-medium text-gray-600">Open Issues</p>
                         <p className="text-2xl font-bold text-gray-900">
-                            {/* {projects.reduce((sum, p) => sum + p.bugs.open, 0) || "NA"} */}
+                            {projects.reduce((sum, p) => sum + p?.bugs?.open, 0) || "NA"}
                         </p>
                     </div>
                     <div className="p-3 bg-orange-100 rounded-full">
@@ -57,7 +57,8 @@ const StatisticsCard = ({ projects }) => {
                     </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                    {projects.reduce((sum, p) => sum + p.bugs.critical, 0) || "NA"} critical
+                    {projects.reduce((sum, p) => sum + p?.bugs?.critical, 0) || "NA"} critical
+                     critical
                 </p>
             </div>
 
