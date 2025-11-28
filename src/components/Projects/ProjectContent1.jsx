@@ -14,6 +14,7 @@ import ProjectListItem from './projectComp/ProjectListItem';
 import StatisticsCard from './projectComp/StatisticsCard';
 import { useApi, useAuth } from '../../api';
 import { useToast } from '../StyledAlert/ToastContext';
+import ApiSpinner from '../ApiSpinner';
 
 const ProjectsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -145,7 +146,7 @@ const ProjectsContent1 = ({ user }) => {
 
     // Add these state variables at the top of your component with other state declarations
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5); // You can make this configurable
+    const [itemsPerPage, setItemsPerPage] = useState(10); // You can make this configurable
 
     // Add this pagination logic after your sorting logic
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -260,6 +261,16 @@ const ProjectsContent1 = ({ user }) => {
             getProjectDetails();
         }
     }, [isAuthenticated, projects, projectDetails, getProjectDetails, loadingGetProjectDetails]);
+
+    if (loadingGetProjectDetails) {
+        return <ApiSpinner
+            borderWidth='3px'
+            size='2.5rem'
+            text='Loading...'
+            fontSize='font-semibold'
+            // color='white'
+        />;
+    }
 
     return (
         <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -623,7 +634,15 @@ const ProjectsContent1 = ({ user }) => {
                     onClose={() => setIsAddModelOpen(false)}
                     header="Add New Project"
                     onSubmit={handleAddProject}
-                    submitText="Add Project"
+                    submitText={loadingCreateProject
+                        ?
+                        <ApiSpinner
+                            borderWidth='3px'
+                            size='1.5rem'
+                            text='Adding...'
+                            fontSize='font-semibold'
+                        // color='white'
+                        /> : 'Add Project'}
                     size="large"
                 >
                     <div>

@@ -4,7 +4,7 @@ const ApiSpinner = ({ borderWidth = '3px', size = '1.5rem', text = '', fontSize 
     <div className="flex items-center justify-center gap-2">
       <div 
         className={`animate-spin rounded-full border-t-transparent border-${color || "purple-500"}`}
-        style={{ 
+        style={{
           width: size, 
           height: size, 
           borderWidth: borderWidth 
