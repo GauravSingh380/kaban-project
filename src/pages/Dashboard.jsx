@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useApi, useAuth } from '../api'; // Update path as needed
+import { useApi, useAuth } from '../api';
 import { allMenuItems } from '../helper';
 import SidebarTabs from '../components/common/SidebarTabs';
 import RenderContent from './Dashboard/RenderContennt';
@@ -9,18 +9,40 @@ const Dashboard = () => {
 
   const { user, isAuthenticated, logout, loading } = useAuth();
   const { execute } = useApi(logout);
-  let defaultTab; 
-  if(user){
-    defaultTab = user.role === 'admin' || user.role === 'super-admin' ? 'dashboard' : 'issues';
-  }
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  // Get default tab based on user role
+  const getDefaultTab = () => {
+    if (!user) return 'dashboard';
+    return user.role === 'admin' || user.role === 'super-admin' ? 'dashboard' : 'issues';
+  };
+
+  // Initialize activeTab from localStorage or default
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem('activeTab');
+    const defaultTab = getDefaultTab();
+    
+    // Verify saved tab is valid for current user role
+    if (savedTab && user) {
+      const menuItems = allMenuItems.filter(item => item.roles.includes(user.role));
+      const isValidTab = menuItems.some(item => item.id === savedTab);
+      return isValidTab ? savedTab : defaultTab;
+    }
+    
+    return defaultTab;
+  });
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [error, setError] = useState(null);
-  
-  const navigate = useNavigate();
-  const location = useLocation();
+
+  // Persist activeTab to localStorage whenever it changes
+  useEffect(() => {
+    if (activeTab) {
+      localStorage.setItem('activeTab', activeTab);
+    }
+  }, [activeTab]);
 
   // Handle authentication state
   useEffect(() => {
@@ -49,11 +71,13 @@ const Dashboard = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     try {
       const apiResp = await execute();
       if (apiResp) {
-        alert.success("Log-out successful!")
+        // Clear saved tab on logout
+        localStorage.removeItem('activeTab');
+        alert.success("Log-out successful!");
         navigate('/login');
       }
     } catch (error) {
@@ -107,7 +131,7 @@ const Dashboard = () => {
       menuItems={menuItems}
       renderContent={renderContent}
       orientation="vertical"
-      defaultTab="dashboard"
+      defaultTab={getDefaultTab()}
       setActiveTab={setActiveTab}
       activeTab={activeTab}
       onLogout={handleLogout}
