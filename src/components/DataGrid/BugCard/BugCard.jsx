@@ -1,7 +1,7 @@
 import { getPriorityColor, getStatusColor } from "../../../helper";
 import { Eye, Edit, Trash2, Calendar, User, Clock } from 'lucide-react';
 
-const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
+const BugCard = ({ id, project, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
   return (
     <div className={`bg-white border rounded-lg p-6 hover:shadow-md transition-shadow ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
       <div className="flex items-start justify-between mb-4">
@@ -18,6 +18,9 @@ const BugCard = ({ id, slNo, issueEnv, title, description, reportedOn, reportedB
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800">
+            {project}
+          </span>
           {(status !== "fixed" && status !== "closed") && <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
             {priority}
           </span>}

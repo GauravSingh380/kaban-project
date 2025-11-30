@@ -30,6 +30,7 @@ import DataView2 from "../../components/DataView/DataView2";
 import DataUsage1 from "../../components/DataView/usage/DataUsage1";
 import { Activity, AlertCircle, Archive, CheckCircle2, Clock, Download, FolderOpen } from "lucide-react";
 import ProjectsComponent from "../../components/Projects/ProjectsComponent";
+import BugsV1 from "../../components/Bugs/BugsV1";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -419,6 +420,11 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     issues: (
       <div className="space-y-6">
         <DataGrid />
+        <br />
+        <br />
+        <br />
+        <br />
+        <BugsV1 />
       </div>
     ),
     reports: (

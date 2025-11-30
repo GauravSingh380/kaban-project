@@ -31,6 +31,7 @@ export const initialBugs = [
   {
     id: 1,
     slNo: 101,
+    project: 'TWR',
     issueEnv: ['dev', 'prod'],
     title: 'Login page crashes on invalid email',
     description: "As a school admin, Purchased The Hochman Method: 3–12 (Live Virtual) membership with 5 educators , but on admin dahboard same membership displaying twice",
@@ -46,6 +47,7 @@ export const initialBugs = [
   {
     id: 2,
     slNo: 102,
+    project: 'TWR',
     issueEnv: ['demo'],
     title: 'Dashboard chart not loading',
     description: 'TWR admin -- Dashboard login -- District listing page -- in District filter -- one District coming multiple time ( its coming e.g. 6 distict admin accounts created with 1 district then in filter its coming 6 times , it should come only 1 time) and with ',
@@ -61,6 +63,7 @@ export const initialBugs = [
   {
     id: 3,
     slNo: 103,
+    project: 'PWC',
     issueEnv: ['prod'],
     title: 'TWR admin',
     description: 'TWR admin -- Dashboard login -- District/School listing page -- in Status filter -- there is 2 words using 1 is Deactivate in status column 2. is Inactive in status filter it should be consitance ( with inactive filter deactivate data coming)',
@@ -76,6 +79,7 @@ export const initialBugs = [
   {
     id: 4,
     slNo: 104,
+    project: 'MetLife',
     issueEnv: ['dev', 'stg'],
     title: 'Email notifications not sent',
     description: 'Users are not receiving email notifications for password reset requests.',
@@ -91,6 +95,7 @@ export const initialBugs = [
   {
     id: 5,
     slNo: 105,
+    project: 'MetLife',
     issueEnv: ['demo', 'stg'],
     title: 'UI elements overlapping on mobile',
     description: 'TWR admin -- Dashboard login -- School listing page -- only 2 option in status filter ( Active and Inactive , But on status column there is 3 status ( Active, Deactivate, Pending) status should be consitance (Inactive & deactivated) pending option should also in status filter',
@@ -106,6 +111,7 @@ export const initialBugs = [
   {
     id: 6,
     slNo: 106,
+    project: 'GenAi',
     issueEnv: ['demo', 'stg'],
     title: 'UI elements overlapping on mobile',
     description: 'On mobile devices, navigation menu overlaps with main content area.',
@@ -121,6 +127,7 @@ export const initialBugs = [
   {
     id: 7,
     slNo: 107,
+    project: 'GenAi',
     issueEnv: ['demo', 'stg'],
     title: 'UI elements overlapping on mobile',
     description: 'On mobile devices, navigation menu overlaps with main content area.',
@@ -158,13 +165,14 @@ export const getStatusColor = (status) => {
 export const formConfig = [
   {
     "id": "1",
-    "type": "text",
-    "label": "Bug Title",
-    "name": "title",
+    "type": "select",
+    "label": "Project",
+    "name": "Select project",
     "required": true,
-    "placeholder": "Enter bug title",
-    "options": [],
+    "placeholder": "",
+    "options": ['TWR', 'PWC', 'MetLife', 'GenAi'],
     "conditions": [],
+    "alignment": 'grid grid-cols-2 gap-4',
     "validations": {
       "minLength": "",
       "maxLength": "",
@@ -175,6 +183,24 @@ export const formConfig = [
   },
   {
     "id": "2",
+    "type": "text",
+    "label": "Bug Title",
+    "name": "title",
+    "required": true,
+    "placeholder": "Enter bug title",
+    "options": [],
+    "alignment": 'grid grid-cols-2 gap-4',
+    "conditions": [],
+    "validations": {
+      "minLength": "",
+      "maxLength": "",
+      "pattern": "",
+      "min": "",
+      "max": ""
+    }
+  },
+  {
+    "id": "3",
     "type": "textarea",
     "label": "Description",
     "name": "description",
@@ -191,7 +217,7 @@ export const formConfig = [
     }
   },
   {
-    "id": "3",
+    "id": "4",
     "type": "select",
     "label": "Priority",
     "name": "priority",
@@ -209,7 +235,7 @@ export const formConfig = [
     }
   },
   {
-    "id": "4",
+    "id": "5",
     "type": "select",
     "label": "Status",
     "name": "status",
@@ -227,7 +253,7 @@ export const formConfig = [
     }
   },
   {
-    "id": "5",
+    "id": "6",
     "type": "text",
     "label": "Reported By",
     "name": "reportedBy",
@@ -245,7 +271,7 @@ export const formConfig = [
     }
   },
   {
-    "id": "6",
+    "id": "7",
     "type": "text",
     "label": "Assigned To",
     "name": "assignedTo",
@@ -263,7 +289,7 @@ export const formConfig = [
     }
   },
   {
-    "id": "7",
+    "id": "8",
     "type": "checkbox",
     "label": "Environment",
     "name": "issueEnv",
@@ -285,7 +311,7 @@ export const formConfig = [
     }
   },
   {
-    "id": "8",
+    "id": "9",
     "type": "textarea",
     "label": "Comments",
     "name": "comments",

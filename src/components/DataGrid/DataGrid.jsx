@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Upload } from 'lucide-react';
+import { Building2, Upload } from 'lucide-react';
 import { Search, Filter, Download, Plus, ChevronLeft, ChevronRight, X, AlertCircle } from 'lucide-react';
 import { formConfig, initialBugs } from '../../helper';
 import BugCard from './BugCard/BugCard';
@@ -7,6 +7,8 @@ import AddBugModal from './BugModel/AddBugModal';
 import ImportBugModal from './ImportBugModel/ImportBugModal';
 import GlobalModel from '../common/GlobalModel';
 import RenderHtmlFields from '../common/RenderHtmlFields';
+import { useToast } from '../StyledAlert/ToastContext';
+import BugStats from './BugCard/BugStats';
 
 const BugManagementSystem = () => {
   const [originalData, setOriginalData] = useState(initialBugs);
@@ -24,12 +26,15 @@ const BugManagementSystem = () => {
     reportedBy: '',
     environment: ''
   });
+  const alert = useToast();
+
   // Add this state variable with other useState declarations in BugManagementSystem component
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
   const [currentEditBugId, setCurrentEditBugId] = useState(null)
   const [formData, setFormData] = useState({
+    project: '',
     title: '',
     description: '',
     priority: '',
@@ -40,33 +45,47 @@ const BugManagementSystem = () => {
     comments: ''
   })
 
+  const [selectedProject, setSelectedProject] = useState('');
+  const [availableProjects] = useState(['TWR', 'PWC', 'MetLife', 'GenAi']);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Filter bugs by selected project FIRST
+  const projectFilteredData = useMemo(() => {
+    if (!selectedProject) return originalData;
+    const finalData = originalData.filter(bug => bug.project === selectedProject);
+    return finalData;
+  }, [originalData, selectedProject]);
 
   // Get unique values for filter dropdowns
   const filterOptions = useMemo(() => ({
-    priorities: [...new Set(originalData.map(item => item.priority))],
-    statuses: [...new Set(originalData.map(item => item.status))],
-    assignedTo: [...new Set(originalData.map(item => item.assignedTo))],
-    reportedBy: [...new Set(originalData.map(item => item.reportedBy))],
-    environments: [...new Set(originalData.flatMap(item => item.issueEnv))]
-  }), [originalData]);
+    priorities: [...new Set(projectFilteredData.map(item => item.priority))],
+    statuses: [...new Set(projectFilteredData.map(item => item.status))],
+    assignedTo: [...new Set(projectFilteredData.map(item => item.assignedTo))],
+    reportedBy: [...new Set(projectFilteredData.map(item => item.reportedBy))],
+    environments: [...new Set(projectFilteredData.flatMap(item => item.issueEnv))]
+  }), [projectFilteredData]); // CHANGE: was [originalData]
+  // Reset page when project changes
+  useEffect(() => {
+    setCurrentPage(1);
+    setSelectedRows([]);
+  }, [selectedProject]);
 
   // Filtering logic
   const filteredData = useMemo(() => {
-    let filtered = originalData;
+    let filtered = projectFilteredData;
 
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(item => {
         const searchLower = searchTerm.toLowerCase();
-        
+
         // Safe string conversion helper
         const safeToString = (value) => {
           if (value === null || value === undefined) return '';
           if (Array.isArray(value)) return value.join(' ');
           return String(value);
         };
-    
+
         return (
           safeToString(item.title).toLowerCase().includes(searchLower) ||
           safeToString(item.description).toLowerCase().includes(searchLower) ||
@@ -76,8 +95,8 @@ const BugManagementSystem = () => {
           safeToString(item.comments).toLowerCase().includes(searchLower) ||
           safeToString(item.status).toLowerCase().includes(searchLower) ||
           safeToString(item.priority).toLowerCase().includes(searchLower) ||
-          (Array.isArray(item.issueEnv) && 
-            item.issueEnv.some(env => 
+          (Array.isArray(item.issueEnv) &&
+            item.issueEnv.some(env =>
               safeToString(env).toLowerCase().includes(searchLower)
             )
           )
@@ -103,7 +122,7 @@ const BugManagementSystem = () => {
     }
 
     return filtered;
-  }, [originalData, searchTerm, filters]);
+  }, [projectFilteredData, searchTerm, filters]);
 
   // Sorting logic
   const sortedData = useMemo(() => {
@@ -257,6 +276,10 @@ const BugManagementSystem = () => {
 
   // Add this function with other handlers in BugManagementSystem component
   const handleImportBugs = (importedBugs) => {
+    if (!selectedProject) {
+      alert('Please select a project before importing bugs');
+      return;
+    }
     // Generate unique IDs and serial numbers
     const maxId = Math.max(...originalData.map(b => b.id), 0);
     const maxSlNo = Math.max(...originalData.map(b => b.slNo), 0);
@@ -265,6 +288,7 @@ const BugManagementSystem = () => {
       ...bug,
       id: maxId + index + 1,
       slNo: maxSlNo + index + 1,
+      project: selectedProject,
       // Ensure all required fields have values
       title: bug.title || 'Untitled Bug',
       description: bug.description || 'No description provided',
@@ -285,31 +309,38 @@ const BugManagementSystem = () => {
   };
   const handleInputChange = (fieldName, value) => {
     setFormData(prev => ({
-        ...prev,
-        [fieldName]: value
+      ...prev,
+      [fieldName]: value
     }));
-};
-const handleAddNewBug = (e) => {
-  const requiredFields = formConfig.filter(field => field.required);
-    const missingFields = requiredFields.filter(field => !formData[field.name]);
-    
-    if (missingFields.length > 0) {
-      alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+  };
+  const handleAddNewBug = (e) => {
+    // ADD THESE 4 LINES AT START
+    if (!selectedProject) {
+      alert('Please select a project first');
       return;
     }
-      // const bug = {
-      //   id: Math.max(...originalData.map(b => b.id)) + 1,
-      //   slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
-      //   ...newBug,
-      //   reportedOn: new Date().toISOString().split('T')[0],
-      //   createdAt: new Date().toISOString().split('T')[0],
-      //   updatedAt: new Date().toISOString().split('T')[0]
-      // };
-      const maxId = originalData.length > 0 ? Math.max(...originalData.map(b => b.id)) : 0;
-      const maxSlNo = originalData.length > 0 ? Math.max(...originalData.map(b => b.slNo)) : 0;
+
+    const requiredFields = formConfig.filter(field => field.required);
+    const missingFields = requiredFields.filter(field => !formData[field.name]);
+
+    if (missingFields.length > 0) {
+      alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+      return;
+    }
+    // const bug = {
+    //   id: Math.max(...originalData.map(b => b.id)) + 1,
+    //   slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
+    //   ...newBug,
+    //   reportedOn: new Date().toISOString().split('T')[0],
+    //   createdAt: new Date().toISOString().split('T')[0],
+    //   updatedAt: new Date().toISOString().split('T')[0]
+    // };
+    const maxId = originalData.length > 0 ? Math.max(...originalData.map(b => b.id)) : 0;
+    const maxSlNo = originalData.length > 0 ? Math.max(...originalData.map(b => b.slNo)) : 0;
     setOriginalData((prevData) => {
-      return [...prevData, { 
-        ...formData, 
+      return [...prevData, {
+        ...formData,
+        project: selectedProject,
         id: maxId + 1,
         slNo: maxSlNo + 1,
         reportedOn: new Date().toISOString().split('T')[0],
@@ -329,73 +360,122 @@ const handleAddNewBug = (e) => {
       comments: ''
     });
 
-}
+  }
 
-const handleEditBug = (id) => {
-  setCurrentEditBugId(id);
-  const bugToEdit = originalData.find(b => b.id === id);
-  
-  if (bugToEdit) {
-    setFormData({
-      title: bugToEdit.title || '',
-      description: bugToEdit.description || '',
-      priority: bugToEdit.priority || '',
-      status: bugToEdit.status || '',
-      reportedBy: bugToEdit.reportedBy || '',
-      assignedTo: bugToEdit.assignedTo || '',
-      issueEnv: bugToEdit.issueEnv || [],
-      comments: bugToEdit.comments || ''
+  const handleEditBug = (id) => {
+    setCurrentEditBugId(id);
+    const bugToEdit = originalData.find(b => b.id === id);
+    console.log("bugToEdit----", bugToEdit);
+
+    if (bugToEdit) {
+      setFormData({
+        project: bugToEdit.project, // ADD THIS LINE
+        title: bugToEdit.title || '',
+        description: bugToEdit.description || '',
+        priority: bugToEdit.priority || '',
+        status: bugToEdit.status || '',
+        reportedBy: bugToEdit.reportedBy || '',
+        assignedTo: bugToEdit.assignedTo || '',
+        issueEnv: bugToEdit.issueEnv || [],
+        comments: bugToEdit.comments || ''
+      });
+      setEditModelOpen(true);
+    }
+  };
+  const handleUpdateBug = (e) => {
+    e.preventDefault();
+
+    // Validate required fields
+    const requiredFields = formConfig.filter(field => field.required);
+    const missingFields = requiredFields.filter(field => {
+      const value = formData[field.name];
+      return !value || (Array.isArray(value) && value.length === 0);
     });
-    setEditModelOpen(true);
-  }
-};
-const handleUpdateBug = (e) => {
-  e.preventDefault();
-  
-  // Validate required fields
-  const requiredFields = formConfig.filter(field => field.required);
-  const missingFields = requiredFields.filter(field => {
-    const value = formData[field.name];
-    return !value || (Array.isArray(value) && value.length === 0);
-  });
-  
-  if (missingFields.length > 0) {
-    alert(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
-    return;
-  }
 
-  // Update the bug in originalData
-  setOriginalData(prevData => 
-    prevData.map(bug => 
-      bug.id === currentEditBugId 
-        ? {
+    if (missingFields.length > 0) {
+      alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+      return;
+    }
+
+    // Update the bug in originalData
+    setOriginalData(prevData =>
+      prevData.map(bug =>
+        bug.id === currentEditBugId
+          ? {
             ...bug,
             ...formData,
             updatedAt: new Date().toISOString().split('T')[0]
           }
-        : bug
-    )
-  );
+          : bug
+      )
+    );
 
-  // Close modal and reset form
-  setEditModelOpen(false);
-  setCurrentEditBugId(null);
-  setFormData({
-    title: '',
-    description: '',
-    priority: '',
-    status: '',
-    reportedBy: '',
-    assignedTo: '',
-    issueEnv: [],
-    comments: ''
-  });
+    // Close modal and reset form
+    setEditModelOpen(false);
+    setCurrentEditBugId(null);
+    setFormData({
+      title: '',
+      description: '',
+      priority: '',
+      status: '',
+      reportedBy: '',
+      assignedTo: '',
+      issueEnv: [],
+      comments: ''
+    });
 
-  alert('Bug updated successfully!');
-};
+    alert.success('Bug updated successfully!');
+  };
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
+      {/* ADD THIS ENTIRE SECTION */}
+      {/* <div className="bg-gradient-to-r rounded-lg from-blue-600 to-blue-700 text-white py-6 shadow-lg"> */}
+      <div className="bg-gradient-to-r mb-4 rounded-lg bg-[#8b40c1] text-white py-6 shadow-lg">
+        <div className="max-w-7xl mx-auto py-2">
+          {/* Header Row */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            {/* Title Section */}
+            <div className="flex items-center gap-4">
+              <Building2 className="w-10 h-10 opacity-90" />
+              <div>
+                <h2 className="text-3xl font-bold tracking-tight">Project Bug Stats</h2>
+                <p className="text-blue-100 text-sm">
+                  Select a project to manage and track its issues
+                </p>
+              </div>
+            </div>
+            {/* Right Side Project Filter */}
+            <div className="flex justify-start lg:justify-end">
+              <select
+                value={selectedProject}
+                onChange={(e) => setSelectedProject(e.target.value)}
+                className="
+            px-4 py-2.5 rounded-xl shadow-md 
+            bg-white text-gray-900 font-medium 
+            border border-blue-200 
+            focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+            min-w-[220px]
+          "
+              >
+                <option value="">All Projects</option>
+                {availableProjects.map((project) => (
+                  <option key={project} value={project}>
+                    {project}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+          </div>
+
+          {/* Stats */}
+          <div className="mt-6">
+            <BugStats originalData={originalData} selectedProject={selectedProject} />
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-lg shadow-lg">
         {/* Header */}
         <div className="border-b border-gray-200 p-6">
@@ -406,21 +486,45 @@ const handleUpdateBug = (e) => {
             </div>
             <div className="mt-4 sm:mt-0 flex items-center space-x-3">
               <button
-                onClick={() => setIsImportModalOpen(true)}
+                onClick={() => {
+                  if (!selectedProject) {
+                    alert.error("Please select a project to  import.");
+                    return;
+                  }
+                  setIsImportModalOpen(true);
+                }}
+                // disabled={!selectedProject}  // ADD THIS
                 className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-orange-600 text-white rounded-md hover:bg-orange-700"
               >
                 <Upload className="w-4 h-4" />
                 <span>Import</span>
               </button>
               <button
-                onClick={exportData}
+                onClick={() => {
+                  if (!selectedProject) {
+                    alert.error("Please select a project to export.");
+                    return;
+                  } else {
+                    exportData()
+                  }
+
+                }}
+                // onClick={exportData}
                 className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 text-white rounded-md hover:bg-green-700"
               >
                 <Download className="w-4 h-4" />
                 <span>Export ({selectedRows.length > 0 ? selectedRows.length : sortedData.length})</span>
               </button>
               <button
-                onClick={() => setIsAddModalOpen(true)}
+                onClick={() => {
+                  if (!selectedProject) {
+                    // console.log("Please select a project first")
+                    alert.warning('Please select a project first.');
+                    return;
+                  }
+                  setIsAddModalOpen(true);
+                }}
+                // disabled={!selectedProject}  // ADD THIS
                 className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
@@ -673,9 +777,19 @@ const handleUpdateBug = (e) => {
         <div className="p-6">
           {paginatedData.length === 0 ? (
             <div className="text-center py-12">
-              <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No bugs found</h3>
-              <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+              {!selectedProject ? (
+                <>
+                  <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Project Selected</h3>
+                  <p className="text-gray-600">Please select a project from the dropdown above</p>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No bugs found</h3>
+                  <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+                </>
+              )}
             </div>
           ) : (
             <div className="grid gap-4">
@@ -783,11 +897,11 @@ const handleUpdateBug = (e) => {
         onSubmit={handleUpdateBug}
         submitText="Update Details"
         children={
-            <RenderHtmlFields
-              fieldItems={formConfig}
-              formData={formData}
-              handleInputChange={handleInputChange}
-            />
+          <RenderHtmlFields
+            fieldItems={formConfig}
+            formData={formData}
+            handleInputChange={handleInputChange}
+          />
         }
       />
       <ImportBugModal
