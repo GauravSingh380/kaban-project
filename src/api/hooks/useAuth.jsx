@@ -13,13 +13,20 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [userDetails, setUserDetails] = useState(null);
-  const [projectDetails, setProjectDetails] = useState([]);
-  const [newProject, setNewProject] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  //! user
+  const [user, setUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+
+  //! projects
+  const [projectDetails, setProjectDetails] = useState([]);
+  const [newProject, setNewProject] = useState([]);
+  const [projectSummary, setProjectSummary] = useState([])
+
+  //! Bugs
   const [bugDetails, setBugDetails] = useState([])
 
   const tokenCheckIntervalRef = useRef(null);
@@ -155,6 +162,18 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const getProjectSummaryDetails = useCallback(async () => {
+    try {
+      const response = await authService.getProjectSummary();
+      if (response.success) {
+        setProjectSummary(response.data.projects);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
   const createNewProject = useCallback(async (payload) => {
     try {
       const response = await authService.createProjects(payload);
@@ -172,6 +191,18 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.getBugs();
       if (response.success) {
         setBugDetails(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
+  const createNewBugs = useCallback(async (payload) => {
+    try {
+      const response = await authService.createBugs(payload);
+      if (response.success) {
+        setProjectDetails(response.data);
         return response;
       }
       throw new Error(response.message);
@@ -245,7 +276,10 @@ export const AuthProvider = ({ children }) => {
     createNewProject,
     getAllProjectDetails,
     bugDetails,
-    getAllBugs
+    getAllBugs,
+    createNewBugs,
+    getProjectSummaryDetails,
+    projectSummary
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -180,7 +180,7 @@ const ProjectsContent1 = ({ user }) => {
 
         try {
             const apiResp = await executeCreateProject(projectFormData);
-            console.log("apiResp------", apiResp);
+            // console.log("apiResp------", apiResp);
             if (apiResp) {
                 alert.success(`${apiResp?.message || "User updated successful!"}`);
                 setProjects(prev => [...prev, apiResp.data]);

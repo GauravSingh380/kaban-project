@@ -88,6 +88,14 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
+  getProjectSummary: async () => {
+    try {
+      const response = await apiClient.get('/projects/summary')
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
   createProjects: async (payload) => {
     try {
       const response = await apiClient.post('/projects/create', payload);
@@ -99,6 +107,14 @@ export const authService = {
   getBugs: async () => {
     try {
       const response = await apiClient.get('/bugs');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
+  createBugs: async (payload) => {
+    try {
+      const response = await apiClient.post('/bugs', payload);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Token verification failed');

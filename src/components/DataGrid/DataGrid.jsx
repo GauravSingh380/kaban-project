@@ -12,16 +12,29 @@ import BugStats from './BugCard/BugStats';
 import { useApi, useAuth } from '../../api';
 
 const BugManagementSystem = () => {
-  const { isAuthenticated, bugDetails, getAllBugs } = useAuth();
+  const { isAuthenticated, bugDetails, getAllBugs , createNewBugs, projectSummary, getProjectSummaryDetails} = useAuth();
   const {
     loading: loadingGetAllBugs,
     error: errorGetAllBugs,
     execute: executeGetAllBugs
   } = useApi(getAllBugs);
 
-  const hasFetchedBugs = useRef(false);
+  const {
+    loading: loadingCreateBug,
+    error: errorCreateBug,
+    execute: executeCreateBug
+  } = useApi(createNewBugs);
 
-  const [originalData, setOriginalData] = useState(initialBugs);
+  const {
+    loading: loadingProjectSummary,
+    execute: executeProjectSummary
+  } = useApi(getProjectSummaryDetails);
+
+  const hasFetchedBugs = useRef(false);
+  const hasFetchedProjectSummary = useRef(false);
+  console.log("projectSummary-----",  projectSummary);
+
+  const [originalData, setOriginalData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,6 +60,7 @@ const BugManagementSystem = () => {
 
   const [selectedProject, setSelectedProject] = useState('');
   const [availableProjects, setAvailableProjects] = useState([]);
+  const [projectId, setProjectId] = useState("");
 
   const [formData, setFormData] = useState({
     project: '',
@@ -372,7 +386,7 @@ const BugManagementSystem = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleAddNewBug = (e) => {
+  const handleAddNewBug = async(e) => {
     e.preventDefault();
     // ADD THESE 4 LINES AT START
     if (!selectedProject) {
@@ -391,30 +405,41 @@ const BugManagementSystem = () => {
       alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
       return;
     }
-    // const bug = {
-    //   id: Math.max(...originalData.map(b => b.id)) + 1,
-    //   slNo: Math.max(...originalData.map(b => b.slNo)) + 1,
-    //   ...newBug,
-    //   reportedOn: new Date().toISOString().split('T')[0],
-    //   createdAt: new Date().toISOString().split('T')[0],
-    //   updatedAt: new Date().toISOString().split('T')[0]
-    // };
-    const maxId = originalData.length > 0 ? Math.max(...originalData.map(b => b.id)) : 0;
-    const maxSlNo = originalData.length > 0 ? Math.max(...originalData.map(b => b.slNo)) : 0;
-    setOriginalData((prevData) => {
-      return [...prevData, {
-        ...formData,
-        project: selectedProject,
-        id: maxId + 1,
-        slNo: maxSlNo + 1,
-        reportedOn: new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0]
-      }]
-    })
-    setIsAddModalOpen(false);
+    // const maxId = originalData.length > 0 ? Math.max(...originalData.map(b => b.id)) : 0;
+    // const maxSlNo = originalData.length > 0 ? Math.max(...originalData.map(b => b.slNo)) : 0;
+    // setOriginalData((prevData) => {
+    //   return [...prevData, {
+    //     ...formData,
+    //     project: selectedProject,
+    //     id: maxId + 1,
+    //     slNo: maxSlNo + 1,
+    //     reportedOn: new Date().toISOString().split('T')[0],
+    //     createdAt: new Date().toISOString().split('T')[0],
+    //     updatedAt: new Date().toISOString().split('T')[0]
+    //   }]
+    // })
+    console.log('payload ===',  {...formData, projectId: projectId})
+    try {
+      const apiResp = await executeCreateBug({...formData, projectId: projectId})
+      if (apiResp) {
+        alert.success(`${apiResp?.message || "New bug created successful!"}`);
+        setOriginalData(prev => [...prev, apiResp.data]);
+        getAllBugDetails();
+        // Reset form
+        // setProjectFormData({ ...initialFormData });
+        setIsAddModalOpen(false);
+      }
+    } catch (error) {
+      if (error.message) {
+        alert.error(error.message || 'An error occurred. Please try again.');
+      } else {
+        alert.error("Failed to add new bug. Please try again.");
+      }
+      console.log('Failed to add new bug:', error.message || error);
+    }
+    // setIsAddModalOpen(false);
     setFormData({
-      project: '',
+      project: selectedProject,
       title: '',
       description: '',
       priority: '',
@@ -491,6 +516,27 @@ const BugManagementSystem = () => {
 
     alert.success('Bug updated successfully!');
   };
+//  console.log("projectId-----", projectId);
+  const getProjectSummaryDetail = useCallback(async () => {
+    try {
+      const apiResp = await executeProjectSummary();
+      if (apiResp) {
+        console.log("executeProjectSummary---", apiResp?.data);
+        alert.success(`${apiResp?.message || "Projects fetched successful!"}`);
+        // setOriginalData(apiResp?.data?.bugs || []);
+        setAvailableProjects([
+          ...new Set(apiResp?.data?.projects?.map(item => item.name))
+        ]);
+      }
+    } catch (error) {
+      if (error.message) {
+        alert.error(error.message || 'An error occurred. Please try again.');
+      } else {
+        alert.error("Failed to get bugs. Please try again.");
+      }
+      console.log('Failed to get bugs:', error.message || error);
+    }
+  }, [executeProjectSummary, getProjectSummaryDetails]);
 
   const getAllBugDetails = useCallback(async () => {
     try {
@@ -498,9 +544,6 @@ const BugManagementSystem = () => {
       if (apiResp) {
         alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
         setOriginalData(apiResp?.data?.bugs || []);
-        setAvailableProjects([
-          ...new Set(apiResp?.data?.bugs.map(item => item.project))
-        ]);
       }
     } catch (error) {
       if (error.message) {
@@ -513,11 +556,27 @@ const BugManagementSystem = () => {
   }, [executeGetAllBugs]);
 
   useEffect(() => {
+    if (!selectedProject || !projectSummary?.length) return;
+
+    const found = projectSummary.find(item => item.name === selectedProject);
+    console.log("found---", found);
+
+    setProjectId(found ? found?.projectId : "");
+  }, [selectedProject, projectSummary]);
+
+  useEffect(() => {
     if (isAuthenticated && !loadingGetAllBugs && !hasFetchedBugs.current) {
       hasFetchedBugs.current = true;
       getAllBugDetails();
     }
-  }, [isAuthenticated, bugDetails, getAllBugDetails, loadingGetAllBugs]);
+  }, [isAuthenticated, originalData, bugDetails,projectSummary, getAllBugDetails]);
+
+  useEffect(() => {
+    if (isAuthenticated && !loadingProjectSummary && !hasFetchedProjectSummary.current) {
+      hasFetchedProjectSummary.current = true;
+      getProjectSummaryDetail();
+    }
+  }, [isAuthenticated, projectSummary]);
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
