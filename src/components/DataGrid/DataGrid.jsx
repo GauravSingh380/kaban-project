@@ -12,11 +12,11 @@ import BugStats from './BugCard/BugStats';
 import { useApi, useAuth } from '../../api';
 
 const BugManagementSystem = () => {
-  const { isAuthenticated, bugDetails, getAllBugs} = useAuth();
+  const { isAuthenticated, bugDetails, getAllBugs } = useAuth();
   const {
-      loading: loadingGetAllBugs,
-      error: errorGetAllBugs,
-      execute: executeGetAllBugs
+    loading: loadingGetAllBugs,
+    error: errorGetAllBugs,
+    execute: executeGetAllBugs
   } = useApi(getAllBugs);
 
   const hasFetchedBugs = useRef(false);
@@ -29,6 +29,7 @@ const BugManagementSystem = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [isIndeterminate, setIsIndeterminate] = useState(false);
+  const [errors, setErrors] = useState({});
   const [filters, setFilters] = useState({
     priority: '',
     status: '',
@@ -43,6 +44,10 @@ const BugManagementSystem = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
   const [currentEditBugId, setCurrentEditBugId] = useState(null)
+
+  const [selectedProject, setSelectedProject] = useState('');
+  const [availableProjects, setAvailableProjects] = useState([]);
+
   const [formData, setFormData] = useState({
     project: '',
     title: '',
@@ -54,9 +59,13 @@ const BugManagementSystem = () => {
     issueEnv: [],
     comments: ''
   })
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      project: selectedProject
+    }));
+  }, [selectedProject]);
 
-  const [selectedProject, setSelectedProject] = useState('');
-  const [availableProjects, setAvailableProjects] = useState(['TWR', 'PWC', 'MetLife', 'GenAi']);
   const [showFilters, setShowFilters] = useState(false);
 
 
@@ -324,12 +333,37 @@ const BugManagementSystem = () => {
       ...prev,
       [fieldName]: value
     }));
+    if (errors[fieldName]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    formConfig.forEach(field => {
+      if (field.required && !formData[field.name]) {
+        newErrors[field.name] = `${field.label} is required`;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
   const handleAddNewBug = (e) => {
+    e.preventDefault();
     // ADD THESE 4 LINES AT START
     if (!selectedProject) {
       alert('Please select a project first');
       return;
+    }
+    if (validateForm()) {
+      // Submit form
+      console.log('Form is valid', formData);
     }
 
     const requiredFields = formConfig.filter(field => field.required);
@@ -362,6 +396,7 @@ const BugManagementSystem = () => {
     })
     setIsAddModalOpen(false);
     setFormData({
+      project: '',
       title: '',
       description: '',
       priority: '',
@@ -441,30 +476,30 @@ const BugManagementSystem = () => {
 
   const getAllBugDetails = useCallback(async () => {
     try {
-        const apiResp = await executeGetAllBugs();
-        if (apiResp) {
-            alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
-            setOriginalData(apiResp?.data?.bugs || []);
-            setAvailableProjects([
-              ...new Set(apiResp?.data?.bugs.map(item => item.project))
-            ]);
-        }
+      const apiResp = await executeGetAllBugs();
+      if (apiResp) {
+        alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
+        setOriginalData(apiResp?.data?.bugs || []);
+        setAvailableProjects([
+          ...new Set(apiResp?.data?.bugs.map(item => item.project))
+        ]);
+      }
     } catch (error) {
-        if (error.message) {
-            alert.error(error.message || 'An error occurred. Please try again.');
-        } else {
-            alert.error("Failed to get bugs. Please try again.");
-        }
-        console.log('Failed to get bugs:', error.message || error);
+      if (error.message) {
+        alert.error(error.message || 'An error occurred. Please try again.');
+      } else {
+        alert.error("Failed to get bugs. Please try again.");
+      }
+      console.log('Failed to get bugs:', error.message || error);
     }
-}, [executeGetAllBugs]);
+  }, [executeGetAllBugs]);
 
-useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated && !loadingGetAllBugs && !hasFetchedBugs.current) {
-        hasFetchedBugs.current = true;
-        getAllBugDetails();
+      hasFetchedBugs.current = true;
+      getAllBugDetails();
     }
-}, [isAuthenticated, bugDetails, getAllBugDetails, loadingGetAllBugs]);
+  }, [isAuthenticated, bugDetails, getAllBugDetails, loadingGetAllBugs]);
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -925,6 +960,7 @@ useEffect(() => {
               fieldItems={formConfig}
               formData={formData}
               handleInputChange={handleInputChange}
+              errors={errors}  // Pass errors object
             />
           </div>
         }

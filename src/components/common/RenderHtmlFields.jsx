@@ -1,6 +1,6 @@
 import React from 'react';
 
-const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
+const RenderHtmlFields = ({ fieldItems, formData, handleInputChange, errors = {} }) => {
   // Group fields by their alignment/grid configuration
   const groupFields = () => {
     const groups = [];
@@ -41,29 +41,42 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
   };
 
   const renderField = (field) => {
+    const hasError = errors[field.name];
+    const errorBorderClass = hasError 
+      ? 'border-red-500 focus:ring-red-500' 
+      : 'border-gray-300 focus:ring-blue-500';
+    
+      const disableClass = field.disabled
+      ? "bg-gray-100 text-gray-500 cursor-not-allowed opacity-90 border-gray-300"
+      : "";
+    
     const commonProps = {
       id: field.name,
       name: field.name,
       required: field.required,
       placeholder: field.placeholder,
-      className:
-        'w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+      className: `w-full p-2 border rounded-md focus:ring-2 focus:border-transparent ${errorBorderClass} ${disableClass}`,
     };
 
     switch (field.type) {
       case 'text':
       case 'email':
         return (
-          <div key={field.id} className="mb-4">
-            <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
+          <div key={field.id} className="mb-4 grayscale-25">
+            <label htmlFor={field.name} className={`block text-sm font-medium mb-1`}>
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <input
               {...commonProps}
               type={field.type}
               value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
+              disabled={field.disabled}
             />
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -72,6 +85,7 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <input
               {...commonProps}
@@ -81,6 +95,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
               value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -89,6 +106,7 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <textarea
               {...commonProps}
@@ -96,6 +114,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
               value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -104,6 +125,7 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <select
               {...commonProps}
@@ -117,6 +139,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
                 </option>
               ))}
             </select>
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -125,8 +150,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            <div className="space-y-2">
+            <div className={`space-y-2 ${hasError ? 'p-2 border-2 border-red-500 rounded-md' : ''}`}>
               {field.options?.map((option, index) => (
                 <label key={index} className="flex items-center space-x-2">
                   <input
@@ -141,6 +167,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
                 </label>
               ))}
             </div>
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -149,8 +178,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className={`flex flex-wrap gap-2 ${hasError ? 'p-2 border-2 border-red-500 rounded-md' : ''}`}>
               {field.options?.map((option, index) => (
                 <label key={index} className="flex items-center space-x-2">
                   <input
@@ -170,6 +200,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
                 </label>
               ))}
             </div>
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -178,6 +211,7 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <input
               {...commonProps}
@@ -185,6 +219,9 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
               value={formData[field.name] || ''}
               onChange={(e) => handleInputChange(field.name, e.target.value)}
             />
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
@@ -193,12 +230,16 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange }) => {
           <div key={field.id} className="mb-4">
             <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
               {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <input
               {...commonProps}
               type="file"
               onChange={(e) => handleInputChange(field.name, e.target.files[0]?.name || '')}
             />
+            {hasError && (
+              <p className="mt-1 text-sm text-red-600">{errors[field.name]}</p>
+            )}
           </div>
         );
 
