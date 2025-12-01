@@ -1,7 +1,10 @@
 import { X } from 'lucide-react';
 
-const GlobalModel = ({ isOpen, onClose, onSubmit, children, header = 'Add Model', submitText="Add" }) => {
+const GlobalModel = ({ isOpen, onClose, onSubmit, children, header = 'Add Model', submitText="Add", disabled }) => {
     if (!isOpen) return null;
+    const disableClass = disabled
+      ? "cursor-not-allowed opacity-70"
+      : "cursor-pointer";
     
     return (
         <div className="fixed inset-0 bg-[rgba(0,0,0,0.50)] flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -29,13 +32,14 @@ const GlobalModel = ({ isOpen, onClose, onSubmit, children, header = 'Add Model'
                     <div className="bg-[#f1e7f7] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-200">
                         <button
                             onClick={onSubmit}
-                            className="w-full cursor-pointer inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                            disabled={disabled}
+                            className={`${disabled ? disableClass: ""} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm`}
                         >
                             {submitText}
                         </button>
                         <button
                             onClick={onClose}
-                            className="mt-3 w-full inline-flex cursor-pointer justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            className={`${disabled ? disableClass: ""} mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm`}
                         >
                             Cancel
                         </button>

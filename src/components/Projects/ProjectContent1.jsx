@@ -15,6 +15,8 @@ import StatisticsCard from './projectComp/StatisticsCard';
 import { useApi, useAuth } from '../../api';
 import { useToast } from '../StyledAlert/ToastContext';
 import ApiSpinner from '../ApiSpinner';
+import ApiSpinnerV2 from '../Teams/ApiSpinnerv2';
+import StyledSpinner from '../StyledSpinner/StyledSpinner';
 
 const ProjectsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -263,12 +265,12 @@ const ProjectsContent1 = ({ user }) => {
     }, [isAuthenticated, projects, projectDetails, getProjectDetails, loadingGetProjectDetails]);
 
     if (loadingGetProjectDetails) {
-        return <ApiSpinner
+        return <ApiSpinnerV2
             borderWidth='3px'
             size='2.5rem'
             text='Loading...'
             fontSize='font-semibold'
-            // color='white'
+            // color='blue'
         />;
     }
 
@@ -634,15 +636,16 @@ const ProjectsContent1 = ({ user }) => {
                     onClose={() => setIsAddModelOpen(false)}
                     header="Add New Project"
                     onSubmit={handleAddProject}
-                    submitText={loadingCreateProject
-                        ?
-                        <ApiSpinner
-                            borderWidth='3px'
-                            size='1.5rem'
-                            text='Adding...'
-                            fontSize='font-semibold'
-                        // color='white'
-                        /> : 'Add Project'}
+                    disabled={loadingCreateProject}
+                    submitText={loadingCreateProject ?
+                        <StyledSpinner
+                          borderWidth='3px'
+                          size='1.5rem'
+                          text='Adding...'
+                          fontSize='semi bold'
+                        /> :
+                        'Add Project'
+                      }
                     size="large"
                 >
                     <div>

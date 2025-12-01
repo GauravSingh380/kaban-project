@@ -10,6 +10,7 @@ import RenderHtmlFields from '../common/RenderHtmlFields';
 import { useToast } from '../StyledAlert/ToastContext';
 import BugStats from './BugCard/BugStats';
 import { useApi, useAuth } from '../../api';
+import StyledSpinner from '../StyledSpinner/StyledSpinner';
 
 const BugManagementSystem = () => {
   const { isAuthenticated, bugDetails, getAllBugs , createNewBugs, projectSummary, getProjectSummaryDetails} = useAuth();
@@ -32,7 +33,6 @@ const BugManagementSystem = () => {
 
   const hasFetchedBugs = useRef(false);
   const hasFetchedProjectSummary = useRef(false);
-  console.log("projectSummary-----",  projectSummary);
 
   const [originalData, setOriginalData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -405,20 +405,6 @@ const BugManagementSystem = () => {
       alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
       return;
     }
-    // const maxId = originalData.length > 0 ? Math.max(...originalData.map(b => b.id)) : 0;
-    // const maxSlNo = originalData.length > 0 ? Math.max(...originalData.map(b => b.slNo)) : 0;
-    // setOriginalData((prevData) => {
-    //   return [...prevData, {
-    //     ...formData,
-    //     project: selectedProject,
-    //     id: maxId + 1,
-    //     slNo: maxSlNo + 1,
-    //     reportedOn: new Date().toISOString().split('T')[0],
-    //     createdAt: new Date().toISOString().split('T')[0],
-    //     updatedAt: new Date().toISOString().split('T')[0]
-    //   }]
-    // })
-    console.log('payload ===',  {...formData, projectId: projectId})
     try {
       const apiResp = await executeCreateBug({...formData, projectId: projectId})
       if (apiResp) {
@@ -516,12 +502,11 @@ const BugManagementSystem = () => {
 
     alert.success('Bug updated successfully!');
   };
-//  console.log("projectId-----", projectId);
+
   const getProjectSummaryDetail = useCallback(async () => {
     try {
       const apiResp = await executeProjectSummary();
       if (apiResp) {
-        console.log("executeProjectSummary---", apiResp?.data);
         alert.success(`${apiResp?.message || "Projects fetched successful!"}`);
         // setOriginalData(apiResp?.data?.bugs || []);
         setAvailableProjects([
@@ -559,8 +544,6 @@ const BugManagementSystem = () => {
     if (!selectedProject || !projectSummary?.length) return;
 
     const found = projectSummary.find(item => item.name === selectedProject);
-    console.log("found---", found);
-
     setProjectId(found ? found?.projectId : "");
   }, [selectedProject, projectSummary]);
 
@@ -1030,7 +1013,16 @@ const BugManagementSystem = () => {
         onClose={() => setIsAddModalOpen(false)}
         header="Add new bug details"
         onSubmit={(e) => handleAddNewBug(e)}
-        submitText="Add new bug"
+        disabled={loadingCreateBug}
+        submitText={loadingCreateBug ?
+          <StyledSpinner
+            borderWidth='3px'
+            size='1.5rem'
+            text='Adding...'
+            fontSize='semi bold'
+          /> :
+          'Add new bug'
+        }
         children={
           <div>
             <RenderHtmlFields
