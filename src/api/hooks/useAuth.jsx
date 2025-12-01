@@ -20,6 +20,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const [bugDetails, setBugDetails] = useState([])
+
   const tokenCheckIntervalRef = useRef(null);
   const hasCheckedRef = useRef(false);
 
@@ -165,6 +167,18 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const getAllBugs = useCallback(async () => {
+    try {
+      const response = await authService.getBugs();
+      if (response.success) {
+        setBugDetails(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
 
   const register = useCallback(async (userData) => {
     setLoading(true);
@@ -229,7 +243,9 @@ export const AuthProvider = ({ children }) => {
     projectDetails,
     newProject,
     createNewProject,
-    getAllProjectDetails
+    getAllProjectDetails,
+    bugDetails,
+    getAllBugs
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

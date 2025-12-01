@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Building2, Upload } from 'lucide-react';
 import { Search, Filter, Download, Plus, ChevronLeft, ChevronRight, X, AlertCircle } from 'lucide-react';
 import { formConfig, initialBugs } from '../../helper';
@@ -9,8 +9,18 @@ import GlobalModel from '../common/GlobalModel';
 import RenderHtmlFields from '../common/RenderHtmlFields';
 import { useToast } from '../StyledAlert/ToastContext';
 import BugStats from './BugCard/BugStats';
+import { useApi, useAuth } from '../../api';
 
 const BugManagementSystem = () => {
+  const { isAuthenticated, bugDetails, getAllBugs} = useAuth();
+  const {
+      loading: loadingGetAllBugs,
+      error: errorGetAllBugs,
+      execute: executeGetAllBugs
+  } = useApi(getAllBugs);
+
+  const hasFetchedBugs = useRef(false);
+
   const [originalData, setOriginalData] = useState(initialBugs);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -46,8 +56,10 @@ const BugManagementSystem = () => {
   })
 
   const [selectedProject, setSelectedProject] = useState('');
-  const [availableProjects] = useState(['TWR', 'PWC', 'MetLife', 'GenAi']);
+  const [availableProjects, setAvailableProjects] = useState(['TWR', 'PWC', 'MetLife', 'GenAi']);
   const [showFilters, setShowFilters] = useState(false);
+
+
 
   // Filter bugs by selected project FIRST
   const projectFilteredData = useMemo(() => {
@@ -426,6 +438,33 @@ const BugManagementSystem = () => {
 
     alert.success('Bug updated successfully!');
   };
+
+  const getAllBugDetails = useCallback(async () => {
+    try {
+        const apiResp = await executeGetAllBugs();
+        if (apiResp) {
+            alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
+            setOriginalData(apiResp?.data?.bugs || []);
+            setAvailableProjects([
+              ...new Set(apiResp?.data?.bugs.map(item => item.project))
+            ]);
+        }
+    } catch (error) {
+        if (error.message) {
+            alert.error(error.message || 'An error occurred. Please try again.');
+        } else {
+            alert.error("Failed to get bugs. Please try again.");
+        }
+        console.log('Failed to get bugs:', error.message || error);
+    }
+}, [executeGetAllBugs]);
+
+useEffect(() => {
+    if (isAuthenticated && !loadingGetAllBugs && !hasFetchedBugs.current) {
+        hasFetchedBugs.current = true;
+        getAllBugDetails();
+    }
+}, [isAuthenticated, bugDetails, getAllBugDetails, loadingGetAllBugs]);
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">

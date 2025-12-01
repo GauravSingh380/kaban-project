@@ -22,6 +22,7 @@ import TeamAnalytics1 from './contents/TeamAnalytics1';
 import TeamAnalytics2 from './contents/TeamAnalytics2';
 import LeaveRequests1 from './contents/LeaveRequests1';
 import LeaveRequests2 from './contents/LeaveRequests2';
+import ApiSpinnerV2 from './ApiSpinnerv2';
 
 const TeamsContent1 = ({ user }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -419,7 +420,13 @@ const TeamsContent1 = ({ user }) => {
     if (loading) {
         return (
             <div>
-                <Spinner text="Default" />
+                <ApiSpinnerV2
+            borderWidth='3px'
+            size='2.5rem'
+            text='Loading...'
+            fontSize='font-semibold'
+            // color='white'
+        />
             </div>
         )
     }

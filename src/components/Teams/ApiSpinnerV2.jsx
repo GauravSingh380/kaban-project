@@ -1,6 +1,6 @@
 import React from "react";
 
-const ApiSpinner = ({ 
+const ApiSpinnerV2 = ({ 
   borderWidth = "3px", 
   size = "1.5rem", 
   text = "", 
@@ -8,7 +8,7 @@ const ApiSpinner = ({
   color 
 }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.50)] bg-opacity-30 z-50">
       <div className="flex items-center justify-center gap-3 p-4 bg-white rounded-lg shadow-lg">
         <div
           className={`animate-spin rounded-full border-t-transparent border-${color || "purple-500"}`}
@@ -24,4 +24,4 @@ const ApiSpinner = ({
   );
 };
 
-export default ApiSpinner;
+export default ApiSpinnerV2;
