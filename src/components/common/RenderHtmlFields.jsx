@@ -180,7 +180,7 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange, errors = {}
               {field.label}
               {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            <div className={`flex flex-wrap gap-2 ${hasError ? 'p-2 border-2 border-red-500 rounded-md' : ''}`}>
+            <div className={`flex flex-wrap gap-2 ${hasError ? 'p-2 border-1 border-red-500 rounded-md' : ''}`}>
               {field.options?.map((option, index) => (
                 <label key={index} className="flex items-center space-x-2">
                   <input

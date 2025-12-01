@@ -344,13 +344,31 @@ const BugManagementSystem = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
+    
     formConfig.forEach(field => {
-      if (field.required && !formData[field.name]) {
-        newErrors[field.name] = `${field.label} is required`;
+      const value = formData[field.name];
+      
+      if (field.required) {
+        // Handle different field types
+        if (field.type === 'checkbox') {
+          // For checkbox, check if array exists and has at least one item
+          if (!value || !Array.isArray(value) || value.length === 0) {
+            newErrors[field.name] = `${field.label} is required. Please select at least one option.`;
+          }
+        } else if (field.type === 'select') {
+          // For select, check if value exists and is not empty string
+          if (!value || value === '') {
+            newErrors[field.name] = `Please select a ${field.label}`;
+          }
+        } else {
+          // For text, textarea, etc.
+          if (!value || value.trim() === '') {
+            newErrors[field.name] = `${field.label} is required`;
+          }
+        }
       }
     });
-
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
