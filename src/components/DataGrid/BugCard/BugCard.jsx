@@ -1,9 +1,18 @@
 import { getPriorityColor, getStatusColor } from "../../../helper";
 import { Eye, Edit, Trash2, Calendar, User, Clock } from 'lucide-react';
+import ApiSpinner from "../../ApiSpinner";
+import StyledSpinner from "../../StyledSpinner/StyledSpinner";
 
-const BugCard = ({ id, project, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
+const BugCard = ({ id, bugId, deletingBugId, loadingDeleteBug, project, slNo, issueEnv, title, description, reportedOn, reportedBy, assignedTo, status, priority, comments, createdAt, updatedAt, onView, onEdit, onDelete, isSelected, onSelect }) => {
+  console.log("deletingBugId---", deletingBugId);
   return (
-    <div className={`bg-white border rounded-lg p-6 hover:shadow-md transition-shadow ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
+    <div
+      className={`
+    bg-white border rounded-lg p-6 hover:shadow-md transition-shadow 
+    ${isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200"}
+    ${deletingBugId == bugId ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+  `}
+    >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <input
@@ -86,12 +95,11 @@ const BugCard = ({ id, project, slNo, issueEnv, title, description, reportedOn, 
           >
             <Edit className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => onDelete(id)}
-            className="text-red-600 hover:text-red-800 p-1 cursor-pointer"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {deletingBugId == bugId ?
+            <StyledSpinner borderWidth='3px' size='1.5rem' text='' fontSize='semi bold' color='red' />
+            : <button onClick={() => onDelete(bugId)} className="text-red-600 hover:text-red-800 p-1 cursor-pointer" >
+              <Trash2 className="w-4 h-4" /> </button>
+          }
         </div>
       </div>
     </div>

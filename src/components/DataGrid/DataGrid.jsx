@@ -11,9 +11,10 @@ import { useToast } from '../StyledAlert/ToastContext';
 import BugStats from './BugCard/BugStats';
 import { useApi, useAuth } from '../../api';
 import StyledSpinner from '../StyledSpinner/StyledSpinner';
+import ApiSpinnerV2 from '../Teams/ApiSpinnerv2';
 
 const BugManagementSystem = () => {
-  const { isAuthenticated, bugDetails, getAllBugs , createNewBugs, projectSummary, getProjectSummaryDetails} = useAuth();
+  const { isAuthenticated, bugDetails, getAllBugs , createNewBugs, projectSummary, getProjectSummaryDetails, deleteBug} = useAuth();
   const {
     loading: loadingGetAllBugs,
     error: errorGetAllBugs,
@@ -25,6 +26,11 @@ const BugManagementSystem = () => {
     error: errorCreateBug,
     execute: executeCreateBug
   } = useApi(createNewBugs);
+  const {
+    loading: loadingDeleteBug,
+    error: errorDeleteBug,
+    execute: executeDeleteBug
+  } = useApi(deleteBug);
 
   const {
     loading: loadingProjectSummary,
@@ -57,6 +63,7 @@ const BugManagementSystem = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
   const [currentEditBugId, setCurrentEditBugId] = useState(null)
+  const [currentDeleteBugId, setCurrentDeleteBugId] = useState(null);
 
   const [selectedProject, setSelectedProject] = useState('');
   const [availableProjects, setAvailableProjects] = useState([]);
@@ -521,7 +528,7 @@ const BugManagementSystem = () => {
     try {
       const apiResp = await executeProjectSummary();
       if (apiResp) {
-        alert.success(`${apiResp?.message || "Projects fetched successful!"}`);
+        // alert.success(`${apiResp?.message || "Projects fetched successful!"}`);
         // setOriginalData(apiResp?.data?.bugs || []);
         setAvailableProjects([
           ...new Set(apiResp?.data?.projects?.map(item => item.name))
@@ -541,7 +548,7 @@ const BugManagementSystem = () => {
     try {
       const apiResp = await executeGetAllBugs();
       if (apiResp) {
-        alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
+        // alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
         setOriginalData(apiResp?.data?.bugs || []);
       }
     } catch (error) {
@@ -553,6 +560,35 @@ const BugManagementSystem = () => {
       console.log('Failed to get bugs:', error.message || error);
     }
   }, [executeGetAllBugs]);
+  
+  const handleDeleteBug = useCallback(async (BugId) => {
+    console.log("BugId----", BugId);
+    setCurrentDeleteBugId(BugId)
+    try {
+      const apiResp = await executeDeleteBug(BugId);
+      if (apiResp) {
+        alert.success(apiResp.message || 'An error occurred. Please try again.');
+        // hasFetchedBugs.current = true
+        getAllBugDetails();
+        setCurrentDeleteBugId(null)
+        // const updatedData = originalData.filter(b => b.id !== id);
+        //     setOriginalData(updatedData);
+        //     setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+        // alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
+        // setOriginalData(apiResp?.data?.bugs || []);
+      }
+    } catch (error) {
+      if (error.message) {
+        alert.error(error.message || 'An error occurred. Please try again.');
+      } else {
+        alert.error("Failed to get bugs. Please try again.");
+      }
+      setCurrentDeleteBugId(null)
+      console.log('Failed to get bugs:', error.message || error);
+    }
+  }, [executeDeleteBug]);
+
+
 
   useEffect(() => {
     if (!selectedProject || !projectSummary?.length) return;
@@ -566,7 +602,7 @@ const BugManagementSystem = () => {
       hasFetchedBugs.current = true;
       getAllBugDetails();
     }
-  }, [isAuthenticated, originalData, bugDetails,projectSummary, getAllBugDetails]);
+  }, [isAuthenticated, originalData, bugDetails,projectSummary, getAllBugDetails, handleDeleteBug]);
 
   useEffect(() => {
     if (isAuthenticated && !loadingProjectSummary && !hasFetchedProjectSummary.current) {
@@ -574,6 +610,16 @@ const BugManagementSystem = () => {
       getProjectSummaryDetail();
     }
   }, [isAuthenticated, projectSummary]);
+
+  if (loadingGetAllBugs) {
+    return <ApiSpinnerV2
+        borderWidth='3px'
+        size='2.5rem'
+        text='Loading...'
+        fontSize='font-semibold'
+        // color='blue'
+    />;
+}
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -950,13 +996,9 @@ const BugManagementSystem = () => {
                     handleEditBug(id);
                     setEditModelOpen(true);
                   }}
-                  onDelete={(id) => {
-                    if (window.confirm('Are you sure you want to delete this bug?')) {
-                      const updatedData = originalData.filter(b => b.id !== id);
-                      setOriginalData(updatedData);
-                      setSelectedRows(prev => prev.filter(rowId => rowId !== id));
-                    }
-                  }}
+                  deletingBugId={currentDeleteBugId}
+                  loadingDeleteBug={loadingDeleteBug}
+                  onDelete={(bug) => handleDeleteBug(bug)}
                   isSelected={selectedRows.includes(bug.id)}
                   onSelect={handleRowSelect}
                 />

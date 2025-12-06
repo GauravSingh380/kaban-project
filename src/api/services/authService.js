@@ -120,6 +120,14 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
+  deleteBug: async (bugId) => {
+    try {
+      const response = await apiClient.delete(`/bugs/${bugId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
 };
 
 
