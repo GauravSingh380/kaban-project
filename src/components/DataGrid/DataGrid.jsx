@@ -310,24 +310,18 @@ const BugManagementSystem = () => {
   };
 
   // Add this function with other handlers in BugManagementSystem component
-  const handleImportBugs = (importedBugs) => {
+  const handleImportBugs = async(importedBugs) => {
     if (!selectedProject) {
       alert('Please select a project before importing bugs');
       return;
     }
-    // Generate unique IDs and serial numbers
-    const maxId = Math.max(...originalData.map(b => b.id), 0);
-    const maxSlNo = Math.max(...originalData.map(b => b.slNo), 0);
-
-    const processedBugs = importedBugs.map((bug, index) => ({
-      ...bug,
-      id: maxId + index + 1,
-      slNo: maxSlNo + index + 1,
-      project: selectedProject,
-      // Ensure all required fields have values
+  
+    // Process imported bugs with required fields
+    const processedBugs = importedBugs.map((bug) => ({
+      projectId: projectId,
       title: bug.title || 'Untitled Bug',
       description: bug.description || 'No description provided',
-      priority: bug.priority || 'P3',
+      priority: bug.priority || 'NA',
       status: bug.status || 'open',
       reportedBy: bug.reportedBy || 'Unknown',
       assignedTo: bug.assignedTo || 'Unassigned',
@@ -337,10 +331,30 @@ const BugManagementSystem = () => {
       createdAt: bug.createdAt || new Date().toISOString().split('T')[0],
       updatedAt: bug.updatedAt || new Date().toISOString().split('T')[0]
     }));
-
-    // Add to existing data
-    setOriginalData(prev => [...prev, ...processedBugs]);
-    alert(`Successfully imported ${processedBugs.length} bugs!`);
+  
+    console.log("processedBugs---", processedBugs);
+  
+    try {
+      // Call the API for each bug individually if your API creates bugs one at a time
+      const results = await Promise.all(
+        processedBugs.map(bug => executeCreateBug(bug))
+      );
+  
+      // Or if you have a bulk create endpoint, use that instead:
+      // const apiResp = await executeCreateBugBulk(processedBugs);
+  
+      alert.success(`Successfully imported ${processedBugs.length} bugs!`);
+      
+      // Refresh the bug list
+      getAllBugDetails();
+      
+      // Close the import modal
+      setIsImportModalOpen(false);
+  
+    } catch (error) {
+      console.error('Failed to import bugs:', error);
+      alert.error(error.message || 'Failed to import bugs. Please try again.');
+    }
   };
   const handleInputChange = (fieldName, value) => {
     setFormData(prev => ({

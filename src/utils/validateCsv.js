@@ -12,7 +12,7 @@ export const validateCSVContent = (headers, rows) => {
     ];
 
     const priorityValues = ['P1', 'P2', 'P3', 'P4', ''];
-    const statusValues = ['open', 'fixed', 'closed', 'blocked', ''];
+    const statusValues = ['open', 'fixed', 'in-progress', 'closed'];
     const envValues = ['dev', 'stg', 'demo', 'prod', ''];
 
     // Check for missing headers
