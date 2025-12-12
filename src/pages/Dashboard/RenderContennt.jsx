@@ -33,6 +33,7 @@ import ProjectsComponent from "../../components/Projects/ProjectsComponent";
 import BugsV1 from "../../components/Bugs/BugsV1";
 import BugImportSampleGenerator from "../../components/DataGrid/BugImportSampleGenerator";
 import DynamicBugCreator from "../../components/DataGrid/DynamicBugCreator";
+import DeleteConfirmationUsage from "../../components/common/deleteConfirmationUsage";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -424,15 +425,16 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
         <DataGrid />
         <br />
         <br />
+        {/* <DeleteConfirmationUsage /> */}
         <br />
         <br />
         <DynamicBugCreator />
         <br />
         <br />
-        <BugImportSampleGenerator />
+        {/* <BugImportSampleGenerator /> */}
         <br />
         <br />
-        <BugsV1 />
+        {/* <BugsV1 /> */}
       </div>
     ),
     reports: (

@@ -41,6 +41,9 @@ const BugManagementSystem = () => {
   const hasFetchedProjectSummary = useRef(false);
 
   const [originalData, setOriginalData] = useState([]);
+  const [globalStats, setGlobalStats] = useState([]);
+  const [statsByProject, setStatsByProject] = useState([]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,6 +72,9 @@ const BugManagementSystem = () => {
   const [availableProjects, setAvailableProjects] = useState([]);
   const [projectId, setProjectId] = useState("");
 
+  const selectedProjectId = selectedProject && selectedProject !== "" 
+  ? originalData.find(bug => bug.project === selectedProject)?.projectId || ""
+  : "";
   const [formData, setFormData] = useState({
     project: '',
     title: '',
@@ -550,6 +556,8 @@ const BugManagementSystem = () => {
       if (apiResp) {
         // alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
         setOriginalData(apiResp?.data?.bugs || []);
+        setGlobalStats(apiResp?.data?.stats || {})
+        setStatsByProject(apiResp?.data?.statsByProject || {})
       }
     } catch (error) {
       if (error.message) {
@@ -645,12 +653,12 @@ const BugManagementSystem = () => {
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
                 className="
-            px-4 py-2.5 rounded-xl shadow-md 
-            bg-white text-gray-900 font-medium 
-            border border-blue-200 
-            focus:ring-2 focus:ring-blue-400 focus:border-blue-400
-            min-w-[220px]
-          "
+                  px-4 py-2.5 rounded-xl shadow-md 
+                  bg-white text-gray-900 font-medium 
+                  border border-blue-200 
+                  focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+                  min-w-[220px]
+                "
               >
                 <option value="">All Projects</option>
                 {availableProjects.map((project) => (
@@ -665,7 +673,12 @@ const BugManagementSystem = () => {
 
           {/* Stats */}
           <div className="mt-6">
-            <BugStats originalData={originalData} selectedProject={selectedProject} />
+            <BugStats
+              globalStats={globalStats}
+              statsByProject={statsByProject}
+              selectedProject={selectedProject}
+              selectedProjectid={selectedProjectId}
+            />
           </div>
         </div>
       </div>

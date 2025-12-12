@@ -1,55 +1,57 @@
 import React from "react";
 import { Bug, Loader, CheckCircle, XCircle } from "lucide-react";
 
-const BugStats = ({ originalData, selectedProject }) => {
-    const filteredBugs =
-        selectedProject && selectedProject.trim() !== ""
-            ? originalData.filter((item) => item.project === selectedProject)
-            : originalData;
+const BugStats = ({ globalStats, statsByProject, selectedProjectid }) => {
+    // Determine which stats to display
+    // If a project is selected, use project-specific stats, otherwise use global stats
+    const currentStats = (selectedProjectid && selectedProjectid !== "" && selectedProjectid !== "all") 
+        ? (statsByProject?.[selectedProjectid] || {
+            total: 0,
+            open: 0,
+            inProgress: 0,
+            fixed: 0,
+            closed: 0
+          })
+        : (globalStats || {
+            total: 0,
+            open: 0,
+            inProgress: 0,
+            fixed: 0,
+            closed: 0
+          });
 
-    const openCount = filteredBugs.filter((bug) => bug.status === "open").length;
-    const inProgressCount = filteredBugs.filter(
-        (bug) => bug.status === "in-progress"
-    ).length;
-    const fixedCount = filteredBugs.filter(
-        (bug) => bug.status === "fixed"
-    ).length;
-    const closedCount = filteredBugs.filter(
-        (bug) => bug.status === "closed"
-    ).length;
-
-    const stats = [
+    const statsConfig = [
         {
             label: "Total Bugs",
-            value: filteredBugs.length,
+            value: currentStats.total || 0,
             color: "text-gray-900",
             bg: "bg-gray-100",
             icon: Bug,
         },
         {
             label: "Open",
-            value: openCount,
+            value: currentStats.open || 0,
             color: "text-red-600",
             bg: "bg-red-100",
             icon: XCircle,
         },
         {
             label: "In Progress",
-            value: inProgressCount,
+            value: currentStats.inProgress || 0,
             color: "text-blue-600",
             bg: "bg-blue-100",
             icon: Loader,
         },
         {
             label: "Fixed",
-            value: fixedCount,
+            value: currentStats.fixed || 0,
             color: "text-green-600",
             bg: "bg-green-100",
             icon: CheckCircle,
         },
         {
             label: "Closed",
-            value: closedCount,
+            value: currentStats.closed || 0,
             color: "text-purple-600",
             bg: "bg-purple-100",
             icon: CheckCircle,
@@ -58,7 +60,7 @@ const BugStats = ({ originalData, selectedProject }) => {
 
     return (
         <div className="grid grid-cols-5 gap-4 p-4 bg-white rounded-xl shadow-md">
-            {stats.map((stat, idx) => {
+            {statsConfig.map((stat, idx) => {
                 const Icon = stat.icon;
                 return (
                     <div
