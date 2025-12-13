@@ -34,6 +34,14 @@ import BugsV1 from "../../components/Bugs/BugsV1";
 import BugImportSampleGenerator from "../../components/DataGrid/BugImportSampleGenerator";
 import DynamicBugCreator from "../../components/DataGrid/DynamicBugCreator";
 import DeleteConfirmationUsage from "../../components/common/deleteConfirmationUsage";
+import ProjectSample1 from "../projectDesign/ProjectSample1";
+import ProjectSample2 from "../projectDesign/ProjectSample2";
+import TeamSample1 from "../projectDesign/TeamSample1";
+import ProfileSample1 from "../projectDesign/profileSample1";
+import IssuesManagement from "../projectDesign/coreFuntionality/IssuesManagement";
+import SprintsManagement from "../projectDesign/coreFuntionality/SprintsManagement";
+import CalendarManagement from "../projectDesign/coreFuntionality/CalendarManagement";
+import ReportsDashboard from "../projectDesign/ReportsDashboard/ReportsDashboard";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -375,11 +383,13 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
       <div className="space-y-6">
         {/* <HomePageUser  user={user}/> */}
         {/* <DashboardContent1 /> */}
-        <ProjectsPage />
+        {/* <ProjectsPage /> */}
+        <ProjectSample1 />
         <br />
         <br />
         <br />
         <br />
+        {/* <ProjectSample2 /> */}
         {/* <DataView2
           data={dummyData.data}
           columns={dummyData.columns}
@@ -406,9 +416,29 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
         <h1>TEST</h1>
         <h1>TEST</h1>
         <h1>TEST</h1>
+        <h1>Team</h1>
+        <TeamSample1 />
+        <h1>TEST</h1>
+        <h1>TEST</h1>
+        <h1>PROFILE</h1>
+        <ProfileSample1 />
+        <h1>TEST</h1>
+        <h1>TEST</h1>
+        <h1>IssuesManagement</h1>
+        <IssuesManagement />
+        <h1>TEST</h1>
+        <h1>TEST</h1>
+        <h1>SprintsManagement</h1>
+        <SprintsManagement />
+        <h1>TEST</h1>
+        <h1>TEST</h1>
+        <h1>CalendarManagement</h1>
+        <CalendarManagement />
         <h1>TEST</h1>
         <h1>TEST</h1>
         <h1>TEST</h1>
+        <h1>ReportsDashboard</h1>
+        <ReportsDashboard />
         {/* <DataUsage3 /> */}
         {/* <DashboardContent2 /> */}
       </div>

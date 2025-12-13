@@ -13,7 +13,7 @@ const DynamicBugCreator = () => {
     status: 'open',
     reportedBy: '',
     assignedTo: '',
-    issueEnv: 'Development',
+    issueEnv: 'dev',
     comments: '',
     reportedOn: new Date().toISOString().split('T')[0],
     createdAt: new Date().toISOString().split('T')[0],
@@ -119,7 +119,7 @@ const DynamicBugCreator = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center justify-between">
