@@ -150,9 +150,9 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  const getAllProjectDetails = useCallback(async () => {
+  const getAllProjectDetails = useCallback(async (queryParams) => {
     try {
-      const response = await authService.getProjects();
+      const response = await authService.getProjectSummary(queryParams);
       if (response.success) {
         setProjectDetails(response.data);
         return response;
@@ -162,9 +162,9 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  const getProjectSummaryDetails = useCallback(async () => {
+  const getProjectSummaryDetails = useCallback(async (queryParams) => {
     try {
-      const response = await authService.getProjectSummary();
+      const response = await authService.getProjectSummary(queryParams);
       if (response.success) {
         setProjectSummary(response.data.projects);
         return response;

@@ -242,7 +242,17 @@ const ProjectsContent1 = ({ user }) => {
     };
     const getProjectDetails = useCallback(async () => {
         try {
-            const apiResp = await executeGetProjectDetails();
+            const queryParams = new URLSearchParams({
+                page: currentPage.toString(),
+                limit: itemsPerPage.toString(),
+                search: searchTerm,
+                status: statusFilter,
+                priority: priorityFilter,
+                // sortBy: sortBy,
+                // sortOrder: sortOrder,
+                // includeArchived: includeArchived.toString()
+            });
+            const apiResp = await executeGetProjectDetails(queryParams);
             if (apiResp) {
                 alert.success(`${apiResp?.message || "Project fetched successful!"}`);
                 setProjects(apiResp?.data.projects || []);

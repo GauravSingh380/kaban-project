@@ -88,9 +88,9 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
-  getProjectSummary: async () => {
+  getProjectSummary: async (queryParams) => {
     try {
-      const response = await apiClient.get('/projects/summary')
+      const response = await apiClient.get(`/projects/available?${queryParams}`)
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Token verification failed');

@@ -42,6 +42,7 @@ import IssuesManagement from "../projectDesign/coreFuntionality/IssuesManagement
 import SprintsManagement from "../projectDesign/coreFuntionality/SprintsManagement";
 import CalendarManagement from "../projectDesign/coreFuntionality/CalendarManagement";
 import ReportsDashboard from "../projectDesign/ReportsDashboard/ReportsDashboard";
+import ProjectContent1v1 from "../../components/Projects/ProjectContent1v1";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -445,7 +446,8 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     ),
     projects: (
       <div className="space-y-2">
-        <ProjectsContent1 />
+        {/* <ProjectsContent1 /> */}
+        <ProjectContent1v1 />
         {/* <ProjectsContent2 /> */}
         {/* <ProjectsComponent /> */}
       </div>
@@ -469,11 +471,11 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     ),
     reports: (
       <div className="space-y-6">
-        <BugReportsDashboard1 />
+        {/* <BugReportsDashboard1 /> */}
+        {/* <br />
         <br />
         <br />
-        <br />
-        <br />
+        <br /> */}
         <BugReportsDashboard2 />
       </div>
     ),
