@@ -58,11 +58,12 @@ const getDaysRemaining = (dueDate) => {
     return diffDays;
 };
 
-const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archivingProjectId, onArchive }) => {
+const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archivingProjectId, onArchive,onDelete,deletingProjectId, loadingDeleteProject }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    const handleDeleteClick = () => {
+    const handleArchiveClick = () => {
         setIsModalOpen(true);
     };
 
@@ -76,6 +77,22 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archiv
         // Only allow closing if not currently deleting
         if (archivingProjectId !== project.id) {
             setIsModalOpen(false);
+        }
+    };
+
+    //TO DO Delete  Project
+    const handleDeleteClick = () => {
+        setIsDeleteModalOpen(true);
+    };
+    const handleConfirmDeleteProject = async () => {
+        setIsDeleteModalOpen(false);
+        // Call the parent's delete function
+        onDelete(project.projectId);
+    };
+    const handleCloseDeleteProjectModal = () => {
+        // Only allow closing if not currently deleting
+        if (deletingProjectId !== project.id) {
+            setIsDeleteModalOpen(false);
         }
     };
     return <>
@@ -231,15 +248,27 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archiv
                                     size='1.5rem'
                                     text=''
                                     fontSize='semi bold'
+                                    color='yellow'
+                                />
+                            ) : (
+                                <button className="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full">
+                                <Archive onClick={handleArchiveClick} className="w-4 h-4" />
+                            </button>
+                            )}
+                        <button className="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full">
+                            {deletingProjectId === project.projectId ? (
+                                <StyledSpinner
+                                    borderWidth='3px'
+                                    size='1.5rem'
+                                    text=''
+                                    fontSize='semi bold'
                                     color='red'
                                 />
                             ) : (
                                 <button className="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full">
-                                <Archive onClick={handleDeleteClick} className="w-4 h-4" />
+                                <Trash2 onClick={handleDeleteClick} className="w-4 h-4" />
                             </button>
                             )}
-                        <button className="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full">
-                            <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
@@ -257,6 +286,20 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archiv
                     cancelText="Cancel"
                     isLoading={archivingProjectId === project.projectId}
                     isArchive={true}
+                />
+                <ConfirmationModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={handleCloseDeleteProjectModal}
+                    onConfirm={handleConfirmDeleteProject}
+                    title="Delete Project"
+                    message={
+                        <>
+                            Are you sure you want to delete <strong>{project?.name || "NA"}</strong>? This action cannot be undone.
+                        </>
+                    }
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                    isLoading={deletingProjectId === project.projectId}
                 />
             </div>
         </div>

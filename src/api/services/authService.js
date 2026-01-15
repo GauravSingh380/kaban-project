@@ -112,6 +112,14 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
+  deleteProjects: async (projectId) => {
+    try {
+      const response = await apiClient.delete(`/projects/${projectId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
   getBugs: async () => {
     try {
       const response = await apiClient.get('/bugs');

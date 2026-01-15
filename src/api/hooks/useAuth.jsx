@@ -198,6 +198,17 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const deleteProject = useCallback(async (projectId) => {
+    try {
+      const response = await authService.deleteProjects(projectId);
+      if (response.success) {
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
   const getAllBugs = useCallback(async () => {
     try {
       const response = await authService.getBugs();
@@ -305,7 +316,8 @@ export const AuthProvider = ({ children }) => {
     createNewBugs,
     getProjectSummaryDetails,
     projectSummary,
-    deleteBug
+    deleteBug,
+    deleteProject
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

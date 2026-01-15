@@ -48,7 +48,7 @@ const ProjectContent1v1 = ({ user }) => {
     const [loading, setLoading] = useState(false);
 
     // crud state 
-    // const [deletingProjectId, setDeletingProjectId] = useState(null);
+    const [deletingProjectId, setDeletingProjectId] = useState(null);
     const [archivingProjectId, setArchivingProjectId] = useState(null);
 
     const alert = useToast();
@@ -98,7 +98,7 @@ const ProjectContent1v1 = ({ user }) => {
         { value: 'createdAt', label: 'Created Date' }
     ];
 
-    const { isAuthenticated, projectDetails, getProjectSummaryDetails, newProject, createNewProject, archiveProject } = useAuth();
+    const { isAuthenticated, projectDetails, getProjectSummaryDetails, newProject, createNewProject, archiveProject, deleteProject } = useAuth();
     const {
         loading: loadingGetProjectDetails,
         error: errorGetProjectDetails,
@@ -113,6 +113,10 @@ const ProjectContent1v1 = ({ user }) => {
         loading: loadingArchiveProject,
         execute: executeArchiveProject
     } = useApi(archiveProject);
+    const {
+        loading: loadingDeleteProject,
+        execute: executeDeleteProject
+    } = useApi(deleteProject);
 
     // ==================== FETCH PROJECTS FROM API ====================
     const fetchProjects = useCallback(async () => {
@@ -152,23 +156,42 @@ const ProjectContent1v1 = ({ user }) => {
     const handleOnArchiveProject = useCallback(async (projectId) => {
         setArchivingProjectId(projectId)
         try {
-          const apiResp = await executeArchiveProject(projectId);
-          if (apiResp) {
-            alert.success(apiResp.message || 'An error occurred. Please try again.');
-            // hasFetchedBugs.current = true
-            fetchProjects();
-            setArchivingProjectId(null)
-          }
+            const apiResp = await executeArchiveProject(projectId);
+            if (apiResp) {
+                alert.success(apiResp.message || 'An error occurred. Please try again.');
+                // hasFetchedBugs.current = true
+                fetchProjects();
+                setArchivingProjectId(null)
+            }
         } catch (error) {
-          if (error.message) {
-            alert.error(error.message || 'An error occurred. Please try again.');
-          } else {
-            alert.error("Failed to get bugs. Please try again.");
-          }
-          setArchivingProjectId(null)
-          console.log('Failed to get bugs:', error.message || error);
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get bugs. Please try again.");
+            }
+            setArchivingProjectId(null)
+            console.log('Failed to get bugs:', error.message || error);
         }
-      }, [executeArchiveProject]);
+    }, [executeArchiveProject]);
+    const handleDeleteProject = useCallback(async (projectId) => {
+        setDeletingProjectId(projectId)
+        try {
+            const apiResp = await executeDeleteProject(projectId);
+            if (apiResp) {
+                alert.success(apiResp.message || 'An error occurred. Please try again.');
+                fetchProjects();
+                setDeletingProjectId(null)
+            }
+        } catch (error) {
+            if (error.message) {
+                alert.error(error.message || 'An error occurred. Please try again.');
+            } else {
+                alert.error("Failed to get bugs. Please try again.");
+            }
+            setDeletingProjectId(null)
+            console.log('Failed to get bugs:', error.message || error);
+        }
+    }, [executeDeleteProject]);
 
     // ==================== DEBOUNCED SEARCH ====================
     useEffect(() => {
@@ -594,6 +617,9 @@ const ProjectContent1v1 = ({ user }) => {
                                         archivingProjectId={archivingProjectId}
                                         onArchive={handleOnArchiveProject}
                                         loadingArchiveProject={loadingArchiveProject}
+                                        onDelete={handleDeleteProject}
+                                        deletingProjectId={deletingProjectId}
+                                        loadingDeleteProject={loadingDeleteProject}
                                     />
                                 ))}
                             </div>
