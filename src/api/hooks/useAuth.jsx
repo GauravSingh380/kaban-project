@@ -198,6 +198,18 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const getUsersName = useCallback(async (query) => {
+    try {
+      const response = await authService.getUsers(query);
+      if (response.success) {
+        // setNewProject(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
   const deleteProject = useCallback(async (projectId) => {
     try {
       const response = await authService.deleteProjects(projectId);
@@ -317,7 +329,8 @@ export const AuthProvider = ({ children }) => {
     getProjectSummaryDetails,
     projectSummary,
     deleteBug,
-    deleteProject
+    deleteProject,
+    getUsersName
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

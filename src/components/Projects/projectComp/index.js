@@ -115,18 +115,33 @@ export const addProjectJsonConfig  = [
     },
   
     // Team Section - Full width
-    {
-      name: 'team',
-      type: 'team',
-      label: 'Team Members',
-      containerClass: 'col-span-full' // Full width for team member cards
-    },
+    // {
+    //   name: 'team',
+    //   type: 'team',
+    //   label: 'Team Members',
+    //   containerClass: 'col-span-full' // Full width for team member cards
+    // },
   
     // Checkbox Section - Full width for better alignment
     {
       name: 'starred',
       type: 'checkbox',
       label: 'Mark as starred project',
+      containerClass: 'col-span-full' // Full width for consistent alignment
+    },
+    {
+      name: "team",
+      type: "team-member-search",
+      label: "Team Members",
+      roles: [
+        { value: "Project Manager", label: "Project Manager" },
+        { value: "Frontend Developer", label: "Frontend Developer" },
+        { value: "Backend Developer", label: "Backend Developer" },
+        { value: "UI/UX Designer", label: "UI/UX Designer" },
+        { value: "QA Engineer", label: "QA Engineer" },
+        { value: "DevOps Engineer", label: "DevOps Engineer" },
+        { value: "Business Analyst", label: "Business Analyst" },
+      ],
       containerClass: 'col-span-full' // Full width for consistent alignment
     }
   ];

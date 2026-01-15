@@ -5,6 +5,7 @@ import {
   Calendar, DollarSign, Users, Tag, Plus, Trash2, X, 
   AlertCircle, TrendingUp, Target, TrendingDown 
 } from 'lucide-react';
+import SearchableTeamMember from './SearchableTeamMember';
 
 const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange, gridClasses = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" }) => {
   const [newMember, setNewMember] = useState({ name: '', role: '', avatar: '' });
@@ -289,6 +290,15 @@ const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange, gridClasse
             </div>
           </div>
         );
+      case 'team-member-search':
+          return (
+            <SearchableTeamMember
+              value={formData[field.name] || []}
+              handleInputChange={handleInputChange}
+              name={field.name}
+              roles={field.roles}
+            />
+          );
 
       case 'checkbox':
         return (

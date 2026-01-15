@@ -377,7 +377,7 @@ const ProjectContent1v1 = ({ user }) => {
                         )}
                     </div>
                 </div>
-
+                {/* filters */}
                 <div className="flex flex-wrap gap-2 mb-4">
                     <select
                         value={statusFilter}
@@ -424,13 +424,13 @@ const ProjectContent1v1 = ({ user }) => {
                         <option value="desc">Descending</option>
                     </select>
 
-                    <button
+                    {/* <button
                         onClick={() => setShowFilters(!showFilters)}
                         className={`p-2 border rounded-lg transition-colors ${showFilters ? 'bg-blue-100 border-blue-500 text-blue-600' : 'border-gray-300 hover:bg-gray-50'
                             }`}
                     >
                         <Filter className="w-4 h-4" />
-                    </button>
+                    </button> */}
 
                     <button
                         onClick={clearFilters}
