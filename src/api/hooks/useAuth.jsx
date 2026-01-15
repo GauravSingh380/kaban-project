@@ -186,6 +186,18 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const archiveProject = useCallback(async (projectId) => {
+    try {
+      const response = await authService.archiveProjects(projectId);
+      if (response.success) {
+        // setNewProject(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
   const getAllBugs = useCallback(async () => {
     try {
       const response = await authService.getBugs();
@@ -285,6 +297,7 @@ export const AuthProvider = ({ children }) => {
     refreshAccessToken,
     projectDetails,
     newProject,
+    archiveProject,
     createNewProject,
     getAllProjectDetails,
     bugDetails,

@@ -1,15 +1,20 @@
-# React + Vite
+Recommended Development Sequence:
+Phase 1: Foundation (Core Data Management)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Projects - Start here! This is your parent entity that everything else references
+Team - Team members are needed before you can assign issues
+Profile/Settings - User management foundation
 
-Currently, two official plugins are available:
+Phase 2: Core Functionality
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Issues (Bug Management) - Your main feature, builds on Projects + Team
+Sprints - Helps organize issues into time-boxed iterations
+Calendar - Can integrate with Sprints and Issues
 
-## Expanding the ESLint configuration
+Phase 3: Analytics & Overview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Reports - Aggregates data from Issues/Projects
+Dashboard - The final overview, pulls from everything
 
 
 

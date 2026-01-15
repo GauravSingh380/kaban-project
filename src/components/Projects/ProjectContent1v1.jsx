@@ -47,6 +47,10 @@ const ProjectContent1v1 = ({ user }) => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // crud state 
+    // const [deletingProjectId, setDeletingProjectId] = useState(null);
+    const [archivingProjectId, setArchivingProjectId] = useState(null);
+
     const alert = useToast();
     const hasFetchedProjects = useRef(false);
     const searchDebounceTimer = useRef(null);
@@ -94,7 +98,7 @@ const ProjectContent1v1 = ({ user }) => {
         { value: 'createdAt', label: 'Created Date' }
     ];
 
-    const { isAuthenticated, projectDetails, getProjectSummaryDetails, newProject, createNewProject } = useAuth();
+    const { isAuthenticated, projectDetails, getProjectSummaryDetails, newProject, createNewProject, archiveProject } = useAuth();
     const {
         loading: loadingGetProjectDetails,
         error: errorGetProjectDetails,
@@ -105,6 +109,10 @@ const ProjectContent1v1 = ({ user }) => {
         loading: loadingCreateProject,
         execute: executeCreateProject
     } = useApi(createNewProject);
+    const {
+        loading: loadingArchiveProject,
+        execute: executeArchiveProject
+    } = useApi(archiveProject);
 
     // ==================== FETCH PROJECTS FROM API ====================
     const fetchProjects = useCallback(async () => {
@@ -126,8 +134,6 @@ const ProjectContent1v1 = ({ user }) => {
             // });
             // const data = await response.json();
             const apiResp = await executeGetProjectDetails(queryParams);
-            console.log("apiResp----", apiResp);
-
             if (apiResp) {
                 setProjects(apiResp?.data?.projects);
                 setTotalPages(apiResp?.data?.pagination?.totalPages);
@@ -142,6 +148,27 @@ const ProjectContent1v1 = ({ user }) => {
             setLoading(false);
         }
     }, [currentPage, itemsPerPage, searchTerm, statusFilter, priorityFilter, sortBy, sortOrder, includeArchived]);
+
+    const handleOnArchiveProject = useCallback(async (projectId) => {
+        setArchivingProjectId(projectId)
+        try {
+          const apiResp = await executeArchiveProject(projectId);
+          if (apiResp) {
+            alert.success(apiResp.message || 'An error occurred. Please try again.');
+            // hasFetchedBugs.current = true
+            fetchProjects();
+            setArchivingProjectId(null)
+          }
+        } catch (error) {
+          if (error.message) {
+            alert.error(error.message || 'An error occurred. Please try again.');
+          } else {
+            alert.error("Failed to get bugs. Please try again.");
+          }
+          setArchivingProjectId(null)
+          console.log('Failed to get bugs:', error.message || error);
+        }
+      }, [executeArchiveProject]);
 
     // ==================== DEBOUNCED SEARCH ====================
     useEffect(() => {
@@ -564,6 +591,9 @@ const ProjectContent1v1 = ({ user }) => {
                                         selectedProjects={selectedProjects}
                                         toggleProjectSelection={toggleProjectSelection}
                                         onRefresh={fetchProjects}
+                                        archivingProjectId={archivingProjectId}
+                                        onArchive={handleOnArchiveProject}
+                                        loadingArchiveProject={loadingArchiveProject}
                                     />
                                 ))}
                             </div>
@@ -630,8 +660,7 @@ const ProjectContent1v1 = ({ user }) => {
                                 <button
                                     onClick={prevPage}
                                     disabled={currentPage === 1}
-                                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg
-                     hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Previous
                                 </button>
@@ -675,7 +704,7 @@ const ProjectContent1v1 = ({ user }) => {
                                     <button
                                         onClick={() => paginate(totalPages)}
                                         className={`px-3 py-2 text-sm rounded-lg
-              ${currentPage === totalPages
+                                         ${currentPage === totalPages
                                                 ? "bg-blue-600 text-white"
                                                 : "border border-gray-300 hover:bg-gray-50"
                                             }`}
