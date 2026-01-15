@@ -186,6 +186,18 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const updateProject = useCallback(async (payload) => {
+    try {
+      const response = await authService.updateProjects(payload);
+      if (response.success) {
+        setNewProject(response.data);
+        return response;
+      }
+      throw new Error(response.message);
+    } catch (error) {
+      throw error;
+    }
+  }, []);
   const archiveProject = useCallback(async (projectId) => {
     try {
       const response = await authService.archiveProjects(projectId);
@@ -330,7 +342,8 @@ export const AuthProvider = ({ children }) => {
     projectSummary,
     deleteBug,
     deleteProject,
-    getUsersName
+    getUsersName,
+    updateProject
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

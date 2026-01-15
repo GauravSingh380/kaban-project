@@ -111,7 +111,7 @@ const SearchableTeamMember = ({ value = [], handleInputChange, name, roles = [] 
     <div className="space-y-3">
     {/* Display existing team members */}
     {value.length > 0 && (
-      <div className="space-y-2">
+      <div className="space-y-4">
         {value.map((member, index) => (
           <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-3">

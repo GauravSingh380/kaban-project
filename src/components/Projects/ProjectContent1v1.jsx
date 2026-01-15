@@ -21,6 +21,8 @@ const ProjectContent1v1 = ({ user }) => {
     const [showFilters, setShowFilters] = useState(false);
     const [selectedProjects, setSelectedProjects] = useState([]);
     const [isAddModelOpen, setIsAddModelOpen] = useState(false);
+    const [isUpdatedModelOpen, setIsUpdateModelOpen] = useState(false);
+    const [selectedProject, setSelectedProject] = useState(null);
 
     // Filter State
     const [searchTerm, setSearchTerm] = useState('');
@@ -98,7 +100,7 @@ const ProjectContent1v1 = ({ user }) => {
         { value: 'createdAt', label: 'Created Date' }
     ];
 
-    const { isAuthenticated, projectDetails, getProjectSummaryDetails, newProject, createNewProject, archiveProject, deleteProject } = useAuth();
+    const { isAuthenticated, projectDetails, getProjectSummaryDetails, newProject, createNewProject, archiveProject, deleteProject, updateProject } = useAuth();
     const {
         loading: loadingGetProjectDetails,
         error: errorGetProjectDetails,
@@ -117,6 +119,10 @@ const ProjectContent1v1 = ({ user }) => {
         loading: loadingDeleteProject,
         execute: executeDeleteProject
     } = useApi(deleteProject);
+    const {
+        loading: loadingUpdateProject,
+        execute: executeUpdateProject
+    } = useApi(updateProject);
 
     // ==================== FETCH PROJECTS FROM API ====================
     const fetchProjects = useCallback(async () => {
@@ -294,6 +300,33 @@ const ProjectContent1v1 = ({ user }) => {
             console.error('Failed to create project:', error);
         }
     };
+    const handleUpdateProject = async () => {
+        const requiredFields = projectConfig.filter(field => field.required);
+        const missingFields = requiredFields.filter(field =>
+            !projectFormData[field.name] ||
+            (typeof projectFormData[field.name] === 'string' && projectFormData[field.name].trim() === '')
+        );
+
+        if (missingFields.length > 0) {
+            alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+            return;
+        }
+
+        try {
+            console.log("projectFormData---", projectFormData);
+            console.log("selectedProject---", selectedProject);
+            const payload = {...projectFormData, projectId: selectedProject.projectId}
+            const apiResp = await executeUpdateProject(payload);
+            if (apiResp) {
+                alert.success(apiResp?.message || "Project created successfully!");
+                setIsUpdateModelOpen(false);
+                fetchProjects(); // Refresh the list
+            }
+        } catch (error) {
+            alert.error(error.message || 'Failed to create project. Please try again.');
+            console.error('Failed to create project:', error);
+        }
+    }
 
     const handleProjectInputChange = (fieldName, value) => {
         setProjectFormData(prev => ({
@@ -309,6 +342,26 @@ const ProjectContent1v1 = ({ user }) => {
                 : [...prev, projectId]
         );
     };
+    useEffect(() => {
+        if (isUpdatedModelOpen && selectedProject) {
+          setProjectFormData({
+            name: selectedProject.name ?? '',
+            description: selectedProject.description ?? '',
+            status: selectedProject.status ?? '',
+            priority: selectedProject.priority ?? '',
+            progress: selectedProject.progress ?? 0,
+            startDate: selectedProject.startDate?.split('T')[0] ?? '',
+            dueDate: selectedProject.dueDate?.split('T')[0] ?? '',
+            budget: selectedProject.budget ?? '',
+            spent: selectedProject.spent ?? '',
+            team: selectedProject.team ?? [],
+            client: selectedProject.client ?? '',
+            tags: selectedProject.tags ?? [],
+            starred: selectedProject.starred ?? false
+          });
+        }
+      }, [isUpdatedModelOpen, selectedProject]);
+      
 
     const selectAllProjects = () => {
         setSelectedProjects(selectedProjects.length === projects.length ? [] : projects.map(p => p._id));
@@ -620,6 +673,10 @@ const ProjectContent1v1 = ({ user }) => {
                                         onDelete={handleDeleteProject}
                                         deletingProjectId={deletingProjectId}
                                         loadingDeleteProject={loadingDeleteProject}
+                                        onUpdate={(project) => {
+                                            setSelectedProject(project)
+                                            setIsUpdateModelOpen(true);
+                                          }}
                                     />
                                 ))}
                             </div>
@@ -766,6 +823,31 @@ const ProjectContent1v1 = ({ user }) => {
                             fontSize='semi bold'
                         /> :
                         'Add Project'
+                    }
+                    size="large"
+                >
+                    <div>
+                        <RenderHtmlFieldsP
+                            fieldItems={addProjectJsonConfig}
+                            formData={projectFormData}
+                            handleInputChange={handleProjectInputChange}
+                        />
+                    </div>
+                </GlobalModelP>
+                <GlobalModelP
+                    isOpen={isUpdatedModelOpen}
+                    onClose={() => setIsUpdateModelOpen(false)}
+                    header="Update Project"
+                    onSubmit={handleUpdateProject}
+                    disabled={loadingUpdateProject}
+                    submitText={loadingUpdateProject ?
+                        <StyledSpinner
+                            borderWidth='3px'
+                            size='1.5rem'
+                            text='Updating...'
+                            fontSize='semi bold'
+                        /> :
+                        'Update Project'
                     }
                     size="large"
                 >

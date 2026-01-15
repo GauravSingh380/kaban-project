@@ -112,6 +112,15 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
+  updateProjects: async (payload) => {
+    try {
+      console.log("payload.projectId-----", payload.projectId);
+      const response = await apiClient.patch(`/projects/${payload.projectId}`, payload);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Token verification failed');
+    }
+  },
   archiveProjects: async (projectId) => {
     try {
       const response = await apiClient.post(`/projects/${projectId}/archive`);

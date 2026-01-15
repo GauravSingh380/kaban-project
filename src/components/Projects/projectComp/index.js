@@ -80,8 +80,8 @@ export const addProjectJsonConfig  = [
       name: 'budget',
       type: 'number',
       label: 'Budget ($)',
-      placeholder: '0',
-      min: 0,
+      placeholder: '',
+      // min: 0,
       icon: 'DollarSign',
       containerClass: 'col-span-2' // Half width
     },
@@ -89,8 +89,8 @@ export const addProjectJsonConfig  = [
       name: 'spent',
       type: 'number',
       label: 'Amount Spent ($)',
-      placeholder: '0',
-      min: 0,
+      placeholder: '',
+      // min: 0,
       icon: 'DollarSign',
       containerClass: 'col-span-2' // Half width
     },
@@ -124,12 +124,6 @@ export const addProjectJsonConfig  = [
   
     // Checkbox Section - Full width for better alignment
     {
-      name: 'starred',
-      type: 'checkbox',
-      label: 'Mark as starred project',
-      containerClass: 'col-span-full' // Full width for consistent alignment
-    },
-    {
       name: "team",
       type: "team-member-search",
       label: "Team Members",
@@ -143,7 +137,13 @@ export const addProjectJsonConfig  = [
         { value: "Business Analyst", label: "Business Analyst" },
       ],
       containerClass: 'col-span-full' // Full width for consistent alignment
-    }
+    },
+    {
+      name: 'starred',
+      type: 'checkbox',
+      label: 'Mark as starred project',
+      containerClass: 'col-span-full' // Full width for consistent alignment
+    },
   ];
 
   const roles = [

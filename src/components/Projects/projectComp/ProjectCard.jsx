@@ -58,7 +58,7 @@ const getDaysRemaining = (dueDate) => {
     return diffDays;
 };
 
-const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archivingProjectId, onArchive,onDelete,deletingProjectId, loadingDeleteProject }) => {
+const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archivingProjectId, onArchive,onDelete,deletingProjectId, loadingDeleteProject, onUpdate }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -240,7 +240,8 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archiv
                     </button>
                     <div className="flex gap-2">
                         <button className="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full">
-                            <Edit className="w-4 h-4" />
+                            {/* <Edit onClick={() => onUpdate(project.projectId)} className="w-4 h-4" /> */}
+                            <Edit onClick={() => onUpdate(project)} className="w-4 h-4" />
                         </button>
                         {archivingProjectId === project.projectId ? (
                                 <StyledSpinner
