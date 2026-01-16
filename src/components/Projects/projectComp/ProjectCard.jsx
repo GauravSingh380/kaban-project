@@ -106,12 +106,12 @@ const ProjectCard = ({ project, selectedProjects, toggleProjectSelection, archiv
             <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <input
+                        {/* <input
                             type="checkbox"
                             checked={selectedProjects.includes(project?.id)}
                             onChange={() => toggleProjectSelection(project?.id)}
                             className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
+                        /> */}
                         <div>
                             <h3 className="font-semibold text-gray-900 text-lg mb-1">{project?.name}</h3>
                             <p className="text-sm text-gray-600 mb-2">{project?.description}</p>

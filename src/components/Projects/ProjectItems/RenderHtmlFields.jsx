@@ -96,8 +96,8 @@ const RenderHtmlFieldsP = ({ fieldItems, formData, handleInputChange, gridClasse
             )}
             <input
               type="number"
-              value={value}
-              onChange={(e) => handleInputChange(name, Number(e.target.value))}
+              value={value === 0 || value === null || value === undefined ? '' : value}
+              onChange={(e) => handleInputChange(name, e.target.value)}
               placeholder={placeholder}
               min={min}
               max={max}

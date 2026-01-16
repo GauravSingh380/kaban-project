@@ -81,7 +81,7 @@ export const addProjectJsonConfig  = [
       type: 'number',
       label: 'Budget ($)',
       placeholder: '',
-      // min: 0,
+      min: 0,
       icon: 'DollarSign',
       containerClass: 'col-span-2' // Half width
     },
@@ -90,7 +90,7 @@ export const addProjectJsonConfig  = [
       type: 'number',
       label: 'Amount Spent ($)',
       placeholder: '',
-      // min: 0,
+      min: 0,
       icon: 'DollarSign',
       containerClass: 'col-span-2' // Half width
     },
