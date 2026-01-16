@@ -14,7 +14,7 @@ import StyledSpinner from '../StyledSpinner/StyledSpinner';
 import ApiSpinnerV2 from '../Teams/ApiSpinnerv2';
 
 const BugManagementSystem = () => {
-  const { isAuthenticated, bugDetails, getAllBugs , createNewBugs, projectSummary, getProjectSummaryDetails, deleteBug} = useAuth();
+  const { isAuthenticated, bugDetails, getAllBugs, createNewBugs, projectSummary, getProjectSummaryDetails, deleteBug } = useAuth();
   const {
     loading: loadingGetAllBugs,
     error: errorGetAllBugs,
@@ -72,9 +72,9 @@ const BugManagementSystem = () => {
   const [availableProjects, setAvailableProjects] = useState([]);
   const [projectId, setProjectId] = useState("");
 
-  const selectedProjectId = selectedProject && selectedProject !== "" 
-  ? originalData.find(bug => bug.project === selectedProject)?.projectId || ""
-  : "";
+  const selectedProjectId = selectedProject && selectedProject !== ""
+    ? originalData.find(bug => bug.project === selectedProject)?.projectId || ""
+    : "";
   const [formData, setFormData] = useState({
     project: '',
     title: '',
@@ -323,12 +323,12 @@ const BugManagementSystem = () => {
   };
 
   // Add this function with other handlers in BugManagementSystem component
-  const handleImportBugs = async(importedBugs) => {
+  const handleImportBugs = async (importedBugs) => {
     if (!selectedProject) {
       alert('Please select a project before importing bugs');
       return;
     }
-  
+
     // Process imported bugs with required fields
     const processedBugs = importedBugs.map((bug) => ({
       projectId: projectId,
@@ -344,26 +344,25 @@ const BugManagementSystem = () => {
       createdAt: bug.createdAt || new Date().toISOString().split('T')[0],
       updatedAt: bug.updatedAt || new Date().toISOString().split('T')[0]
     }));
-  
-    console.log("processedBugs---", processedBugs);
-  
+
+    // console.log("processedBugs---", processedBugs);
     try {
       // Call the API for each bug individually if your API creates bugs one at a time
       const results = await Promise.all(
         processedBugs.map(bug => executeCreateBug(bug))
       );
-  
+
       // Or if you have a bulk create endpoint, use that instead:
       // const apiResp = await executeCreateBugBulk(processedBugs);
-  
-      alert.success(`Successfully imported ${processedBugs.length} bugs!`);
-      
-      // Refresh the bug list
-      getAllBugDetails();
-      
-      // Close the import modal
-      setIsImportModalOpen(false);
-  
+      if (results) {
+        alert.success(`Successfully imported ${processedBugs.length} bugs!`);
+        // Refresh the bug list
+        await getAllBugDetails();
+        // Close the import modal
+        console.log('loadingCreateBugloadingCreateBug----', loadingCreateBug);
+        setIsImportModalOpen(false);
+      }
+
     } catch (error) {
       console.error('Failed to import bugs:', error);
       alert.error(error.message || 'Failed to import bugs. Please try again.');
@@ -385,10 +384,10 @@ const BugManagementSystem = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     formConfig.forEach(field => {
       const value = formData[field.name];
-      
+
       if (field.required) {
         // Handle different field types
         if (field.type === 'checkbox') {
@@ -409,13 +408,14 @@ const BugManagementSystem = () => {
         }
       }
     });
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleAddNewBug = async(e) => {
+  const handleAddNewBug = async (e) => {
     e.preventDefault();
     // ADD THESE 4 LINES AT START
+    console.log('loading----', loadingCreateBug);
     if (!selectedProject) {
       alert('Please select a project first');
       return;
@@ -433,7 +433,7 @@ const BugManagementSystem = () => {
       return;
     }
     try {
-      const apiResp = await executeCreateBug({...formData, projectId: projectId})
+      const apiResp = await executeCreateBug({ ...formData, projectId: projectId })
       if (apiResp) {
         alert.success(`${apiResp?.message || "New bug created successful!"}`);
         setOriginalData(prev => [...prev, apiResp.data]);
@@ -441,6 +441,7 @@ const BugManagementSystem = () => {
         // Reset form
         // setProjectFormData({ ...initialFormData });
         setIsAddModalOpen(false);
+        console.log('loading----', loadingCreateBug);
       }
     } catch (error) {
       if (error.message) {
@@ -568,7 +569,7 @@ const BugManagementSystem = () => {
       console.log('Failed to get bugs:', error.message || error);
     }
   }, [executeGetAllBugs]);
-  
+
   const handleDeleteBug = useCallback(async (BugId) => {
     console.log("BugId----", BugId);
     setCurrentDeleteBugId(BugId)
@@ -610,7 +611,7 @@ const BugManagementSystem = () => {
       hasFetchedBugs.current = true;
       getAllBugDetails();
     }
-  }, [isAuthenticated, originalData, bugDetails,projectSummary, getAllBugDetails, handleDeleteBug]);
+  }, [isAuthenticated, originalData, bugDetails, projectSummary, getAllBugDetails, handleDeleteBug]);
 
   useEffect(() => {
     if (isAuthenticated && !loadingProjectSummary && !hasFetchedProjectSummary.current) {
@@ -621,13 +622,13 @@ const BugManagementSystem = () => {
 
   if (loadingGetAllBugs) {
     return <ApiSpinnerV2
-        borderWidth='3px'
-        size='2.5rem'
-        text='Loading...'
-        fontSize='font-semibold'
-        // color='blue'
+      borderWidth='3px'
+      size='2.5rem'
+      text='Loading...'
+      fontSize='font-semibold'
+    // color='blue'
     />;
-}
+  }
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -1109,6 +1110,7 @@ const BugManagementSystem = () => {
         header="Edit bug details"
         onSubmit={handleUpdateBug}
         submitText="Update Details"
+        disabled={loadingCreateBug}
         children={
           <RenderHtmlFields
             fieldItems={formConfig}
@@ -1121,6 +1123,7 @@ const BugManagementSystem = () => {
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onSubmit={handleImportBugs}
+        loadingCreateBug={loadingCreateBug}
       />
     </div>
   );
