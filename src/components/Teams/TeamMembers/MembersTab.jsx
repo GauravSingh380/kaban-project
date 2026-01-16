@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import {
   Search, Filter, X, UserPlus, ChevronLeft, ChevronRight
 } from 'lucide-react';
-
-// This is your standalone Members component
-// Import this in your TeamManagement component as: <MembersTab user={user} />
+import GlobalLoader from '../../common/GlobalLoader';
 
 const MembersTab = ({ user }) => {
   // State Management
@@ -162,8 +160,8 @@ const MembersTab = ({ user }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="h-64 relative">
+        <GlobalLoader text="Fetching teams..." />
       </div>
     );
   }
