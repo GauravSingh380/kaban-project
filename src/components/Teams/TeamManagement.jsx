@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Building, Shield, Activity, GitPullRequestDraft, UserPlus } from 'lucide-react';
 import MembersTab from './TeamMembers/MembersTab';
+import TeamUsers from './TeamUsers';
 
 // Reusable Tab Component
 const TabNavigation = ({ tabs, activeTab, onTabChange }) => {
@@ -36,22 +37,7 @@ const TabNavigation = ({ tabs, activeTab, onTabChange }) => {
 const TeamsTab = () => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Teams Overview</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3].map((team) => (
-          <div key={team} className="p-5 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="font-semibold text-gray-900">Team {team}</h4>
-              <Building className="w-5 h-5 text-gray-400" />
-            </div>
-            <p className="text-sm text-gray-600 mb-3">Team description goes here</p>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">5 members</span>
-              <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">Active</span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <TeamUsers />
     </div>
   );
 };

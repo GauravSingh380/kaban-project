@@ -138,9 +138,9 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  const getAllUserDetails = useCallback(async () => {
+  const getAllUserDetails = useCallback(async (payload) => {
     try {
-      const response = await authService.getAllUsers();
+      const response = await authService.getAllUsers(payload);
       if (response.success) {
         setUserDetails(response.data);
         return response;

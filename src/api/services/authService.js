@@ -55,9 +55,9 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Failed to fetch user profile');
     }
   },
-  getAllUsers: async () => {
+  getAllUsers: async (payload) => {
     try {
-      const response = await apiClient.get('/users/all-users');
+      const response = await apiClient.get('/users/all-users', payload);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch user details');
