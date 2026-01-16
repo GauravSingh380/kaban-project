@@ -43,6 +43,7 @@ import SprintsManagement from "../projectDesign/coreFuntionality/SprintsManageme
 import CalendarManagement from "../projectDesign/coreFuntionality/CalendarManagement";
 import ReportsDashboard from "../projectDesign/ReportsDashboard/ReportsDashboard";
 import ProjectContent1v1 from "../../components/Projects/ProjectContent1v1";
+import TeamManagement from "../../components/Teams/TeamManagement";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -481,8 +482,13 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     ),
     team: (
       <div className="space-y-6">
-        <TeamsContent1 />
+        <TeamManagement />
         <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <TeamsContent1 />
         <br />
         <br />
         <br />
