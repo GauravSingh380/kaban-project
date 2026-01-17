@@ -42,13 +42,11 @@ const TeamUsers = () => {
           page: params.page || 1
         }
       })
-       console.log("response----", response.data);
+       
       if (response.success) {
         setUsers(response.data.users);
         setTotalUsers(response.data.pagination.totalUsers);
       }
-      console.log("fetched users----", response.data.users);
-      console.log("sucsses----", response.data.success);
 
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -56,13 +54,12 @@ const TeamUsers = () => {
       setLoading(false);
     }
   }, []);
-  // console.log("response.data.pagination.totalUsers", response.data.pagination.totalUsers);
+
   // Initial fetch
   useEffect(() => {
     fetchUsers();
   }, []);
   
-  console.log("users----------------", users);
   // Handle server-side operations
   const handleServerSearch = (searchTerm) => {
     const newParams = { ...serverParams, search: searchTerm, page: 1 };
@@ -161,11 +158,14 @@ const TeamUsers = () => {
       label: 'Role',
       defaultValue: 'all',
       options: [
-        { value: 'all', label: 'All Roles' },
-        { value: 'admin', label: 'Admin' },
-        { value: 'developer', label: 'Developer' },
-        { value: 'tester', label: 'Tester' },
-        { value: 'viewer', label: 'Viewer' }
+        { value: 'manager', label: 'Manager' },
+        { value: 'QA_Manager', label: 'QA_Manager' },
+        { value: 'lead', label: 'Team Lead' },
+        { value: 'senior', label: 'Senior Developer' },
+        { value: 'junior', label: 'Junior Developer' },
+        { value: 'devops', label: 'DevOps Engineer' },
+        { value: 'designer', label: 'UI/UX Designer' },
+        { value: 'analyst', label: 'Analyst' }
       ]
     },
     {
@@ -297,7 +297,7 @@ const TeamUsers = () => {
   // Custom grid card renderer using UsersCard
   const renderGridCard = (item, selectedItems, toggleItemSelection, getRowId) => (
     <div className="relative">
-      <input
+      {/* <input
         type="checkbox"
         checked={selectedItems.includes(getRowId(item))}
         onChange={(e) => {
@@ -305,7 +305,7 @@ const TeamUsers = () => {
           toggleItemSelection(getRowId(item));
         }}
         className="absolute top-4 left-4 w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 z-10"
-      />
+      /> */}
       <UsersCard
         member={item}
         onView={handleViewUser}
@@ -317,19 +317,7 @@ const TeamUsers = () => {
 
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users Management</h1>
-          <p className="text-gray-600">Manage all users in your organization</p>
-        </div>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <UserPlus className="w-4 h-4 mr-2" />
-          Add User
-        </button>
-      </div>
-
+    <div className="p-2">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg border border-gray-200 p-4">

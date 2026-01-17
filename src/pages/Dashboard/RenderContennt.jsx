@@ -454,6 +454,22 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
         {/* <ProjectsComponent /> */}
       </div>
     ),
+    team: (
+      <div className="space-y-6">
+        {/* <DataDisplayDemo /> */}
+        <TeamManagement />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        {/* <TeamsContent1 /> */}
+        <br />
+        <br />
+        <br />
+        <TeamsContent2 />
+      </div>
+    ),
     issues: (
       <div className="space-y-6">
         <DataGrid />
@@ -479,22 +495,6 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
         <br />
         <br /> */}
         <BugReportsDashboard2 />
-      </div>
-    ),
-    team: (
-      <div className="space-y-6">
-        {/* <DataDisplayDemo /> */}
-        <TeamManagement />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* <TeamsContent1 /> */}
-        <br />
-        <br />
-        <br />
-        <TeamsContent2 />
       </div>
     ),
     sprints: (
