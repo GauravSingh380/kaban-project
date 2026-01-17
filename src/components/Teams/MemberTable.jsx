@@ -2,7 +2,7 @@ import React from 'react';
 import { Star, MessageSquare, MoreHorizontal } from 'lucide-react';
 
 const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleMemberSelection, toggleStar, getRoleIcon, getWorkloadColor, getStatusColor, getTimeAgo }) => {
-    
+
     const MemberRow = ({ member }) => (
         <tr className="hover:bg-gray-50 transition-colors">
             <td className="px-6 py-4 whitespace-nowrap">
@@ -37,7 +37,7 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
                     </div>
                 </div>
             </td>
-            
+
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
                     <p className="text-sm font-medium text-gray-900 flex items-center justify-center gap-1">
@@ -47,21 +47,21 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
                     <p className="text-xs text-gray-500">{member.department}</p>
                 </div>
             </td>
-            
+
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
                     <p className="text-sm font-medium text-gray-900">{member.performance}%</p>
                     <p className="text-xs text-gray-500">Performance</p>
                 </div>
             </td>
-            
+
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
                     <p className="text-sm font-medium text-gray-900">{member.completedTasks}/{member.totalTasks}</p>
                     <p className="text-xs text-gray-500">Tasks</p>
                 </div>
             </td>
-            
+
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getWorkloadColor(member.workload)}`}>
@@ -70,16 +70,16 @@ const MemberTable = ({ sortedMembers, selectedMembers, selectAllMembers, toggleM
                     <p className="text-xs text-gray-500 mt-1">Workload</p>
                 </div>
             </td>
-            
+
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(member?.userDetails?.status)}`}>
                         {member?.userDetails?.status.charAt(0).toUpperCase() + member?.userDetails?.status.slice(1).replace('_', ' ')}
                     </span>
-                    <p className="text-xs text-gray-500 mt-1">Last active {getTimeAgo(member?.lastLogin|| "")}</p>
+                    <p className="text-xs text-gray-500 mt-1">Last active {getTimeAgo(member?.lastLogin || "")}</p>
                 </div>
             </td>
-            
+
             <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div className="flex gap-2 justify-center">
                     <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-full">

@@ -456,18 +456,7 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     ),
     team: (
       <div className="space-y-6">
-        {/* <DataDisplayDemo /> */}
         <TeamManagement />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* <TeamsContent1 /> */}
-        <br />
-        <br />
-        <br />
-        <TeamsContent2 />
       </div>
     ),
     issues: (
