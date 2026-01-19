@@ -26,6 +26,7 @@ const BugManagementSystem = () => {
     error: errorCreateBug,
     execute: executeCreateBug
   } = useApi(createNewBugs);
+  
   const {
     loading: loadingDeleteBug,
     error: errorDeleteBug,
@@ -41,58 +42,60 @@ const BugManagementSystem = () => {
   const hasFetchedProjectSummary = useRef(false);
   const searchDebounceTimer = useRef(null);
 
-  const [originalData, setOriginalData] = useState([]);
-  const [globalStats, setGlobalStats] = useState([]);
-  const [statsByProject, setStatsByProject] = useState([]);
+  // Backend data state
+  const [bugsData, setBugsData] = useState([]);
+  const [globalStats, setGlobalStats] = useState({});
+  const [statsByProject, setStatsByProject] = useState({});
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalBugs: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
 
+  // UI state
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [selectedRows, setSelectedRows] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [isIndeterminate, setIsIndeterminate] = useState(false);
   const [errors, setErrors] = useState({});
-  const [filters, setFilters] = useState({
-    priority: '',
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Query parameters for API
+  const [queryParams, setQueryParams] = useState({
+    projectId: '',
     status: '',
+    priority: '',
     assignedTo: '',
     reportedBy: '',
-    environment: ''
-  });
-  const DEFAULT_BUG_PARAMS = {
-    projectId: '',        // no project filter
-    status: '',           // open | in-progress | fixed | closed
-    priority: '',         // low | medium | high
-    assignedTo: '',       // email or userId
-    reportedBy: '',       // email or userId
-    environment: '',      // production | staging | dev
-    search: '',           // search text
-
+    environment: '',
+    search: '',
     page: 1,
     limit: 10,
+    sortBy: 'reportedOn',
+    sortOrder: 'desc'
+  });
 
-    sortBy: 'reportedOn', // backend default
-    sortOrder: 'desc',    // asc | desc
-  };
-
-  const [queryParams, setQueryParams] = useState(DEFAULT_BUG_PARAMS);
   const alert = useToast();
 
-  // Add this state variable with other useState declarations in BugManagementSystem component
+  // Modal states
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModelOpen, setEditModelOpen] = useState(false);
-  const [currentEditBugId, setCurrentEditBugId] = useState(null)
+  const [currentEditBugId, setCurrentEditBugId] = useState(null);
   const [currentDeleteBugId, setCurrentDeleteBugId] = useState(null);
 
+  // Project state
   const [selectedProject, setSelectedProject] = useState('');
   const [availableProjects, setAvailableProjects] = useState([]);
   const [projectId, setProjectId] = useState("");
 
   const selectedProjectId = selectedProject && selectedProject !== ""
-    ? originalData.find(bug => bug.project === selectedProject)?.projectId || ""
+    ? bugsData.find(bug => bug.project === selectedProject)?.projectId || ""
     : "";
+
   const [formData, setFormData] = useState({
     project: '',
     title: '',
@@ -103,7 +106,9 @@ const BugManagementSystem = () => {
     assignedTo: '',
     issueEnv: [],
     comments: ''
-  })
+  });
+
+  // Update form data when project changes
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
@@ -111,170 +116,85 @@ const BugManagementSystem = () => {
     }));
   }, [selectedProject]);
 
-  const [showFilters, setShowFilters] = useState(false);
-
-
-
-  // Filter bugs by selected project FIRST
-  const projectFilteredData = useMemo(() => {
-    if (!selectedProject) return originalData;
-    const finalData = originalData.filter(bug => bug.project === selectedProject);
-    return finalData;
-  }, [originalData, selectedProject]);
-
-  // Get unique values for filter dropdowns
+  // Get filter options from current bugs data
   const filterOptions = useMemo(() => ({
-    priorities: [...new Set(projectFilteredData.map(item => item.priority))],
-    statuses: [...new Set(projectFilteredData.map(item => item.status))],
-    assignedTo: [...new Set(projectFilteredData.map(item => item.assignedTo))],
-    reportedBy: [...new Set(projectFilteredData.map(item => item.reportedBy))],
-    environments: [...new Set(projectFilteredData.flatMap(item => item.issueEnv))]
-  }), [projectFilteredData]); // CHANGE: was [originalData]
-  // Reset page when project changes
+    priorities: [...new Set(bugsData.map(item => item.priority))],
+    statuses: [...new Set(bugsData.map(item => item.status))],
+    assignedTo: [...new Set(bugsData.map(item => item.assignedTo))],
+    reportedBy: [...new Set(bugsData.map(item => item.reportedBy))],
+    environments: [...new Set(bugsData.flatMap(item => item.issueEnv))]
+  }), [bugsData]);
+
+  // Reset selections when project changes
   useEffect(() => {
-    setCurrentPage(1);
     setSelectedRows([]);
-  }, [selectedProject]);
+    setQueryParams(prev => ({
+      ...prev,
+      projectId: projectId,
+      page: 1
+    }));
+  }, [projectId]);
 
-  // Filtering logic
-  const filteredData = useMemo(() => {
-    let filtered = projectFilteredData;
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(item => {
-        const searchLower = searchTerm.toLowerCase();
-
-        // Safe string conversion helper
-        const safeToString = (value) => {
-          if (value === null || value === undefined) return '';
-          if (Array.isArray(value)) return value.join(' ');
-          return String(value);
-        };
-
-        return (
-          safeToString(item.title).toLowerCase().includes(searchLower) ||
-          safeToString(item.description).toLowerCase().includes(searchLower) ||
-          safeToString(item.reportedBy).toLowerCase().includes(searchLower) ||
-          safeToString(item.assignedTo).toLowerCase().includes(searchLower) ||
-          safeToString(item.slNo).includes(searchTerm) || // Numbers don't need lowercase
-          safeToString(item.comments).toLowerCase().includes(searchLower) ||
-          safeToString(item.status).toLowerCase().includes(searchLower) ||
-          safeToString(item.priority).toLowerCase().includes(searchLower) ||
-          (Array.isArray(item.issueEnv) &&
-            item.issueEnv.some(env =>
-              safeToString(env).toLowerCase().includes(searchLower)
-            )
-          )
-        );
-      });
-    }
-
-    // Advanced filters
-    if (filters.priority) {
-      filtered = filtered.filter(item => item.priority === filters.priority);
-    }
-    if (filters.status) {
-      filtered = filtered.filter(item => item.status === filters.status);
-    }
-    if (filters.assignedTo) {
-      filtered = filtered.filter(item => item.assignedTo === filters.assignedTo);
-    }
-    if (filters.reportedBy) {
-      filtered = filtered.filter(item => item.reportedBy === filters.reportedBy);
-    }
-    if (filters.environment) {
-      filtered = filtered.filter(item => item.issueEnv.includes(filters.environment));
-    }
-
-    return filtered;
-  }, [projectFilteredData, searchTerm, filters]);
-
-  // Sorting logic
-  const sortedData = useMemo(() => {
-    if (!sortConfig.key) return filteredData;
-
-    return [...filteredData].sort((a, b) => {
-      let aValue = a[sortConfig.key];
-      let bValue = b[sortConfig.key];
-
-      // Handle date sorting
-      if (sortConfig.key === 'reportedOn' || sortConfig.key === 'updatedAt') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      }
-
-      if (aValue < bValue) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [filteredData, sortConfig]);
-
+  // Debounced search effect
   useEffect(() => {
     if (searchDebounceTimer.current) {
-        clearTimeout(searchDebounceTimer.current);
+      clearTimeout(searchDebounceTimer.current);
     }
 
     searchDebounceTimer.current = setTimeout(() => {
-            setCurrentPage(1); // Reset to first page on search
-            getAllBugDetails(queryParams);
-    }, 500); // 500ms delay
+      setQueryParams(prev => ({
+        ...prev,
+        search: searchTerm,
+        page: 1
+      }));
+    }, 500);
 
     return () => {
-        if (searchDebounceTimer.current) {
-            clearTimeout(searchDebounceTimer.current);
-        }
+      if (searchDebounceTimer.current) {
+        clearTimeout(searchDebounceTimer.current);
+      }
     };
-}, [searchTerm]);
+  }, [searchTerm]);
 
-  // Pagination logic
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return sortedData.slice(startIndex, startIndex + itemsPerPage);
-  }, [sortedData, currentPage, itemsPerPage]);
-
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-
-  // Update selection states when paginated data changes
+  // Fetch bugs whenever query params change
   useEffect(() => {
-    const currentPageIds = paginatedData.map(item => item.id);
+    if (isAuthenticated) {
+      getAllBugDetails(queryParams);
+    }
+  }, [queryParams, isAuthenticated]);
+
+  // Update selection states
+  useEffect(() => {
+    const currentPageIds = bugsData.map(item => item.id);
     const selectedInCurrentPage = selectedRows.filter(id => currentPageIds.includes(id));
 
     if (selectedInCurrentPage.length === 0) {
       setIsAllSelected(false);
       setIsIndeterminate(false);
-    } else if (selectedInCurrentPage.length === paginatedData.length) {
+    } else if (selectedInCurrentPage.length === bugsData.length && bugsData.length > 0) {
       setIsAllSelected(true);
       setIsIndeterminate(false);
     } else {
       setIsAllSelected(false);
       setIsIndeterminate(true);
     }
-  }, [paginatedData, selectedRows]);
+  }, [bugsData, selectedRows]);
 
   // Handlers
   const handleRowSelect = (id) => {
-    let newSelectedRows;
-    if (selectedRows.includes(id)) {
-      newSelectedRows = selectedRows.filter(rowId => rowId !== id);
-    } else {
-      newSelectedRows = [...selectedRows, id];
-    }
-    setSelectedRows(newSelectedRows);
+    setSelectedRows(prev =>
+      prev.includes(id)
+        ? prev.filter(rowId => rowId !== id)
+        : [...prev, id]
+    );
   };
 
   const handleSelectAll = () => {
-    const currentPageIds = paginatedData.map(item => item.id);
+    const currentPageIds = bugsData.map(item => item.id);
 
     if (isAllSelected || isIndeterminate) {
-      // Deselect all items from current page
       setSelectedRows(prev => prev.filter(id => !currentPageIds.includes(id)));
     } else {
-      // Select all items from current page
       setSelectedRows(prev => {
         const newSelection = [...prev];
         currentPageIds.forEach(id => {
@@ -288,45 +208,36 @@ const BugManagementSystem = () => {
   };
 
   const handleFilterChange = (filterType, value) => {
-    // setFilters(prev => ({
-    //   ...prev,
-    //   [filterType]: value
-    // }));
-    // setCurrentPage(1);
     setQueryParams(prev => ({
       ...prev,
       [filterType]: value,
-      page: 1,
+      page: 1
     }));
   };
-  useEffect(() => {
-    getAllBugDetails(queryParams);
-  }, [queryParams]);
-  
 
   const clearFilters = () => {
-    setFilters({
-      priority: '',
+    setSearchTerm('');
+    setSelectedProject('');
+    setQueryParams({
+      projectId: '',
       status: '',
+      priority: '',
       assignedTo: '',
       reportedBy: '',
-      environment: ''
+      environment: '',
+      search: '',
+      page: 1,
+      limit: queryParams.limit,
+      sortBy: 'reportedOn',
+      sortOrder: 'desc'
     });
-    setSearchTerm('');
-    setCurrentPage(1);
-    // setOriginalData(originalData)
-    // 👇 THIS resets projectFilteredData
-    setSelectedProject('')
-    filterOptions()
   };
 
   const exportData = () => {
-    // Get the data to export (selected bugs or all filtered/sorted bugs)
     const dataToExport = selectedRows.length > 0
-      ? sortedData.filter(bug => selectedRows.includes(bug.id))
-      : sortedData;
+      ? bugsData.filter(bug => selectedRows.includes(bug.id))
+      : bugsData;
 
-    // Create CSV content
     const headers = [
       'Bug ID', 'Serial No', 'Title', 'Description', 'Priority', 'Status',
       'Reported By', 'Assigned To', 'Environment', 'Reported On', 'Comments'
@@ -349,7 +260,6 @@ const BugManagementSystem = () => {
       ].join(','))
     ].join('\n');
 
-    // Create and download file
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     if (link.download !== undefined) {
@@ -367,20 +277,17 @@ const BugManagementSystem = () => {
     setQueryParams(prev => ({
       ...prev,
       sortBy: key,
-      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
-      page: 1,
+      sortOrder: prev.sortBy === key && prev.sortOrder === 'asc' ? 'desc' : 'asc',
+      page: 1
     }));
-    getAllBugDetails(queryParams)
   };
 
-  // Add this function with other handlers in BugManagementSystem component
   const handleImportBugs = async (importedBugs) => {
     if (!selectedProject) {
-      alert('Please select a project before importing bugs');
+      alert.error('Please select a project before importing bugs');
       return;
     }
 
-    // Process imported bugs with required fields
     const processedBugs = importedBugs.map((bug) => ({
       projectId: projectId,
       title: bug.title || 'Untitled Bug',
@@ -396,29 +303,22 @@ const BugManagementSystem = () => {
       updatedAt: bug.updatedAt || new Date().toISOString().split('T')[0]
     }));
 
-    // console.log("processedBugs---", processedBugs);
     try {
-      // Call the API for each bug individually if your API creates bugs one at a time
       const results = await Promise.all(
         processedBugs.map(bug => executeCreateBug(bug))
       );
 
-      // Or if you have a bulk create endpoint, use that instead:
-      // const apiResp = await executeCreateBugBulk(processedBugs);
       if (results) {
         alert.success(`Successfully imported ${processedBugs.length} bugs!`);
-        // Refresh the bug list
-        await getAllBugDetails();
-        // Close the import modal
-        console.log('loadingCreateBugloadingCreateBug----', loadingCreateBug);
+        await getAllBugDetails(queryParams);
         setIsImportModalOpen(false);
       }
-
     } catch (error) {
       console.error('Failed to import bugs:', error);
       alert.error(error.message || 'Failed to import bugs. Please try again.');
     }
   };
+
   const handleInputChange = (fieldName, value) => {
     setFormData(prev => ({
       ...prev,
@@ -440,19 +340,15 @@ const BugManagementSystem = () => {
       const value = formData[field.name];
 
       if (field.required) {
-        // Handle different field types
         if (field.type === 'checkbox') {
-          // For checkbox, check if array exists and has at least one item
           if (!value || !Array.isArray(value) || value.length === 0) {
             newErrors[field.name] = `${field.label} is required. Please select at least one option.`;
           }
         } else if (field.type === 'select') {
-          // For select, check if value exists and is not empty string
           if (!value || value === '') {
             newErrors[field.name] = `Please select a ${field.label}`;
           }
         } else {
-          // For text, textarea, etc.
           if (!value || value.trim() === '') {
             newErrors[field.name] = `${field.label} is required`;
           }
@@ -463,68 +359,50 @@ const BugManagementSystem = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleAddNewBug = async (e) => {
     e.preventDefault();
-    // ADD THESE 4 LINES AT START
-    console.log('loading----', loadingCreateBug);
+
     if (!selectedProject) {
-      alert('Please select a project first');
+      alert.error('Please select a project first');
       return;
     }
-    if (validateForm()) {
-      // Submit form
-      console.log('Form is valid', formData);
-    }
 
-    const requiredFields = formConfig.filter(field => field.required);
-    const missingFields = requiredFields.filter(field => !formData[field.name]);
-
-    if (missingFields.length > 0) {
-      alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+    if (!validateForm()) {
       return;
     }
+
     try {
-      const apiResp = await executeCreateBug({ ...formData, projectId: projectId })
+      const apiResp = await executeCreateBug({ ...formData, projectId: projectId });
       if (apiResp) {
-        alert.success(`${apiResp?.message || "New bug created successful!"}`);
-        setOriginalData(prev => [...prev, apiResp.data]);
-        getAllBugDetails();
-        // Reset form
-        // setProjectFormData({ ...initialFormData });
+        alert.success(apiResp?.message || "New bug created successfully!");
+        await getAllBugDetails(queryParams);
         setIsAddModalOpen(false);
-        console.log('loading----', loadingCreateBug);
+        setFormData({
+          project: selectedProject,
+          title: '',
+          description: '',
+          priority: '',
+          status: '',
+          reportedBy: '',
+          assignedTo: '',
+          issueEnv: [],
+          comments: ''
+        });
       }
     } catch (error) {
-      if (error.message) {
-        alert.error(error.message || 'An error occurred. Please try again.');
-      } else {
-        alert.error("Failed to add new bug. Please try again.");
-      }
-      console.log('Failed to add new bug:', error.message || error);
+      alert.error(error.message || 'Failed to add new bug. Please try again.');
+      console.error('Failed to add new bug:', error);
     }
-    // setIsAddModalOpen(false);
-    setFormData({
-      project: selectedProject,
-      title: '',
-      description: '',
-      priority: '',
-      status: '',
-      reportedBy: '',
-      assignedTo: '',
-      issueEnv: [],
-      comments: ''
-    });
-
-  }
+  };
 
   const handleEditBug = (id) => {
     setCurrentEditBugId(id);
-    const bugToEdit = originalData.find(b => b.id === id);
-    console.log("bugToEdit----", bugToEdit);
+    const bugToEdit = bugsData.find(b => b.id === id);
 
     if (bugToEdit) {
       setFormData({
-        project: bugToEdit.project, // ADD THIS LINE
+        project: bugToEdit.project,
         title: bugToEdit.title || '',
         description: bugToEdit.description || '',
         priority: bugToEdit.priority || '',
@@ -537,70 +415,55 @@ const BugManagementSystem = () => {
       setEditModelOpen(true);
     }
   };
-  const handleUpdateBug = (e) => {
+
+  const handleUpdateBug = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    const requiredFields = formConfig.filter(field => field.required);
-    const missingFields = requiredFields.filter(field => {
-      const value = formData[field.name];
-      return !value || (Array.isArray(value) && value.length === 0);
-    });
-
-    if (missingFields.length > 0) {
-      alert.warning(`Please fill in required fields: ${missingFields.map(f => f.label).join(', ')}`);
+    if (!validateForm()) {
       return;
     }
 
-    // Update the bug in originalData
-    setOriginalData(prevData =>
-      prevData.map(bug =>
-        bug.id === currentEditBugId
-          ? {
-            ...bug,
-            ...formData,
-            updatedAt: new Date().toISOString().split('T')[0]
-          }
-          : bug
-      )
-    );
+    try {
+      // Add your update bug API call here
+      // const apiResp = await executeUpdateBug(currentEditBugId, formData);
+      
+      // For now, just refresh the list
+      await getAllBugDetails(queryParams);
+      
+      setEditModelOpen(false);
+      setCurrentEditBugId(null);
+      setFormData({
+        project: '',
+        title: '',
+        description: '',
+        priority: '',
+        status: '',
+        reportedBy: '',
+        assignedTo: '',
+        issueEnv: [],
+        comments: ''
+      });
 
-    // Close modal and reset form
-    setEditModelOpen(false);
-    setCurrentEditBugId(null);
-    setFormData({
-      title: '',
-      description: '',
-      priority: '',
-      status: '',
-      reportedBy: '',
-      assignedTo: '',
-      issueEnv: [],
-      comments: ''
-    });
-
-    alert.success('Bug updated successfully!');
+      alert.success('Bug updated successfully!');
+    } catch (error) {
+      alert.error(error.message || 'Failed to update bug. Please try again.');
+      console.error('Failed to update bug:', error);
+    }
   };
 
   const getProjectSummaryDetail = useCallback(async () => {
     try {
       const apiResp = await executeProjectSummary();
       if (apiResp) {
-        // alert.success(`${apiResp?.message || "Projects fetched successful!"}`);
-        // setOriginalData(apiResp?.data?.bugs || []);
         setAvailableProjects([
           ...new Set(apiResp?.data?.projects?.map(item => item.name))
         ]);
       }
     } catch (error) {
-      if (error.message) {
-        alert.error(error.message || 'An error occurred. Please try again.');
-      } else {
-        alert.error("Failed to get bugs. Please try again.");
-      }
-      console.log('Failed to get bugs:', error.message || error);
+      alert.error(error.message || 'Failed to get projects. Please try again.');
+      console.error('Failed to get projects:', error);
     }
-  }, [executeProjectSummary, getProjectSummaryDetails]);
+  }, [executeProjectSummary]);
 
   const getAllBugDetails = useCallback(async (params = queryParams) => {
     try {
@@ -610,51 +473,59 @@ const BugManagementSystem = () => {
           page: params.page || 1
         }
       });
+      
       if (apiResp) {
-        // alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
-        setOriginalData(apiResp?.data?.bugs || []);
-        setGlobalStats(apiResp?.data?.stats || {})
-        setStatsByProject(apiResp?.data?.statsByProject || {})
+        setBugsData(apiResp?.data?.bugs || []);
+        setGlobalStats(apiResp?.data?.stats || {});
+        setStatsByProject(apiResp?.data?.statsByProject || {});
+        setPagination(apiResp?.data?.pagination || {
+          currentPage: 1,
+          totalPages: 1,
+          totalBugs: 0,
+          limit: 10,
+          hasNextPage: false,
+          hasPrevPage: false
+        });
       }
     } catch (error) {
-      if (error.message) {
-        alert.error(error.message || 'An error occurred. Please try again.');
-      } else {
-        alert.error("Failed to get bugs. Please try again.");
-      }
-      console.log('Failed to get bugs:', error.message || error);
+      alert.error(error.message || 'Failed to get bugs. Please try again.');
+      console.error('Failed to get bugs:', error);
     }
-  }, [executeGetAllBugs]);
+  }, [executeGetAllBugs, alert]);
 
-  const handleDeleteBug = useCallback(async (BugId) => {
-    console.log("BugId----", BugId);
-    setCurrentDeleteBugId(BugId)
+  const handleDeleteBug = useCallback(async (bugId) => {
+    setCurrentDeleteBugId(bugId);
     try {
-      const apiResp = await executeDeleteBug(BugId);
+      const apiResp = await executeDeleteBug(bugId);
       if (apiResp) {
-        alert.success(apiResp.message || 'An error occurred. Please try again.');
-        // hasFetchedBugs.current = true
-        getAllBugDetails();
-        setCurrentDeleteBugId(null)
-        // const updatedData = originalData.filter(b => b.id !== id);
-        //     setOriginalData(updatedData);
-        //     setSelectedRows(prev => prev.filter(rowId => rowId !== id));
-        // alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
-        // setOriginalData(apiResp?.data?.bugs || []);
+        alert.success(apiResp.message || 'Bug deleted successfully');
+        await getAllBugDetails(queryParams);
+        setCurrentDeleteBugId(null);
+        setSelectedRows(prev => prev.filter(id => id !== bugId));
       }
     } catch (error) {
-      if (error.message) {
-        alert.error(error.message || 'An error occurred. Please try again.');
-      } else {
-        alert.error("Failed to get bugs. Please try again.");
-      }
-      setCurrentDeleteBugId(null)
-      console.log('Failed to get bugs:', error.message || error);
+      alert.error(error.message || 'Failed to delete bug. Please try again.');
+      setCurrentDeleteBugId(null);
+      console.error('Failed to delete bug:', error);
     }
-  }, [executeDeleteBug]);
+  }, [executeDeleteBug, getAllBugDetails, queryParams, alert]);
 
+  const handlePageChange = (newPage) => {
+    setQueryParams(prev => ({
+      ...prev,
+      page: newPage
+    }));
+  };
 
+  const handleItemsPerPageChange = (newLimit) => {
+    setQueryParams(prev => ({
+      ...prev,
+      limit: newLimit,
+      page: 1
+    }));
+  };
 
+  // Update projectId when selectedProject changes
   useEffect(() => {
     if (!selectedProject || !projectSummary?.length) return;
 
@@ -662,27 +533,19 @@ const BugManagementSystem = () => {
     setProjectId(found ? found?.projectId : "");
   }, [selectedProject, projectSummary]);
 
+  // Initial fetch
   useEffect(() => {
-    if (isAuthenticated && !loadingGetAllBugs && !hasFetchedBugs.current) {
-      hasFetchedBugs.current = true;
-      getAllBugDetails();
-    }
-  }, [isAuthenticated, originalData, bugDetails, projectSummary, getAllBugDetails, handleDeleteBug, handleSort]);
-
-  useEffect(() => {
-    if (isAuthenticated && !loadingProjectSummary && !hasFetchedProjectSummary.current) {
+    if (isAuthenticated && !hasFetchedProjectSummary.current) {
       hasFetchedProjectSummary.current = true;
       getProjectSummaryDetail();
     }
-  }, [isAuthenticated, projectSummary]);
+  }, [isAuthenticated, getProjectSummaryDetail]);
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
       <div className="bg-gradient-to-r mb-4 rounded-lg bg-[#8b40c1] text-white py-6 shadow-lg">
         <div className="max-w-7xl mx-auto py-2">
-          {/* Header Row */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-            {/* Title Section */}
             <div className="flex items-center gap-4">
               <Building2 className="w-10 h-10 opacity-90" />
               <div>
@@ -692,18 +555,11 @@ const BugManagementSystem = () => {
                 </p>
               </div>
             </div>
-            {/* Right Side Project Filter */}
             <div className="flex justify-start lg:justify-end">
               <select
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
-                className="
-                  px-4 py-2.5 rounded-xl shadow-md 
-                  bg-white text-gray-900 font-medium 
-                  border border-blue-200 
-                  focus:ring-2 focus:ring-blue-400 focus:border-blue-400
-                  min-w-[220px]
-                "
+                className="px-4 py-2.5 rounded-xl shadow-md bg-white text-gray-900 font-medium border border-blue-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 min-w-[220px]"
               >
                 <option value="">All Projects</option>
                 {availableProjects.map((project) => (
@@ -713,10 +569,8 @@ const BugManagementSystem = () => {
                 ))}
               </select>
             </div>
-
           </div>
 
-          {/* Stats */}
           <div className="mt-6">
             <BugStats
               globalStats={globalStats}
@@ -729,7 +583,6 @@ const BugManagementSystem = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg">
-        {/* Header */}
         <div className="border-b border-gray-200 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -740,12 +593,11 @@ const BugManagementSystem = () => {
               <button
                 onClick={() => {
                   if (!selectedProject) {
-                    alert.error("Please select a project to  import.");
+                    alert.error("Please select a project to import.");
                     return;
                   }
                   setIsImportModalOpen(true);
                 }}
-                // disabled={!selectedProject}  // ADD THIS
                 className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-orange-600 text-white rounded-md hover:bg-orange-700"
               >
                 <Upload className="w-4 h-4" />
@@ -756,27 +608,22 @@ const BugManagementSystem = () => {
                   if (!selectedProject) {
                     alert.error("Please select a project to export.");
                     return;
-                  } else {
-                    exportData()
                   }
-
+                  exportData();
                 }}
-                // onClick={exportData}
                 className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-green-600 text-white rounded-md hover:bg-green-700"
               >
                 <Download className="w-4 h-4" />
-                <span>Export ({selectedRows.length > 0 ? selectedRows.length : sortedData.length})</span>
+                <span>Export ({selectedRows.length > 0 ? selectedRows.length : pagination.totalBugs})</span>
               </button>
               <button
                 onClick={() => {
                   if (!selectedProject) {
-                    // console.log("Please select a project first")
                     alert.warning('Please select a project first.');
                     return;
                   }
                   setIsAddModalOpen(true);
                 }}
-                // disabled={!selectedProject}  // ADD THIS
                 className="flex items-center space-x-2 px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 <Plus className="w-4 h-4" />
@@ -786,7 +633,6 @@ const BugManagementSystem = () => {
           </div>
         </div>
 
-        {/* Filters and Search */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
@@ -797,20 +643,21 @@ const BugManagementSystem = () => {
                   placeholder="Search bugs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-72  md:w-80 lg:w-96"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-72 md:w-80 lg:w-96"
                 />
               </div>
 
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center space-x-2 px-4 py-2 border rounded-md ${showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700'
-                  }`}
+                className={`flex items-center space-x-2 px-4 py-2 border rounded-md ${
+                  showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700'
+                }`}
               >
                 <Filter className="w-4 h-4" />
                 <span>Filters</span>
               </button>
 
-              {(Object.values(filters).some(v => v && v !== '') || searchTerm || showFilters) && (
+              {(Object.values(queryParams).some(v => v && v !== '' && v !== 'reportedOn' && v !== 'desc' && v !== 1 && v !== 10) || searchTerm) && (
                 <button
                   onClick={clearFilters}
                   className="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:text-red-800"
@@ -823,14 +670,11 @@ const BugManagementSystem = () => {
 
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-500">
-                Showing {paginatedData.length} of {sortedData.length} results
+                Showing {bugsData.length} of {pagination.totalBugs} results
               </span>
               <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
+                value={queryParams.limit}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
                 className="border border-gray-300 rounded-md px-3 py-1 text-sm"
               >
                 <option value={5}>5 per page</option>
@@ -841,14 +685,13 @@ const BugManagementSystem = () => {
             </div>
           </div>
 
-          {/* Advanced Filters */}
           {showFilters && (
             <div className="mt-4 p-4 bg-gray-50 rounded-md">
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                   <select
-                    value={filters.priority}
+                    value={queryParams.priority}
                     onChange={(e) => handleFilterChange('priority', e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
                   >
@@ -862,7 +705,7 @@ const BugManagementSystem = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
-                    value={filters.status}
+                    value={queryParams.status}
                     onChange={(e) => handleFilterChange('status', e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
                   >
@@ -876,7 +719,7 @@ const BugManagementSystem = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
                   <select
-                    value={filters.assignedTo}
+                    value={queryParams.assignedTo}
                     onChange={(e) => handleFilterChange('assignedTo', e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
                   >
@@ -890,7 +733,7 @@ const BugManagementSystem = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Reported By</label>
                   <select
-                    value={filters.reportedBy}
+                    value={queryParams.reportedBy}
                     onChange={(e) => handleFilterChange('reportedBy', e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
                   >
@@ -904,7 +747,7 @@ const BugManagementSystem = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Environment</label>
                   <select
-                    value={filters.environment}
+                    value={queryParams.environment}
                     onChange={(e) => handleFilterChange('environment', e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
                   >
@@ -919,7 +762,6 @@ const BugManagementSystem = () => {
           )}
         </div>
 
-        {/* Selection Controls */}
         {selectedRows.length > 0 && (
           <div className="p-4 bg-blue-50 border-b border-blue-200">
             <div className="flex items-center justify-between">
@@ -927,31 +769,6 @@ const BugManagementSystem = () => {
                 {selectedRows.length} bug{selectedRows.length !== 1 ? 's' : ''} selected
               </span>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => {
-                    const selectedBugs = sortedData.filter(bug => selectedRows.includes(bug.id));
-                    const updatedData = originalData.map(bug =>
-                      selectedRows.includes(bug.id)
-                        ? { ...bug, status: 'closed', updatedAt: new Date().toISOString().split('T')[0] }
-                        : bug
-                    );
-                    setOriginalData(updatedData);
-                    setSelectedRows([]);
-                  }}
-                  className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                  Mark as Closed
-                </button>
-                <button
-                  onClick={() => {
-                    const updatedData = originalData.filter(bug => !selectedRows.includes(bug.id));
-                    setOriginalData(updatedData);
-                    setSelectedRows([]);
-                  }}
-                  className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Delete Selected
-                </button>
                 <button
                   onClick={() => setSelectedRows([])}
                   className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
@@ -963,7 +780,6 @@ const BugManagementSystem = () => {
           </div>
         )}
 
-        {/* Table Header */}
         <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center">
             <div className="flex items-center mr-4">
@@ -977,7 +793,7 @@ const BugManagementSystem = () => {
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="ml-2 text-sm font-medium text-gray-700">
-                Select Page ({paginatedData.length})
+                Select Page ({bugsData.length})
               </span>
             </div>
             <div className="flex items-center space-x-4">
@@ -986,54 +802,54 @@ const BugManagementSystem = () => {
                 className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <span>Bug ID</span>
-                <ChevronRight className={`w-4 h-4 transition-transform ${sortConfig.key === 'slNo' ?
-                  (sortConfig.direction === 'asc' ? 'rotate-90' : '-rotate-90') :
-                  'rotate-90 opacity-50'
-                  }`} />
+                <ChevronRight className={`w-4 h-4 transition-transform ${
+                  queryParams.sortBy === 'slNo'
+                    ? (queryParams.sortOrder === 'asc' ? 'rotate-90' : '-rotate-90')
+                    : 'rotate-90 opacity-50'
+                }`} />
               </button>
               <button
                 onClick={() => handleSort('priority')}
                 className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <span>Priority</span>
-                <ChevronRight className={`w-4 h-4 transition-transform ${sortConfig.key === 'priority' ?
-                  (sortConfig.direction === 'asc' ? 'rotate-90' : '-rotate-90') :
-                  'rotate-90 opacity-50'
-                  }`} />
+                <ChevronRight className={`w-4 h-4 transition-transform ${
+                  queryParams.sortBy === 'priority'
+                    ? (queryParams.sortOrder === 'asc' ? 'rotate-90' : '-rotate-90')
+                    : 'rotate-90 opacity-50'
+                }`} />
               </button>
               <button
                 onClick={() => handleSort('status')}
                 className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <span>Status</span>
-                <ChevronRight className={`w-4 h-4 transition-transform ${sortConfig.key === 'status' ?
-                  (sortConfig.direction === 'asc' ? 'rotate-90' : '-rotate-90') :
-                  'rotate-90 opacity-50'
-                  }`} />
+                <ChevronRight className={`w-4 h-4 transition-transform ${
+                  queryParams.sortBy === 'status'
+                    ? (queryParams.sortOrder === 'asc' ? 'rotate-90' : '-rotate-90')
+                    : 'rotate-90 opacity-50'
+                }`} />
               </button>
               <button
                 onClick={() => handleSort('reportedOn')}
                 className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <span>Date</span>
-                <ChevronRight className={`w-4 h-4 transition-transform ${sortConfig.key === 'reportedOn' ?
-                  (sortConfig.direction === 'asc' ? 'rotate-90' : '-rotate-90') :
-                  'rotate-90 opacity-50'
-                  }`} />
+                <ChevronRight className={`w-4 h-4 transition-transform ${
+                  queryParams.sortBy === 'reportedOn'
+                    ? (queryParams.sortOrder === 'asc' ? 'rotate-90' : '-rotate-90')
+                    : 'rotate-90 opacity-50'
+                }`} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Bug Cards */}
-
-        {loadingGetAllBugs ?
-          (
-            <BugListSkelton rows={6} />
-          )
-          :
+        {loadingGetAllBugs ? (
+          <BugListSkelton rows={6} />
+        ) : (
           <div className="p-6">
-            {paginatedData.length === 0 ? (
+            {bugsData.length === 0 ? (
               <div className="text-center py-12">
                 {!selectedProject ? (
                   <>
@@ -1051,11 +867,11 @@ const BugManagementSystem = () => {
               </div>
             ) : (
               <div className="grid gap-4">
-                {paginatedData.map((bug) => (
+                {bugsData.map((bug) => (
                   <BugCard
                     key={bug.id}
                     {...bug}
-                    onView={(id) => alert(`View bug ${id}`)}
+                    onView={(id) => alert.info(`View bug ${id}`)}
                     onEdit={(id) => {
                       handleEditBug(id);
                       setEditModelOpen(true);
@@ -1070,19 +886,18 @@ const BugManagementSystem = () => {
               </div>
             )}
           </div>
-        }
+        )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {pagination.totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedData.length)} of {sortedData.length} results
+                Showing {((pagination.currentPage - 1) * pagination.limit) + 1} to {Math.min(pagination.currentPage * pagination.limit, pagination.totalBugs)} of {pagination.totalBugs} results
               </div>
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={!pagination.hasPrevPage}
                   className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" />
@@ -1090,12 +905,14 @@ const BugManagementSystem = () => {
                 </button>
 
                 <div className="flex items-center space-x-1">
-                  {[...Array(totalPages)].map((_, index) => {
+                  {[...Array(pagination.totalPages)].map((_, index) => {
                     const page = index + 1;
-                    const isVisible = page === 1 || page === totalPages || (page >= currentPage - 2 && page <= currentPage + 2);
+                    const isVisible = page === 1 || 
+                                     page === pagination.totalPages || 
+                                     (page >= pagination.currentPage - 2 && page <= pagination.currentPage + 2);
 
                     if (!isVisible) {
-                      if (page === currentPage - 3 || page === currentPage + 3) {
+                      if (page === pagination.currentPage - 3 || page === pagination.currentPage + 3) {
                         return <span key={page} className="px-2 text-gray-400">...</span>;
                       }
                       return null;
@@ -1104,11 +921,12 @@ const BugManagementSystem = () => {
                     return (
                       <button
                         key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-2 text-sm border rounded-md ${currentPage === page
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'border-gray-300 hover:bg-gray-50'
-                          }`}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-2 text-sm border rounded-md ${
+                          pagination.currentPage === page
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'border-gray-300 hover:bg-gray-50'
+                        }`}
                       >
                         {page}
                       </button>
@@ -1117,8 +935,8 @@ const BugManagementSystem = () => {
                 </div>
 
                 <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={!pagination.hasNextPage}
                   className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
                   Next
@@ -1129,20 +947,24 @@ const BugManagementSystem = () => {
           </div>
         )}
       </div>
+
       <GlobalModel
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         header="Add new bug details"
         onSubmit={(e) => handleAddNewBug(e)}
         disabled={loadingCreateBug}
-        submitText={loadingCreateBug ?
-          <StyledSpinner
-            borderWidth='3px'
-            size='1.5rem'
-            text='Adding...'
-            fontSize='semi bold'
-          /> :
-          'Add new bug'
+        submitText={
+          loadingCreateBug ? (
+            <StyledSpinner
+              borderWidth='3px'
+              size='1.5rem'
+              text='Adding...'
+              fontSize='semi bold'
+            />
+          ) : (
+            'Add new bug'
+          )
         }
         children={
           <div>
@@ -1150,11 +972,12 @@ const BugManagementSystem = () => {
               fieldItems={formConfig}
               formData={formData}
               handleInputChange={handleInputChange}
-              errors={errors}  // Pass errors object
+              errors={errors}
             />
           </div>
         }
       />
+
       <GlobalModel
         isOpen={isEditModelOpen}
         onClose={() => setEditModelOpen(false)}
@@ -1167,9 +990,11 @@ const BugManagementSystem = () => {
             fieldItems={formConfig}
             formData={formData}
             handleInputChange={handleInputChange}
+            errors={errors}
           />
         }
       />
+
       <ImportBugModal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
