@@ -35,8 +35,6 @@ const TabNavigation = ({ tabs, activeTab, onTabChange }) => {
     );
 };
 
-
-// Teams Component Placeholder
 const TeamsTab = () => {
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -45,7 +43,6 @@ const TeamsTab = () => {
     );
 };
 
-// Permissions Component Placeholder
 const PermissionsTab = () => {
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -72,7 +69,6 @@ const PermissionsTab = () => {
     );
 };
 
-// Analytics Component Placeholder
 const AnalyticsTab = () => {
     return (
         <div className="space-y-6">
@@ -87,7 +83,6 @@ const AnalyticsTab = () => {
     );
 };
 
-// Leave Requests Component Placeholder
 const LeaveRequestsTab = () => {
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -103,7 +98,6 @@ const LeaveRequestsTab = () => {
     );
 };
 
-// Main Team Management Component
 const TeamManagement = ({ user }) => {
     const [activeTab, setActiveTab] = useState('members');
 

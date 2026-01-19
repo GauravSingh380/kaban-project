@@ -8,8 +8,6 @@ import ProjectsContent1 from "../../components/Projects/ProjectContent1";
 import ProjectsContent2 from "../../components/Projects/ProjectContent2";
 import BugReportsDashboard1 from "../../components/BugReport/BugReportsDashboard1";
 import BugReportsDashboard2 from "../../components/BugReport/BugReportsDashboard2";
-import TeamsContent1 from "../../components/Teams/TeamsContent1";
-import TeamsContent2 from "../../components/Teams/TeamsContent2";
 import TeamMemberSignupExample from "../../components/TeamSignUp/TeamMemberSignupExample";
 import TeamMemberSignupDeepSeek from "../../components/TeamSignUp/SignupForm/TeamMemberSignupDeepSeek";
 import EditProfileDeepSeek from "../../components/TeamSignUp/SignupForm/EditProfileDeepSeek";
@@ -45,6 +43,7 @@ import ReportsDashboard from "../projectDesign/ReportsDashboard/ReportsDashboard
 import ProjectContent1v1 from "../../components/Projects/ProjectContent1v1";
 import TeamManagement from "../../components/Teams/TeamManagement";
 import DataDisplayDemo from "../../components/common/DataDisplay/DataDisplayDemo";
+import IssueManagement from "../../components/DataGrid/IssueManagement";
 
 const RenderContent = ({ menuItems, activeTab, user }) => {
   // Check if user has access to current tab
@@ -461,7 +460,8 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     ),
     issues: (
       <div className="space-y-6">
-        <DataGrid />
+        {/* <DataGrid /> */}
+        <IssueManagement />
         <br />
         <br />
         {/* <DeleteConfirmationUsage /> */}
