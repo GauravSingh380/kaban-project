@@ -233,9 +233,9 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  const getAllBugs = useCallback(async () => {
+  const getAllBugs = useCallback(async (queryParams) => {
     try {
-      const response = await authService.getBugs();
+      const response = await authService.getBugs(queryParams);
       if (response.success) {
         setBugDetails(response.data);
         return response;

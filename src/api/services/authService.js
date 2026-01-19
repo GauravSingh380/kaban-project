@@ -137,9 +137,9 @@ export const authService = {
       throw new Error(error.response?.data?.message || 'Token verification failed');
     }
   },
-  getBugs: async () => {
+  getBugs: async (queryParams) => {
     try {
-      const response = await apiClient.get('/bugs');
+      const response = await apiClient.get(`/bugs`, queryParams);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Token verification failed');

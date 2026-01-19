@@ -73,6 +73,78 @@ const MembersTab = ({ user }) => {
           department: 'Engineering',
           status: 'active',
           avatar: 'MJ'
+        },
+        {
+          id: 3,
+          name: 'Sarah Wilson',
+          email: 'sarah.wilson@company.com',
+          role: 'Project Manager',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'SW'
+        },
+        {
+          id: 4,
+          name: 'Mike Johnson',
+          email: 'mike.johnson@company.com',
+          role: 'Senior Developer',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'MJ'
+        },
+        {
+          id: 5,
+          name: 'Mike Johnson',
+          email: 'mike.johnson@company.com',
+          role: 'Senior Developer',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'MJ'
+        },
+        {
+          id: 6,
+          name: 'Sarah Wilson',
+          email: 'sarah.wilson@company.com',
+          role: 'Project Manager',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'SW'
+        },
+        {
+          id: 7,
+          name: 'Mike Johnson',
+          email: 'mike.johnson@company.com',
+          role: 'Senior Developer',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'MJ'
+        },
+        {
+          id: 8,
+          name: 'Mike Johnson',
+          email: 'mike.johnson@company.com',
+          role: 'Senior Developer',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'MJ'
+        },
+        {
+          id: 9,
+          name: 'Sarah Wilson',
+          email: 'sarah.wilson@company.com',
+          role: 'Project Manager',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'SW'
+        },
+        {
+          id: 10,
+          name: 'Mike Johnson',
+          email: 'mike.johnson@company.com',
+          role: 'Senior Developer',
+          department: 'Engineering',
+          status: 'active',
+          avatar: 'MJ'
         }
       ];
       

@@ -460,20 +460,7 @@ const RenderContent = ({ menuItems, activeTab, user }) => {
     ),
     issues: (
       <div className="space-y-6">
-        {/* <DataGrid /> */}
         <IssueManagement />
-        <br />
-        <br />
-        {/* <DeleteConfirmationUsage /> */}
-        <br />
-        <br />
-        <DynamicBugCreator />
-        <br />
-        <br />
-        {/* <BugImportSampleGenerator /> */}
-        <br />
-        <br />
-        {/* <BugsV1 /> */}
       </div>
     ),
     reports: (

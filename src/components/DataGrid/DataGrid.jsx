@@ -11,7 +11,7 @@ import { useToast } from '../StyledAlert/ToastContext';
 import BugStats from './BugCard/BugStats';
 import { useApi, useAuth } from '../../api';
 import StyledSpinner from '../StyledSpinner/StyledSpinner';
-import ApiSpinnerV2 from '../Teams/ApiSpinnerv2';
+import BugListSkelton from '../common/BugListSkelton';
 
 const BugManagementSystem = () => {
   const { isAuthenticated, bugDetails, getAllBugs, createNewBugs, projectSummary, getProjectSummaryDetails, deleteBug } = useAuth();
@@ -59,6 +59,23 @@ const BugManagementSystem = () => {
     reportedBy: '',
     environment: ''
   });
+  const DEFAULT_BUG_PARAMS = {
+    projectId: '',        // no project filter
+    status: '',           // open | in-progress | fixed | closed
+    priority: '',         // low | medium | high
+    assignedTo: '',       // email or userId
+    reportedBy: '',       // email or userId
+    environment: '',      // production | staging | dev
+    search: '',           // search text
+
+    page: 1,
+    limit: 10,
+
+    sortBy: 'reportedOn', // backend default
+    sortOrder: 'desc',    // asc | desc
+  };
+
+  const [queryParams, setQueryParams] = useState(DEFAULT_BUG_PARAMS);
   const alert = useToast();
 
   // Add this state variable with other useState declarations in BugManagementSystem component
@@ -253,11 +270,16 @@ const BugManagementSystem = () => {
   };
 
   const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
+    // setFilters(prev => ({
+    //   ...prev,
+    //   [filterType]: value
+    // }));
+    // setCurrentPage(1);
+    setQueryParams(prev => ({
       ...prev,
-      [filterType]: value
+      [filterType]: value,
+      page: 1,
     }));
-    setCurrentPage(1);
   };
 
   const clearFilters = () => {
@@ -316,10 +338,17 @@ const BugManagementSystem = () => {
   };
 
   const handleSort = (key) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    // setSortConfig(prev => ({
+    //   key,
+    //   direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    // }));
+    setQueryParams(prev => ({
+      ...prev,
+      sortBy: key,
+      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc',
+      page: 1,
     }));
+    getAllBugDetails(queryParams)
   };
 
   // Add this function with other handlers in BugManagementSystem component
@@ -551,9 +580,14 @@ const BugManagementSystem = () => {
     }
   }, [executeProjectSummary, getProjectSummaryDetails]);
 
-  const getAllBugDetails = useCallback(async () => {
+  const getAllBugDetails = useCallback(async (params = queryParams) => {
     try {
-      const apiResp = await executeGetAllBugs();
+      const apiResp = await executeGetAllBugs({
+        params: {
+          ...params,
+          page: params.page || 1
+        }
+      });
       if (apiResp) {
         // alert.success(`${apiResp?.message || "Bugs fetched successful!"}`);
         setOriginalData(apiResp?.data?.bugs || []);
@@ -611,7 +645,7 @@ const BugManagementSystem = () => {
       hasFetchedBugs.current = true;
       getAllBugDetails();
     }
-  }, [isAuthenticated, originalData, bugDetails, projectSummary, getAllBugDetails, handleDeleteBug]);
+  }, [isAuthenticated, originalData, bugDetails, projectSummary, getAllBugDetails, handleDeleteBug, handleSort]);
 
   useEffect(() => {
     if (isAuthenticated && !loadingProjectSummary && !hasFetchedProjectSummary.current) {
@@ -620,15 +654,15 @@ const BugManagementSystem = () => {
     }
   }, [isAuthenticated, projectSummary]);
 
-  if (loadingGetAllBugs) {
-    return <ApiSpinnerV2
-      borderWidth='3px'
-      size='2.5rem'
-      text='Loading...'
-      fontSize='font-semibold'
-    // color='blue'
-    />;
-  }
+  // if (loadingGetAllBugs) {
+  //   return <ApiSpinnerV2
+  //     borderWidth='3px'
+  //     size='2.5rem'
+  //     text='Loading...'
+  //     fontSize='font-semibold'
+  //   // color='blue'
+  //   />;
+  // }
 
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
@@ -753,7 +787,7 @@ const BugManagementSystem = () => {
                   placeholder="Search bugs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-72  md:w-80 lg:w-96"
                 />
               </div>
 
@@ -982,44 +1016,51 @@ const BugManagementSystem = () => {
         </div>
 
         {/* Bug Cards */}
-        <div className="p-6">
-          {paginatedData.length === 0 ? (
-            <div className="text-center py-12">
-              {!selectedProject ? (
-                <>
-                  <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Project Selected</h3>
-                  <p className="text-gray-600">Please select a project from the dropdown above</p>
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No bugs found</h3>
-                  <p className="text-gray-600">Try adjusting your search or filter criteria</p>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {paginatedData.map((bug) => (
-                <BugCard
-                  key={bug.id}
-                  {...bug}
-                  onView={(id) => alert(`View bug ${id}`)}
-                  onEdit={(id) => {
-                    handleEditBug(id);
-                    setEditModelOpen(true);
-                  }}
-                  deletingBugId={currentDeleteBugId}
-                  loadingDeleteBug={loadingDeleteBug}
-                  onDelete={(bug) => handleDeleteBug(bug)}
-                  isSelected={selectedRows.includes(bug.id)}
-                  onSelect={handleRowSelect}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+
+        {loadingGetAllBugs ?
+          (
+            <BugListSkelton rows={6} />
+          )
+          :
+          <div className="p-6">
+            {paginatedData.length === 0 ? (
+              <div className="text-center py-12">
+                {!selectedProject ? (
+                  <>
+                    <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Project Selected</h3>
+                    <p className="text-gray-600">Please select a project from the dropdown above</p>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No bugs found</h3>
+                    <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {paginatedData.map((bug) => (
+                  <BugCard
+                    key={bug.id}
+                    {...bug}
+                    onView={(id) => alert(`View bug ${id}`)}
+                    onEdit={(id) => {
+                      handleEditBug(id);
+                      setEditModelOpen(true);
+                    }}
+                    deletingBugId={currentDeleteBugId}
+                    loadingDeleteBug={loadingDeleteBug}
+                    onDelete={(bug) => handleDeleteBug(bug)}
+                    isSelected={selectedRows.includes(bug.id)}
+                    onSelect={handleRowSelect}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        }
 
         {/* Pagination */}
         {totalPages > 1 && (
