@@ -39,6 +39,7 @@ const BugManagementSystem = () => {
 
   const hasFetchedBugs = useRef(false);
   const hasFetchedProjectSummary = useRef(false);
+  const searchDebounceTimer = useRef(null);
 
   const [originalData, setOriginalData] = useState([]);
   const [globalStats, setGlobalStats] = useState([]);
@@ -213,6 +214,23 @@ const BugManagementSystem = () => {
     });
   }, [filteredData, sortConfig]);
 
+  useEffect(() => {
+    if (searchDebounceTimer.current) {
+        clearTimeout(searchDebounceTimer.current);
+    }
+
+    searchDebounceTimer.current = setTimeout(() => {
+            setCurrentPage(1); // Reset to first page on search
+            getAllBugDetails(queryParams);
+    }, 500); // 500ms delay
+
+    return () => {
+        if (searchDebounceTimer.current) {
+            clearTimeout(searchDebounceTimer.current);
+        }
+    };
+}, [searchTerm]);
+
   // Pagination logic
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -281,6 +299,10 @@ const BugManagementSystem = () => {
       page: 1,
     }));
   };
+  useEffect(() => {
+    getAllBugDetails(queryParams);
+  }, [queryParams]);
+  
 
   const clearFilters = () => {
     setFilters({
@@ -292,6 +314,10 @@ const BugManagementSystem = () => {
     });
     setSearchTerm('');
     setCurrentPage(1);
+    // setOriginalData(originalData)
+    // 👇 THIS resets projectFilteredData
+    setSelectedProject('')
+    filterOptions()
   };
 
   const exportData = () => {
@@ -338,10 +364,6 @@ const BugManagementSystem = () => {
   };
 
   const handleSort = (key) => {
-    // setSortConfig(prev => ({
-    //   key,
-    //   direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
-    // }));
     setQueryParams(prev => ({
       ...prev,
       sortBy: key,
@@ -654,20 +676,8 @@ const BugManagementSystem = () => {
     }
   }, [isAuthenticated, projectSummary]);
 
-  // if (loadingGetAllBugs) {
-  //   return <ApiSpinnerV2
-  //     borderWidth='3px'
-  //     size='2.5rem'
-  //     text='Loading...'
-  //     fontSize='font-semibold'
-  //   // color='blue'
-  //   />;
-  // }
-
   return (
     <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
-      {/* ADD THIS ENTIRE SECTION */}
-      {/* <div className="bg-gradient-to-r rounded-lg from-blue-600 to-blue-700 text-white py-6 shadow-lg"> */}
       <div className="bg-gradient-to-r mb-4 rounded-lg bg-[#8b40c1] text-white py-6 shadow-lg">
         <div className="max-w-7xl mx-auto py-2">
           {/* Header Row */}
@@ -800,7 +810,7 @@ const BugManagementSystem = () => {
                 <span>Filters</span>
               </button>
 
-              {(Object.values(filters).some(v => v && v !== '') || searchTerm) && (
+              {(Object.values(filters).some(v => v && v !== '') || searchTerm || showFilters) && (
                 <button
                   onClick={clearFilters}
                   className="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:text-red-800"
