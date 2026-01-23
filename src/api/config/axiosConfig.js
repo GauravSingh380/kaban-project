@@ -17,11 +17,11 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('➡️ API Request:', {
-        method: config.method,
-        url: config.url,
-        data: config.data,
-      });
+      // console.log('➡️ API Request:', {
+      //   method: config.method,
+      //   url: config.url,
+      //   data: config.data,
+      // });
     }
     return config;
   },
@@ -32,10 +32,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('✅ API Response:', {
-        status: response.status,
-        data: response.data,
-      });
+      // console.log('✅ API Response:', {
+      //   status: response.status,
+      //   data: response.data,
+      // });
     }
     return response;
   },

@@ -1,4 +1,6 @@
 import React from 'react';
+import SearchableTeamMember from '../Projects/ProjectItems/SearchableTeamMember';
+import SearchableUserInput from './FormFields/SearchableUserInput';
 
 const RenderHtmlFields = ({ fieldItems, formData, handleInputChange, errors = {} }) => {
   // Group fields by their alignment/grid configuration
@@ -242,6 +244,16 @@ const RenderHtmlFields = ({ fieldItems, formData, handleInputChange, errors = {}
             )}
           </div>
         );
+      case 'searchableUser':
+          return (
+            <SearchableUserInput
+              value={formData[field.name] || []}
+              handleInputChange={handleInputChange}
+              name={field.name}
+              roles={field.roles}
+              field={field}
+            />
+          );
 
       default:
         return null;

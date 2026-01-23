@@ -338,6 +338,7 @@ const BugManagementSystem = () => {
 
     formConfig.forEach(field => {
       const value = formData[field.name];
+      console.log('value---',  value);
 
       if (field.required) {
         if (field.type === 'checkbox') {
@@ -349,7 +350,7 @@ const BugManagementSystem = () => {
             newErrors[field.name] = `Please select a ${field.label}`;
           }
         } else {
-          if (!value || value.trim() === '') {
+          if (!value || value?.name?.trim() === '') {
             newErrors[field.name] = `${field.label} is required`;
           }
         }

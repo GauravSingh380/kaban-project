@@ -253,41 +253,65 @@ export const formConfig = [
       "max": ""
     }
   },
+  // {
+  //   "id": "6",
+  //   "type": "text",
+  //   "label": "Reported By",
+  //   "name": "reportedBy",
+  //   "required": true,
+  //   "placeholder": "Enter bug title",
+  //   "options": [],
+  //   "conditions": [],
+  //   "alignment": 'grid grid-cols-2 gap-4',
+  //   "validations": {
+  //     "minLength": "",
+  //     "maxLength": "",
+  //     "pattern": "",
+  //     "min": "",
+  //     "max": ""
+  //   }
+  // },
+  // {
+  //   "id": "7",
+  //   "type": "text",
+  //   "label": "Assigned To",
+  //   "name": "assignedTo",
+  //   "required": true,
+  //   "placeholder": "",
+  //   "options": [],
+  //   "conditions": [],
+  //   "alignment": 'grid grid-cols-2 gap-4',
+  //   "validations": {
+  //     "minLength": "",
+  //     "maxLength": "",
+  //     "pattern": "",
+  //     "min": "",
+  //     "max": ""
+  //   }
+  // },
   {
     "id": "6",
-    "type": "text",
+    "type": "searchableUser",
     "label": "Reported By",
     "name": "reportedBy",
     "required": true,
-    "placeholder": "Enter bug title",
+    "alignment": 'grid grid-cols-2 gap-4',
+    "placeholder": "Search user...",
     "options": [],
     "conditions": [],
-    "alignment": 'grid grid-cols-2 gap-4',
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
+    "validations": {}
   },
   {
     "id": "7",
-    "type": "text",
+    "type": "searchableUser",
     "label": "Assigned To",
     "name": "assignedTo",
     "required": true,
-    "placeholder": "",
+    "alignment": 'grid grid-cols-2 gap-4',
+    "placeholder": "Search user...",
     "options": [],
     "conditions": [],
-    "alignment": 'grid grid-cols-2 gap-4',
-    "validations": {
-      "minLength": "",
-      "maxLength": "",
-      "pattern": "",
-      "min": "",
-      "max": ""
-    }
+    "validations": {}
   },
   {
     "id": "8",
@@ -328,6 +352,30 @@ export const formConfig = [
       "max": ""
     }
   },
+  // {
+  //   "id": "10",
+  //   "type": "searchableUser",
+  //   "label": "Reported By",
+  //   "name": "reported",
+  //   "required": true,
+  //   "alignment": 'grid grid-cols-2 gap-4',
+  //   "placeholder": "Search user...",
+  //   "options": [],
+  //   "conditions": [],
+  //   "validations": {}
+  // },
+  // {
+  //   "id": "11",
+  //   "type": "searchableUser",
+  //   "label": "Assigned To",
+  //   "name": "assignedTo",
+  //   "required": true,
+  //   "alignment": 'grid grid-cols-2 gap-4',
+  //   "placeholder": "Search user...",
+  //   "options": [],
+  //   "conditions": [],
+  //   "validations": {}
+  // }
 ]
 const jsoData =     {
   id: 1,
